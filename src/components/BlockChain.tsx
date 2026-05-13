@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import type { JSX } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import SectionTransition from './ui/SectionTransition';
 import GlassCard from './ui/GlassCard';
@@ -6,9 +7,25 @@ import Badge from './ui/Badge';
 import { useInView } from '../hooks/useInView';
 
 type CascadeState = 'blocked' | 'resolved' | 'exempt';
+type CascadeIcon = 'warning' | 'lock' | 'ban';
+
+const cascadeIcons: Record<CascadeIcon | 'check', (color: string) => JSX.Element> = {
+  warning: (color) => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+  ),
+  lock: (color) => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+  ),
+  ban: (color) => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+  ),
+  check: (color) => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+  ),
+};
 
 interface CascadeNode {
-  icon: string;
+  icon: CascadeIcon;
   title: string;
   detail: string;
   subtext?: string;
@@ -21,7 +38,7 @@ interface CascadeNode {
 
 const cascadeNodes: CascadeNode[] = [
   {
-    icon: '⚠️',
+    icon: 'warning',
     title: 'Mensalidade atrasada',
     detail: 'Dona Sol · R$ 1.800',
     subtext: 'Vencimento: 05/jun · 7 dias',
@@ -32,7 +49,7 @@ const cascadeNodes: CascadeNode[] = [
     exemptDetail: 'Dona Sol · R$ 1.800',
   },
   {
-    icon: '🔒',
+    icon: 'lock',
     title: 'Repasse bloqueado',
     detail: 'R$ 990 retido',
     subtext: 'Repasse só libera com mensalidade em dia',
@@ -41,7 +58,7 @@ const cascadeNodes: CascadeNode[] = [
     resolvedDetail: 'R$ 990',
   },
   {
-    icon: '🔒',
+    icon: 'lock',
     title: 'NF-e bloqueada',
     detail: 'Emissão suspensa',
     subtext: 'NF-e de repasse requer repasse liberado',
@@ -50,7 +67,7 @@ const cascadeNodes: CascadeNode[] = [
     resolvedDetail: 'Emissão liberada',
   },
   {
-    icon: '⛔',
+    icon: 'ban',
     title: 'Fechamento impedido',
     detail: 'Dona Sol impede o fechamento',
     subtext: 'do mês de Junho',
@@ -126,8 +143,12 @@ export default function BlockChain() {
                     transition={{ duration: 0.3, delay: idx * 0.3 }}
                   >
                     <div className="flex items-start gap-3">
-                      <span className="text-xl">
-                        {isResolved ? '✅' : isExempt ? '⚠️' : node.icon}
+                      <span className="shrink-0 mt-0.5">
+                        {isResolved
+                          ? cascadeIcons.check('#16A34A')
+                          : isExempt
+                          ? cascadeIcons.warning('#F59E0B')
+                          : cascadeIcons[node.icon](node.borderColor)}
                       </span>
                       <div>
                         <h4 className="font-subheading text-[16px] text-[#111111]">

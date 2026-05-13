@@ -1,0 +1,2261 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flipper — Gestão de Consignações</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --green: #1A7A4A;
+  --green-light: #E8F5EE;
+  --green-mid: #2EA865;
+  --green-dark: #0F5233;
+  --amber: #D4860A;
+  --amber-light: #FEF3DC;
+  --red: #C53030;
+  --red-light: #FEE8E8;
+  --ink: #111410;
+  --ink-2: #3A3D38;
+  --ink-3: #6B6F69;
+  --ink-4: #9FA39D;
+  --paper: #FAFAF8;
+  --surface: #FFFFFF;
+  --border: #E8EAE5;
+  --border-2: #D4D8CF;
+  --radius: 10px;
+  --radius-lg: 16px;
+  --font: 'DM Sans', sans-serif;
+  --mono: 'DM Mono', monospace;
+  --sidebar-w: 220px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.hidden { display: none !important; }
+
+/* ─── LOGIN ─────────────────────────────────── */
+#login {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--paper);
+  padding: 1.5rem;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 380px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  box-shadow: var(--shadow);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 2rem;
+}
+
+.brand-mark {
+  width: 36px;
+  height: 36px;
+  background: var(--green);
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.brand-mark svg { width: 18px; height: 18px; }
+
+.brand-name {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: -0.5px;
+}
+
+.brand-sub {
+  font-size: 11px;
+  color: var(--ink-3);
+  margin-top: 1px;
+}
+
+.tab-row {
+  display: flex;
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 3px;
+  gap: 3px;
+  margin-bottom: 1.5rem;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 7px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  font-family: var(--font);
+  font-size: 13px;
+  color: var(--ink-3);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-weight: 500;
+}
+
+.tab-btn.active {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.field { margin-bottom: 1rem; }
+.field label { display: block; font-size: 12px; color: var(--ink-3); margin-bottom: 5px; font-weight: 500; }
+
+input, select {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 14px;
+  transition: border-color 0.15s;
+  outline: none;
+}
+
+input:focus, select:focus { border-color: var(--green); }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn:hover { background: var(--paper); }
+.btn-primary { background: var(--green); color: #fff; border-color: var(--green); width: 100%; }
+.btn-primary:hover { background: var(--green-dark); }
+.btn-sm { padding: 6px 12px; font-size: 12px; }
+.btn-ghost { border-color: transparent; background: transparent; }
+.btn-ghost:hover { background: var(--paper); }
+.btn-danger { color: var(--red); border-color: var(--red-light); background: var(--red-light); }
+
+.login-hint {
+  text-align: center;
+  font-size: 11px;
+  color: var(--ink-4);
+  margin-top: 1rem;
+}
+
+/* ─── APP SHELL ─────────────────────────────── */
+#app { display: flex; min-height: 100vh; }
+
+/* ─── SIDEBAR ───────────────────────────────── */
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  z-index: 100;
+  transition: transform 0.25s ease;
+}
+
+.sidebar-head {
+  padding: 1.25rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar-brand { display: flex; align-items: center; gap: 8px; }
+.sidebar-brand .brand-mark { width: 28px; height: 28px; border-radius: 7px; }
+.sidebar-brand .brand-mark svg { width: 14px; height: 14px; }
+.sidebar-brand-name { font-size: 16px; font-weight: 600; color: var(--ink); letter-spacing: -0.3px; }
+.sidebar-role { font-size: 10px; color: var(--ink-4); font-family: var(--mono); margin-top: 1px; }
+
+.nav { padding: 0.5rem 0; flex: 1; overflow-y: auto; }
+.nav-section { padding: 0.75rem 1rem 0.25rem; font-size: 10px; color: var(--ink-4); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; }
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 1rem;
+  margin: 1px 0.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--ink-2);
+  transition: all 0.12s;
+  border: none;
+  background: none;
+  width: calc(100% - 1rem);
+  text-align: left;
+  font-family: var(--font);
+  font-weight: 400;
+}
+
+.nav-item:hover { background: var(--paper); color: var(--ink); }
+.nav-item.active { background: var(--green-light); color: var(--green-dark); font-weight: 500; }
+.nav-item svg { width: 15px; height: 15px; flex-shrink: 0; opacity: 0.7; }
+.nav-item.active svg { opacity: 1; }
+
+.nav-badge {
+  margin-left: auto;
+  background: var(--amber);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 20px;
+  font-family: var(--mono);
+}
+
+.sidebar-foot {
+  padding: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.user-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.av-g { background: var(--green-light); color: var(--green-dark); }
+.av-t { background: #E1F5EE; color: #0F6E56; }
+.av-p { background: #EEEDFE; color: #534AB7; }
+.av-a { background: var(--amber-light); color: var(--amber); }
+.av-r { background: var(--red-light); color: var(--red); }
+
+.user-name { font-size: 12px; font-weight: 500; color: var(--ink); }
+.user-email { font-size: 10px; color: var(--ink-4); }
+
+/* ─── MAIN ──────────────────────────────────── */
+.main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  background: var(--paper);
+  min-height: 100vh;
+}
+
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 1.5rem;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.topbar-title { font-size: 15px; font-weight: 600; color: var(--ink); letter-spacing: -0.3px; }
+.topbar-right { display: flex; align-items: center; gap: 8px; }
+
+.page { display: none; padding: 1.5rem; animation: fadeIn 0.2s ease; }
+.page.active { display: block; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ─── COMPONENTS ────────────────────────────── */
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-bottom: 1.5rem;
+}
+
+.metric {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.1rem 1.25rem;
+}
+
+.metric-label { font-size: 11px; color: var(--ink-3); font-weight: 500; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+.metric-value { font-size: 24px; font-weight: 600; color: var(--ink); letter-spacing: -0.5px; font-family: var(--mono); }
+.metric-sub { font-size: 11px; color: var(--ink-4); margin-top: 3px; }
+.metric-up { color: var(--green); }
+.metric-down { color: var(--red); }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+
+.card-head {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.card-title { font-size: 13px; font-weight: 600; color: var(--ink); }
+.card-body { padding: 1.25rem; }
+.card-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.card-head .btn { width: auto; }
+
+.quick-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.sku-code {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 7px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--paper);
+  color: var(--ink-2);
+  font-family: var(--mono);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead th {
+  text-align: left;
+  padding: 10px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border);
+  background: var(--paper);
+}
+
+tbody td {
+  padding: 11px 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--ink);
+  vertical-align: middle;
+}
+
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: var(--paper); }
+.total-row td { background: var(--paper); font-weight: 600; border-top: 2px solid var(--border); }
+
+/* badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-weight: 500;
+  font-family: var(--mono);
+}
+.badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; }
+.b-green { background: var(--green-light); color: var(--green-dark); }
+.b-green::before { background: var(--green); }
+.b-amber { background: var(--amber-light); color: var(--amber); }
+.b-amber::before { background: var(--amber); }
+.b-red { background: var(--red-light); color: var(--red); }
+.b-red::before { background: var(--red); }
+.b-gray { background: var(--paper); color: var(--ink-3); }
+.b-gray::before { background: var(--ink-4); }
+
+.pos { color: var(--green); font-family: var(--mono); }
+.neg { color: var(--red); font-family: var(--mono); }
+.mono { font-family: var(--mono); }
+
+/* alert banner */
+.alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  margin-bottom: 1rem;
+  font-size: 13px;
+}
+.alert-amber { background: var(--amber-light); color: var(--amber); border: 1px solid #F5D89A; }
+.alert-green { background: var(--green-light); color: var(--green-dark); border: 1px solid #A8DFC0; }
+.alert svg { width: 15px; height: 15px; flex-shrink: 0; margin-top: 1px; }
+
+.row-flex { display: flex; align-items: center; gap: 8px; }
+.col { display: flex; flex-direction: column; }
+.name-cell { font-weight: 500; }
+.sub-cell { font-size: 11px; color: var(--ink-4); margin-top: 1px; }
+
+.sep { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
+
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* pix block */
+.pix-block {
+  background: var(--paper);
+  border: 1px dashed var(--border-2);
+  border-radius: var(--radius);
+  padding: 1rem;
+  text-align: center;
+  margin: 1rem 0;
+}
+.pix-label { font-size: 11px; color: var(--ink-4); margin-bottom: 6px; }
+.pix-code { font-family: var(--mono); font-size: 10px; color: var(--ink-3); word-break: break-all; }
+
+/* extrato items */
+.ext-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.ext-item:last-child { border-bottom: none; }
+.ext-name { font-size: 13px; font-weight: 500; }
+.ext-sub { font-size: 11px; color: var(--ink-4); margin-top: 1px; }
+.payable-item {
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.payable-item:hover { background: var(--paper); }
+.payable-right { display: flex; align-items: center; gap: 10px; }
+.clickable-row { cursor: pointer; }
+.clickable-row:hover td { background: var(--green-light); }
+.profile-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 1rem;
+}
+.profile-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.profile-title .avatar { width: 44px; height: 44px; }
+.profile-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.task-list { display: grid; gap: 8px; }
+.task-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+.task-item:last-child { border-bottom: none; }
+.task-main { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.task-index {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--paper);
+  border: 1px solid var(--border);
+  color: var(--ink-3);
+  font-family: var(--mono);
+  font-size: 11px;
+  flex-shrink: 0;
+}
+.checklist {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 10px;
+  padding: 1.25rem;
+}
+.check-item {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px;
+  background: var(--surface);
+}
+.check-item.blocked { border-color: #F5D89A; background: #FFFBF0; }
+.check-item.done { border-color: #A8DFC0; background: var(--green-light); }
+.calc-preview {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px;
+}
+.sync-note {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  background: var(--paper);
+  border: 1px solid var(--border);
+  font-size: 12px;
+}
+
+/* modal */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.3);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: fadeIn 0.15s ease;
+}
+
+.modal {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 460px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+  animation: slideUp 0.2s ease;
+}
+
+@keyframes slideUp { from { transform: translateY(8px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+.modal-title { font-size: 15px; font-weight: 600; margin-bottom: 1.25rem; color: var(--ink); }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 1.25rem; }
+.modal-actions .btn { width: auto; }
+
+/* hamburger */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+.hamburger span { display: block; width: 18px; height: 2px; background: var(--ink); border-radius: 2px; transition: all 0.2s; }
+
+/* notification dot */
+
+.unit-selector {
+  display: flex;
+  align-items: center;
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 2px;
+  gap: 2px;
+}
+.unit-btn {
+  padding: 4px 10px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-3);
+  cursor: pointer;
+  transition: all 0.12s;
+  white-space: nowrap;
+}
+.unit-btn.active {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+.unit-tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: var(--mono);
+  font-weight: 500;
+  margin-left: 4px;
+}
+.unit-sp { background: #E6F1FB; color: #185FA5; }
+.unit-rj { background: #EEEDFE; color: #534AB7; }
+.unit-all { background: var(--paper); color: var(--ink-3); border: 1px solid var(--border); }
+
+.notif-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--amber); margin-right: 4px; }
+
+/* progress bar */
+.progress { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; margin-top: 6px; }
+.progress-fill { height: 100%; background: var(--green); border-radius: 2px; transition: width 0.5s ease; }
+
+/* ─── RESPONSIVE ────────────────────────────── */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+    box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+  }
+  .sidebar.open { transform: translateX(0); }
+  .main { margin-left: 0; }
+  .hamburger { display: flex; }
+  .metrics { grid-template-columns: 1fr 1fr; }
+  .grid2 { grid-template-columns: 1fr; }
+  .topbar { padding: 0 1rem; }
+  .page { padding: 1rem; }
+  .hide-mobile { display: none; }
+  table { font-size: 12px; }
+  thead th, tbody td { padding: 8px; }
+  .metric-value { font-size: 20px; }
+  .overlay { align-items: flex-end; padding: 0; }
+  .modal { border-radius: var(--radius-lg) var(--radius-lg) 0 0; max-width: 100%; }
+
+  /* card-head responsivo: título empilha com botão se necessário */
+  .card-head {
+    row-gap: 8px;
+  }
+  .card-head .card-title {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .card-head .btn {
+    flex-shrink: 0;
+    white-space: nowrap;
+    max-width: 100%;
+  }
+  /* quando o botão é longo (ex: "Registrar pagamento"), ele vai para linha própria */
+  .card-head .btn-primary {
+    width: auto;
+    align-self: flex-start;
+  }
+}
+
+@media (max-width: 400px) {
+  .metrics { grid-template-columns: 1fr; }
+}
+
+/* unit dropdown */
+.unit-dropdown { position: relative; display: inline-block; }
+.unit-dropdown-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border: 1px solid var(--border-2);
+  border-radius: var(--radius); background: var(--surface);
+  color: var(--ink); font-family: var(--font); font-size: 13px;
+  font-weight: 500; cursor: pointer; transition: all 0.15s; white-space: nowrap;
+}
+.unit-dropdown-btn:hover { background: var(--paper); }
+.unit-dropdown-btn.filtered { color: var(--green); border-color: var(--green-mid); }
+.unit-dropdown-btn svg { width: 12px; height: 12px; transition: transform 0.15s; flex-shrink: 0; opacity: 0.5; }
+.unit-dropdown-btn.open svg { transform: rotate(180deg); }
+.unit-dropdown-menu {
+  display: none; position: absolute; top: calc(100% + 6px); right: 0;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  min-width: 160px; z-index: 150; overflow: hidden;
+}
+.unit-dropdown-menu.open { display: block; }
+.unit-dropdown-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 14px; font-size: 13px; font-family: var(--font);
+  color: var(--ink-2); cursor: pointer; border: none; background: none;
+  width: 100%; text-align: left; transition: background 0.1s;
+}
+.unit-dropdown-item:hover { background: var(--paper); }
+.unit-dropdown-item.active { color: var(--green-dark); font-weight: 500; background: var(--green-light); }
+.unit-dropdown-item .check { margin-left: auto; color: var(--green); font-size: 11px; }
+
+/* status filter buttons */
+.active-filter {
+  background: var(--green-light);
+  color: var(--green-dark);
+  border-color: var(--green-mid);
+  font-weight: 500;
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login">
+  <div class="login-card">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 18 18" fill="none"><path d="M3 9C3 5.686 5.686 3 9 3s6 2.686 6 6-2.686 6-6 6-6-2.686-6-6z" stroke="#fff" stroke-width="1.5"/><path d="M6.5 9l2 2 3-3" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div>
+        <div class="brand-name">Flipper</div>
+        <div class="brand-sub">Gestão de Consignações</div>
+      </div>
+    </div>
+
+    <div class="tab-row">
+      <button class="tab-btn active" onclick="setTab('loja',this)">Financeiro</button>
+      <button class="tab-btn" onclick="setTab('expositor',this)">Loja Parceira</button>
+    </div>
+
+    <div id="form-loja">
+      <div class="field"><label>E-mail</label><input value="financeiro@lojademo.com.br"></div>
+      <div class="field"><label>Senha</label><input type="password" value="••••••••"></div>
+      <button class="btn btn-primary" onclick="entrar('loja')">Entrar como financeiro</button>
+    </div>
+
+    <div id="form-expositor" class="hidden">
+      <div class="field"><label>E-mail</label><input value="contato@marca-a.com.br"></div>
+      <div class="field"><label>Senha</label><input type="password" value="••••••••"></div>
+      <button class="btn btn-primary" onclick="entrar('expositor')">Entrar como loja parceira</button>
+    </div>
+
+    <p class="login-hint">Demo — Loja Demo Multimarcas · dados simulados</p>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" class="hidden">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <div class="sidebar-brand">
+        <div class="brand-mark">
+          <svg viewBox="0 0 18 18" fill="none"><path d="M3 9C3 5.686 5.686 3 9 3s6 2.686 6 6-2.686 6-6 6-6-2.686-6-6z" stroke="#fff" stroke-width="1.5"/><path d="M6.5 9l2 2 3-3" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <div class="sidebar-brand-name">Flipper</div>
+          <div class="sidebar-role" id="sidebar-role">financeiro · loja demo</div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="nav" id="nav-loja">
+      <div class="nav-section">Visão geral</div>
+      <button class="nav-item active" onclick="goPage('dashboard',this)">
+        <svg viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="9" y="1" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="1" y="9" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="9" y="9" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.3"/></svg>
+        Dashboard
+      </button>
+      <div class="nav-section">Operação</div>
+      <button class="nav-item" onclick="goPage('expositores',this)">
+        <svg viewBox="0 0 16 16" fill="none"><circle cx="6" cy="5" r="2.5" stroke="currentColor" stroke-width="1.3"/><path d="M1 14c0-2.761 2.239-5 5-5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="1.3"/><path d="M12 8.5V10l1 1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        Lojas Parceiras
+      </button>
+      <button class="nav-item" onclick="goPage('produtos',this)">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M2.5 4.5L8 1.8l5.5 2.7v7L8 14.2l-5.5-2.7v-7z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M2.8 4.8L8 7.5l5.2-2.7M8 7.5v6.2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Produtos/SKUs
+      </button>
+      <button class="nav-item" onclick="goPage('vendas',this)">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M2 4h12M5 4V2.5h6V4M5 13.5V5.5h6v8H5z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Vendas
+      </button>
+      <div class="nav-section">Financeiro</div>
+      <button class="nav-item" onclick="goPage('cobrancas',this)">
+        <svg viewBox="0 0 16 16" fill="none"><rect x="1" y="3.5" width="14" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M1 7h14" stroke="currentColor" stroke-width="1.3"/><circle cx="4.5" cy="10.5" r="1" fill="currentColor"/></svg>
+        Cobranças
+        <span class="nav-badge" id="badge-cob">2</span>
+      </button>
+      <button class="nav-item" onclick="goPage('repasses',this)">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M2 8h12M10 5l3 3-3 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Repasses
+      </button>
+      <button class="nav-item" onclick="goPage('fechamento',this)">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M3 2h10a1 1 0 011 1v10a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z" stroke="currentColor" stroke-width="1.3"/><path d="M5 8.5l2 2 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Fechamento
+      </button>
+      <button class="nav-item" onclick="goPage('nfe',this)">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M3 1.5h7l3 3V14a.5.5 0 01-.5.5h-9A.5.5 0 013 14V2a.5.5 0 010-.5z" stroke="currentColor" stroke-width="1.3"/><path d="M10 1.5V4.5H13" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M5.5 8h5M5.5 10.5h3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        NF-e
+      </button>
+    </nav>
+
+    <nav class="nav hidden" id="nav-expositor">
+      <div class="nav-section">Minha conta</div>
+      <button class="nav-item active" onclick="goPage('e-home',this)">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M2 7L8 2l6 5v7H10V9.5H6V14H2V7z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+        Início
+      </button>
+      <button class="nav-item" onclick="goPage('e-mensalidade',this)">
+        <svg viewBox="0 0 16 16" fill="none"><rect x="1" y="3.5" width="14" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M1 7h14" stroke="currentColor" stroke-width="1.3"/></svg>
+        Mensalidade
+      </button>
+      <button class="nav-item" onclick="goPage('e-vendas',this)">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M2 4h12M5 4V2.5h6V4M5 13.5V5.5h6v8H5z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Minhas vendas
+      </button>
+      <button class="nav-item" onclick="goPage('e-repasses',this)">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M2 8h12M10 5l3 3-3 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Repasses
+      </button>
+      <button class="nav-item" onclick="goPage('e-nfe',this)">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M3 1.5h7l3 3V14a.5.5 0 01-.5.5h-9A.5.5 0 013 14V2a.5.5 0 010-.5z" stroke="currentColor" stroke-width="1.3"/><path d="M5.5 8h5M5.5 10.5h3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        Notas fiscais
+      </button>
+    </nav>
+
+    <div class="sidebar-foot">
+      <div class="row-flex" style="justify-content:space-between; min-width:0; gap:6px;">
+        <div class="row-flex" style="min-width:0; flex:1; overflow:hidden;">
+          <div class="avatar av-g" id="foot-av" style="flex-shrink:0;">FI</div>
+          <div class="col" style="min-width:0; overflow:hidden;">
+            <div class="user-name" id="foot-name" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Financeiro</div>
+            <div class="user-email" id="foot-email" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">financeiro@lojademo.com.br</div>
+          </div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="sair()" title="Sair" style="flex-shrink:0;">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 2H3a1 1 0 00-1 1v10a1 1 0 001 1h3M10 11l3-3-3-3M13 8H6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- OVERLAY SIDEBAR MOBILE -->
+  <div id="sidebar-overlay" onclick="fecharSidebar()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:99"></div>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="topbar">
+      <div class="row-flex">
+        <button class="hamburger" onclick="toggleSidebar()"><span></span><span></span><span></span></button>
+        <span class="topbar-title" id="topbar-title">Dashboard</span>
+      </div>
+      <div class="topbar-right">
+        <div class="unit-dropdown" id="unit-dropdown">
+          <button class="unit-dropdown-btn" id="unit-dropdown-btn" onclick="toggleDropdown(event)">
+            <span id="unit-dropdown-label">Todas as unidades</span>
+            <svg viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="unit-dropdown-menu" id="unit-dropdown-menu">
+            <button class="unit-dropdown-item active" id="uopt-todas" onclick="selectUnidade(event, 'todas')">Todas as unidades <span class="check">✓</span></button>
+            <button class="unit-dropdown-item" id="uopt-sp" onclick="selectUnidade(event, 'sp')">Unidade 1</button>
+            <button class="unit-dropdown-item" id="uopt-rj" onclick="selectUnidade(event, 'rj')">Unidade 2</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── LOJA PAGES ── -->
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+        <div>
+          <span id="dash-unit-label" style="font-size:13px;color:var(--ink-3)">Todas as unidades</span>
+        </div>
+      </div>
+      <div class="metrics" id="dash-metrics">
+        <div class="metric">
+          <div class="metric-label">Vendas brutas</div>
+          <div class="metric-value" id="m-vendas">R$8.340</div>
+          <div class="metric-sub metric-up">↑ 12% vs maio</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Lojas parceiras</div>
+          <div class="metric-value" id="m-exp">8</div>
+          <div class="metric-sub" id="m-exp-sub">4 SP · 4 RJ</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Mensalidades</div>
+          <div class="metric-value" id="m-mens">R$5.200</div>
+          <div class="metric-sub metric-down" id="m-mens-sub">R$2.200 em aberto</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Repasse previsto</div>
+          <div class="metric-value" id="m-repasse">R$7.890</div>
+          <div class="metric-sub metric-down" id="m-repasse-sub">Vence em 20/06</div>
+        </div>
+      </div>
+
+      <div class="alert alert-amber">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M8 6v3M8 11v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M6.8 2.5L1.5 12a1 1 0 00.9 1.5h11.2a1 1 0 00.9-1.5L9.2 2.5a1 1 0 00-1.8 0z" stroke="currentColor" stroke-width="1.3"/></svg>
+        <span><strong>2 lojas parceiras</strong> com mensalidade em aberto · Lembretes enviados automaticamente em 01/06</span>
+      </div>
+
+      <div class="alert alert-amber">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M8 6v3M8 11v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M6.8 2.5L1.5 12a1 1 0 00.9 1.5h11.2a1 1 0 00.9-1.5L9.2 2.5a1 1 0 00-1.8 0z" stroke="currentColor" stroke-width="1.3"/></svg>
+        <span><strong>3 itens importados sem loja parceira</strong> · vincule os SKUs antes do fechamento para liberar R$ 890 em vendas</span>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">Fila operacional</span>
+          <span class="badge b-amber">3 pendências</span>
+        </div>
+        <div class="task-list">
+          <div class="task-item">
+            <div class="task-main"><span class="task-index">1</span><div class="col"><span class="ext-name">Vincular 3 SKUs sem loja parceira</span><span class="ext-sub">R$ 890 travados fora do fechamento</span></div></div>
+            <button class="btn btn-sm" onclick="goPage('produtos')">Resolver</button>
+          </div>
+          <div class="task-item">
+            <div class="task-main"><span class="task-index">2</span><div class="col"><span class="ext-name">Confirmar contrato de Terra Mãe</span><span class="ext-sub">Modelo comercial pendente de aprovação</span></div></div>
+            <button class="btn btn-sm" onclick="goPage('expositores')">Revisar</button>
+          </div>
+          <div class="task-item">
+            <div class="task-main"><span class="task-index">3</span><div class="col"><span class="ext-name">NF-e pendente — Lua Cheia e Marca D</span><span class="ext-sub">Repasse aguarda recebimento da nota fiscal</span></div></div>
+            <button class="btn btn-sm" onclick="goPage('nfe')">Ver</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">Status das lojas parceiras — Junho 2025</span>
+          <button class="btn btn-sm" onclick="goPage('expositores')">Ver todos</button>
+        </div>
+        <table>
+          <thead><tr>
+            <th>Marca</th>
+            <th>Mensalidade</th>
+            <th class="hide-mobile">Vendas maio</th>
+            <th>Repasse</th>
+            <th class="hide-mobile">NF-e</th>
+          </tr></thead>
+          <tbody>
+            <tr class="dash-exp-row clickable-row" data-unidade="sp" onclick="openBrandProfile('marcaA')">
+              <td><div class="row-flex"><div class="avatar av-g">MA</div><div class="col"><span class="name-cell">Marca A <span class="unit-tag unit-sp">SP</span></span></div></div></td>
+              <td><span class="badge b-green">Pago</span></td>
+              <td class="mono hide-mobile">R$ 2.300</td>
+              <td><span class="badge b-amber">Pendente</span></td>
+              <td class="hide-mobile"><span class="badge b-green">Emitida</span></td>
+            </tr>
+            <tr class="dash-exp-row clickable-row" data-unidade="sp" onclick="openBrandProfile('luaCheia')">
+              <td><div class="row-flex"><div class="avatar av-t">LC</div><div class="col"><span class="name-cell">Lua Cheia <span class="unit-tag unit-sp">SP</span></span></div></div></td>
+              <td><span class="badge b-amber">Pendente</span></td>
+              <td class="mono hide-mobile">R$ 1.800</td>
+              <td><span class="badge b-amber">Pendente</span></td>
+              <td class="hide-mobile"><span class="badge b-gray">Aguardando</span></td>
+            </tr>
+            <tr class="dash-exp-row clickable-row" data-unidade="rj" onclick="openBrandProfile('marRio')">
+              <td><div class="row-flex"><div class="avatar av-p">MR</div><div class="col"><span class="name-cell">Mar e Rio <span class="unit-tag unit-rj">RJ</span></span></div></div></td>
+              <td><span class="badge b-green">Pago</span></td>
+              <td class="mono hide-mobile">R$ 2.640</td>
+              <td><span class="badge b-amber">Pendente</span></td>
+              <td class="hide-mobile"><span class="badge b-green">Emitida</span></td>
+            </tr>
+            <tr class="dash-exp-row clickable-row" data-unidade="rj" onclick="openBrandProfile('marcaD')">
+              <td><div class="row-flex"><div class="avatar av-r">MD</div><div class="col"><span class="name-cell">Marca D <span class="unit-tag unit-rj">RJ</span></span></div></div></td>
+              <td><span class="badge b-red">Atrasado</span></td>
+              <td class="mono hide-mobile">R$ 1.600</td>
+              <td><span class="badge b-gray">Bloqueado</span></td>
+              <td class="hide-mobile"><span class="badge b-gray">Bloqueado</span></td>
+            </tr>
+            <tr class="dash-exp-row clickable-row" data-unidade="rj" onclick="openBrandProfile('casaBruta')">
+              <td><div class="row-flex"><div class="avatar av-a">CB</div><div class="col"><span class="name-cell">Casa Bruta <span class="unit-tag unit-rj">RJ</span></span></div></div></td>
+              <td><span class="badge b-green">Pago</span></td>
+              <td class="mono hide-mobile">R$ 1.900</td>
+              <td><span class="badge b-amber">Pendente</span></td>
+              <td class="hide-mobile"><span class="badge b-green">Emitida</span></td>
+            </tr>
+            <tr class="dash-exp-row clickable-row" data-unidade="sp" onclick="openBrandProfile('vazio')">
+              <td><div class="row-flex"><div class="avatar av-p">VZ</div><div class="col"><span class="name-cell">Vazio <span class="unit-tag unit-sp">SP</span></span></div></div></td>
+              <td><span class="badge b-green">Pago</span></td>
+              <td class="mono hide-mobile">R$ 1.200</td>
+              <td><span class="badge b-amber">Pendente</span></td>
+              <td class="hide-mobile"><span class="badge b-gray">Aguardando</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="grid2">
+        <div class="card">
+          <div class="card-head"><span class="card-title">Próximos vencimentos</span></div>
+          <div class="card-body" style="padding:0">
+            <div class="ext-item payable-item" style="padding:10px 1.25rem" onclick="openPayoutDetail('Junho 2025','R$ 2.300','R$ 1.150','R$ 1.150','—','Pendente')">
+              <div class="col"><span class="ext-name">Repasse — Marca A</span><span class="ext-sub">Vence 20/06/2025 · 4 vendas no extrato</span></div>
+              <div class="payable-right"><span class="badge b-amber">Pendente</span><span class="mono" style="font-size:13px">R$ 1.150</span></div>
+            </div>
+            <div class="ext-item payable-item" style="padding:10px 1.25rem" onclick="openPayoutDetail('Junho 2025','R$ 1.800','R$ 720','R$ 1.080','—','Pendente')">
+              <div class="col"><span class="ext-name">Repasse — Lua Cheia</span><span class="ext-sub">Vence 20/06/2025 · 3 vendas no extrato</span></div>
+              <div class="payable-right"><span class="badge b-amber">Pendente</span><span class="mono" style="font-size:13px">R$ 1.080</span></div>
+            </div>
+            <div class="ext-item payable-item" style="padding:10px 1.25rem" onclick="openPayoutDetail('Junho 2025','R$ 2.640','R$ 1.320','R$ 1.320','—','Pendente')">
+              <div class="col"><span class="ext-name">Repasse — Mar e Rio</span><span class="ext-sub">Vence 20/06/2025 · NF-e emitida</span></div>
+              <div class="payable-right"><span class="badge b-amber">Pendente</span><span class="mono" style="font-size:13px">R$ 1.320</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><span class="card-title">Atividade recente</span></div>
+          <div class="card-body" style="padding:0">
+            <div class="ext-item" style="padding:10px 1.25rem">
+              <div class="col"><span class="ext-name">Mensalidade paga</span><span class="ext-sub">Marca A · Pix · agora</span></div>
+              <span class="badge b-green">+R$ 800</span>
+            </div>
+            <div class="ext-item" style="padding:10px 1.25rem">
+              <div class="col"><span class="ext-name">NF-e emitida</span><span class="ext-sub">Mar e Rio · #00421 · 2h</span></div>
+              <span class="badge b-gray">NF-e</span>
+            </div>
+            <div class="ext-item" style="padding:10px 1.25rem">
+              <div class="col"><span class="ext-name">Venda registrada</span><span class="ext-sub">Marca A · Colar K · 3h</span></div>
+              <span class="badge b-green">+R$ 620</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXPOSITORES -->
+    <div class="page" id="page-expositores">
+
+      <!-- filtro por status -->
+      <div class="quick-actions" style="margin-bottom:1rem">
+        <button class="btn btn-sm active-filter" id="filt-todos"   onclick="filtrarExpStatus('todos',this)">Todos</button>
+        <button class="btn btn-sm" id="filt-ativo"       onclick="filtrarExpStatus('ativo',this)">Ativos</button>
+        <button class="btn btn-sm" id="filt-inadimplente" onclick="filtrarExpStatus('inadimplente',this)">Inadimplentes</button>
+        <button class="btn btn-sm" id="filt-pendente"    onclick="filtrarExpStatus('pendente',this)">Pendentes</button>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">Lojas parceiras</span>
+          <button class="btn btn-sm btn-primary" onclick="showModal('modal-exp')">+ Nova loja parceira</button>
+        </div>
+        <table>
+          <thead><tr>
+            <th>Marca</th>
+            <th>Modelo</th>
+            <th>Mensalidade</th>
+            <th>Status</th>
+          </tr></thead>
+          <tbody>
+            <tr class="exp-row clickable-row" data-unidade="sp" data-status="ativo" onclick="openBrandProfile('marcaA')">
+              <td><div class="row-flex"><div class="avatar av-g">MA</div><div class="col"><span class="name-cell">Marca A</span><span class="sub-cell">contato@marca-a.com.br</span></div></div></td>
+              <td><span class="badge b-green">Consignação</span></td>
+              <td><span class="badge b-green">Pago</span></td>
+              <td><span class="badge b-green">Ativo</span></td>
+            </tr>
+            <tr class="exp-row clickable-row" data-unidade="sp" data-status="ativo" onclick="openBrandProfile('luaCheia')">
+              <td><div class="row-flex"><div class="avatar av-t">LC</div><div class="col"><span class="name-cell">Lua Cheia</span><span class="sub-cell">lua@luacheia.com</span></div></div></td>
+              <td><span class="badge b-green">Consignação</span></td>
+              <td><span class="badge b-amber">Pendente</span></td>
+              <td><span class="badge b-green">Ativo</span></td>
+            </tr>
+            <tr class="exp-row clickable-row" data-unidade="rj" data-status="ativo" onclick="openBrandProfile('marRio')">
+              <td><div class="row-flex"><div class="avatar av-p">MR</div><div class="col"><span class="name-cell">Mar e Rio</span><span class="sub-cell">contato@merio.com</span></div></div></td>
+              <td><span class="badge b-green">Consignação</span></td>
+              <td><span class="badge b-green">Pago</span></td>
+              <td><span class="badge b-green">Ativo</span></td>
+            </tr>
+            <tr class="exp-row clickable-row" data-unidade="rj" data-status="inadimplente" onclick="openBrandProfile('marcaD')">
+              <td><div class="row-flex"><div class="avatar av-r">MD</div><div class="col"><span class="name-cell">Marca D</span><span class="sub-cell">contato@marca-d.com</span></div></div></td>
+              <td><span class="badge b-amber">Híbrido</span></td>
+              <td><span class="badge b-red">Atrasado</span></td>
+              <td><span class="badge b-red">Inadimplente</span></td>
+            </tr>
+            <tr class="exp-row clickable-row" data-unidade="rj" data-status="ativo" onclick="openBrandProfile('casaBruta')">
+              <td><div class="row-flex"><div class="avatar av-a">CB</div><div class="col"><span class="name-cell">Casa Bruta</span><span class="sub-cell">oi@casabruta.com</span></div></div></td>
+              <td><span class="badge b-green">Consignação</span></td>
+              <td><span class="badge b-green">Pago</span></td>
+              <td><span class="badge b-green">Ativo</span></td>
+            </tr>
+            <tr class="exp-row clickable-row" data-unidade="sp" data-status="ativo" onclick="openBrandProfile('vazio')">
+              <td><div class="row-flex"><div class="avatar av-p">VZ</div><div class="col"><span class="name-cell">Vazio</span><span class="sub-cell">contato@vazio.com</span></div></div></td>
+              <td><span class="badge b-green">Consignação</span></td>
+              <td><span class="badge b-green">Pago</span></td>
+              <td><span class="badge b-green">Ativo</span></td>
+            </tr>
+            <tr class="exp-row clickable-row" data-unidade="sp" data-status="ativo" onclick="openBrandProfile('bruta')">
+              <td><div class="row-flex"><div class="avatar av-t">BR</div><div class="col"><span class="name-cell">Bruta</span><span class="sub-cell">bruta@bruta.com</span></div></div></td>
+              <td><span class="badge b-green">Consignação</span></td>
+              <td><span class="badge b-green">Pago</span></td>
+              <td><span class="badge b-green">Ativo</span></td>
+            </tr>
+            <tr class="exp-row clickable-row" data-unidade="rj" data-status="pendente" onclick="openBrandProfile('terraMae')">
+              <td><div class="row-flex"><div class="avatar av-g">TM</div><div class="col"><span class="name-cell">Terra Mãe</span><span class="sub-cell">terra@terramae.com</span></div></div></td>
+              <td><span class="badge b-gray">Sem contrato</span></td>
+              <td><span class="badge b-gray">—</span></td>
+              <td><span class="badge b-amber">Pendente</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PERFIL DA MARCA -->
+    <div class="page" id="page-marca">
+
+      <!-- cabeçalho: identidade + ações principais -->
+      <div class="profile-head">
+        <div class="profile-title">
+          <div class="avatar av-g" id="brand-profile-avatar">MA</div>
+          <div class="col">
+            <span class="topbar-title" id="brand-profile-name" style="font-size:20px">Marca A</span>
+            <span class="sub-cell" id="brand-profile-sub">SP · contato@marca-a.com.br</span>
+          </div>
+        </div>
+        <div class="profile-actions">
+          <button class="btn btn-sm" onclick="goPage('expositores')">Voltar</button>
+          <button class="btn btn-sm btn-primary" onclick="openBrandPayout()">Registrar repasse</button>
+          <button class="btn btn-sm" onclick="sendBrandReport()">Enviar relatório</button>
+          <button class="btn btn-sm" onclick="notifyBrandPending()">Notificar pendência</button>
+          <button class="btn btn-sm" onclick="resendInvite()">Reenviar convite</button>
+        </div>
+      </div>
+
+      <!-- 4 cards financeiros essenciais -->
+      <div class="metrics">
+        <div class="metric">
+          <div class="metric-label">Vendas do mês</div>
+          <div class="metric-value" id="brand-sales">R$2.300</div>
+          <div class="metric-sub" id="brand-sales-sub">4 vendas · 1 devolução</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Repasse previsto</div>
+          <div class="metric-value" id="brand-payout">R$1.150</div>
+          <div class="metric-sub metric-down" id="brand-payout-sub">Vence 20/07</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Mensalidade</div>
+          <div class="metric-value" id="brand-mens-value" style="font-size:18px">R$800</div>
+          <div class="metric-sub metric-up" id="brand-mens-sub">Pago em 07/06</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Status</div>
+          <div class="metric-value" id="brand-fin-status">OK</div>
+          <div class="metric-sub" id="brand-fin-sub">Sem bloqueios</div>
+        </div>
+      </div>
+
+      <!-- repasses + histórico unificado -->
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">Repasses — histórico</span>
+          <button class="btn btn-sm" onclick="alert('Histórico exportado com comprovantes e auditoria.')">Exportar</button>
+        </div>
+        <table>
+          <thead><tr>
+            <th>Período</th>
+            <th>Vendido cliente</th>
+            <th class="hide-mobile">Fica loja</th>
+            <th>Repasse</th>
+            <th class="hide-mobile">Forma</th>
+            <th>Status</th>
+          </tr></thead>
+          <tbody id="brand-payouts-body"></tbody>
+        </table>
+      </div>
+
+      <!-- vendas do mês com total -->
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">Vendas do mês</span>
+          <button class="btn btn-sm" onclick="sendBrandReport()">Enviar por e-mail</button>
+        </div>
+        <table>
+          <thead><tr><th>Data</th><th>Código</th><th>Produto</th><th>Repasse</th></tr></thead>
+          <tbody id="brand-sales-body"></tbody>
+          <tfoot id="brand-sales-total" style="border-top:2px solid var(--border)">
+            <tr class="total-row">
+              <td colspan="3" style="font-size:12px;color:var(--ink-3)">Total do mês</td>
+              <td class="mono pos" id="brand-sales-total-val">R$ 670</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <!-- detalhes de contrato e acesso — seção colapsável -->
+      <details style="margin-top:8px">
+        <summary style="cursor:pointer;font-size:13px;font-weight:600;color:var(--ink-3);padding:10px 0;list-style:none;display:flex;align-items:center;gap:6px;border-top:1px solid var(--border)">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+          Contrato e acesso
+        </summary>
+        <div class="grid2" style="margin-top:10px">
+          <div class="card">
+            <div class="card-head"><span class="card-title">Contrato</span><button class="btn btn-sm" onclick="alert('Auditoria do contrato aberta.')">Auditoria</button></div>
+            <div class="card-body">
+              <div class="ext-item"><span style="color:var(--ink-3)">Modelo</span><span class="mono" id="brand-model">Consignação</span></div>
+              <div class="ext-item"><span style="color:var(--ink-3)">Regra</span><span class="mono" id="brand-rule">50% loja / 50% parceira</span></div>
+              <div class="ext-item"><span style="color:var(--ink-3)">Pagamento</span><span class="mono" id="brand-payment-day">Todo dia 20</span></div>
+              <div class="ext-item" style="border:none"><span style="color:var(--ink-3)">Unidade</span><span class="mono" id="brand-unit">SP</span></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="card-title">Acesso da loja parceira</span><span class="badge b-green" id="brand-access-badge">Ativo</span></div>
+            <div class="card-body">
+              <div class="ext-item"><span style="color:var(--ink-3)">E-mail</span><span class="mono" id="brand-login-email">contato@marca-a.com.br</span></div>
+              <div class="ext-item"><span style="color:var(--ink-3)">Último convite</span><span class="mono" id="brand-last-invite">12/06/2025</span></div>
+              <div class="ext-item" style="border:none"><span style="color:var(--ink-3)">Último login</span><span class="mono" id="brand-last-login">Hoje 09:12</span></div>
+            </div>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- PRODUTOS/SKUS -->
+    <div class="page" id="page-produtos">
+      <div class="quick-actions">
+        <button class="btn btn-sm btn-primary" onclick="alert('Produto cadastrado. O SKU já pode ser identificado nas próximas importações.')">+ Novo produto</button>
+        <button class="btn btn-sm" onclick="showModal('modal-csv')">Importar CSV de produtos</button>
+      </div>
+
+      <div class="metrics">
+        <div class="metric"><div class="metric-label">Produtos ativos</div><div class="metric-value">126</div><div class="metric-sub">8 lojas parceiras</div></div>
+        <div class="metric"><div class="metric-label">SKUs mapeados</div><div class="metric-value">123</div><div class="metric-sub metric-up">97,6% da base</div></div>
+        <div class="metric"><div class="metric-label">Sem parceira</div><div class="metric-value">3</div><div class="metric-sub metric-down">bloqueiam R$ 890</div></div>
+        <div class="metric"><div class="metric-label">Atualizados hoje</div><div class="metric-value">18</div><div class="metric-sub">via CSV Bling</div></div>
+      </div>
+
+      <div class="sync-note" style="margin-bottom:1rem">
+        <span><strong>Bling sincronizado</strong> · última leitura hoje 14:32 · Flipper guarda o vínculo financeiro SKU → loja parceira</span>
+        <span class="badge b-green">OK</span>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">SKUs sem loja parceira</span>
+          <button class="btn btn-sm" onclick="showLinkSkuModal('BLG-4491','Bolsa Trama Natural','R$ 420','Bling · venda #8812')">Resolver pendências</button>
+        </div>
+        <table>
+          <thead><tr><th>SKU</th><th>Produto importado</th><th class="hide-mobile">Origem</th><th>Valor travado</th><th>Ação</th></tr></thead>
+          <tbody>
+            <tr class="product-row" data-unidade="sp"><td><span class="sku-code">BLG-4491</span></td><td>Bolsa Trama Natural</td><td class="hide-mobile">Bling · venda #8812</td><td class="mono">R$ 420</td><td><button class="btn btn-sm" onclick="showLinkSkuModal('BLG-4491','Bolsa Trama Natural','R$ 420','Bling · venda #8812')">Vincular</button></td></tr>
+            <tr class="product-row" data-unidade="rj"><td><span class="sku-code">PDV-0772</span></td><td>Vestido Linho Cru</td><td class="hide-mobile">PDV · cupom #1930</td><td class="mono">R$ 310</td><td><button class="btn btn-sm" onclick="showLinkSkuModal('PDV-0772','Vestido Linho Cru','R$ 310','PDV · cupom #1930')">Vincular</button></td></tr>
+            <tr class="product-row" data-unidade="sp"><td><span class="sku-code">SHOP-118</span></td><td>Anel Ajustável Sol</td><td class="hide-mobile">E-commerce · pedido #552</td><td class="mono">R$ 160</td><td><button class="btn btn-sm" onclick="showLinkSkuModal('SHOP-118','Anel Ajustável Sol','R$ 160','E-commerce · pedido #552')">Vincular</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">Produtos cadastrados</span>
+          <div class="card-actions">
+            <button class="btn btn-sm" onclick="alert('Lista exportada com SKU, loja parceira, comissão e status.')">Exportar</button>
+          </div>
+        </div>
+        <table>
+          <thead><tr><th>SKU</th><th>Produto</th><th>Loja parceira</th><th class="hide-mobile">Valor parceira</th><th class="hide-mobile">Preço venda</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr class="product-row" data-unidade="sp"><td><span class="sku-code">MA-COL-001</span></td><td>Colar K Moeda</td><td>Marca A <span class="unit-tag unit-sp">SP</span></td><td class="mono hide-mobile">R$ 310</td><td class="mono hide-mobile">R$ 620</td><td><span class="badge b-green">Ativo</span></td></tr>
+            <tr class="product-row" data-unidade="sp"><td><span class="sku-code">LC-BRI-014</span></td><td>Brinco Pedra</td><td>Lua Cheia <span class="unit-tag unit-sp">SP</span></td><td class="mono hide-mobile">R$ 160</td><td class="mono hide-mobile">R$ 320</td><td><span class="badge b-green">Ativo</span></td></tr>
+            <tr class="product-row" data-unidade="rj"><td><span class="sku-code">MR-PUL-220</span></td><td>Pulseira Onda</td><td>Mar e Rio <span class="unit-tag unit-rj">RJ</span></td><td class="mono hide-mobile">R$ 240</td><td class="mono hide-mobile">R$ 480</td><td><span class="badge b-green">Ativo</span></td></tr>
+            <tr class="product-row" data-unidade="rj"><td><span class="sku-code">MD-COL-102</span></td><td>Colar Concha</td><td>Marca D <span class="unit-tag unit-rj">RJ</span></td><td class="mono hide-mobile">R$ 280</td><td class="mono hide-mobile">R$ 560</td><td><span class="badge b-amber">Repasse bloqueado</span></td></tr>
+            <tr class="product-row" data-unidade="sp"><td><span class="sku-code">BR-BOL-040</span></td><td>Bolsa Couro P</td><td>Bruta <span class="unit-tag unit-sp">SP</span></td><td class="mono hide-mobile">R$ 210</td><td class="mono hide-mobile">R$ 420</td><td><span class="badge b-green">Ativo</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- VENDAS -->
+    <div class="page" id="page-vendas">
+
+      <div class="sync-note" style="margin-bottom:1rem">
+        <span><strong>ERP sincronizado</strong> · última leitura hoje 14:32 · vendas importadas automaticamente</span>
+        <div class="row-flex" style="gap:8px">
+          <span class="badge b-green">OK</span>
+          <button class="btn btn-sm" onclick="showModal('modal-venda')">+ Lançamento manual</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">Vendas — Junho 2025</span>
+          <button class="btn btn-sm" onclick="showModal('modal-csv')" style="color:var(--ink-4);font-size:12px;border-color:var(--border)">Importar CSV</button>
+        </div>
+        <table>
+          <thead><tr><th>Data</th><th>Código</th><th class="hide-mobile">Produto</th><th>Valor cliente</th><th class="hide-mobile">Loja 50%</th><th>Repasse</th><th class="hide-mobile">Pgto previsto</th></tr></thead>
+          <tbody id="tbody-vendas">
+            <tr><td class="mono">03/06</td><td><span class="sku-code">MA-COL-001</span><br><span class="sub-cell">Marca A</span></td><td class="hide-mobile">Colar K Moeda</td><td class="mono">R$ 620</td><td class="mono hide-mobile">R$ 310</td><td class="mono pos">R$ 310</td><td class="mono hide-mobile">20/07</td></tr>
+            <tr><td class="mono">05/06</td><td><span class="sku-code">MR-PUL-220</span><br><span class="sub-cell">Mar e Rio</span></td><td class="hide-mobile">Pulseira Onda</td><td class="mono">R$ 480</td><td class="mono hide-mobile">R$ 240</td><td class="mono pos">R$ 240</td><td class="mono hide-mobile">20/07</td></tr>
+            <tr><td class="mono">08/06</td><td><span class="sku-code">LC-BRI-014</span><br><span class="sub-cell">Lua Cheia</span></td><td class="hide-mobile">Brinco Pedra</td><td class="mono">R$ 320</td><td class="mono hide-mobile">R$ 160</td><td class="mono pos">R$ 160</td><td class="mono hide-mobile">20/07</td></tr>
+            <tr><td class="mono">10/06</td><td><span class="sku-code">MA-PUL-009</span><br><span class="sub-cell">Marca A</span></td><td class="hide-mobile">Pulseira Kali</td><td class="mono neg">-R$ 380</td><td class="mono hide-mobile neg">-R$ 190</td><td class="mono neg">-R$ 190</td><td class="mono hide-mobile">20/07</td></tr>
+            <tr><td class="mono">14/06</td><td><span class="sku-code">MD-COL-102</span><br><span class="sub-cell">Marca D</span></td><td class="hide-mobile">Colar Concha</td><td class="mono">R$ 560</td><td class="mono hide-mobile">R$ 280</td><td class="mono pos">R$ 280</td><td class="mono hide-mobile">Bloqueado</td></tr>
+            <tr class="total-row"><td colspan="3">Total acumulado</td><td class="mono">R$ 1.600</td><td class="mono hide-mobile">R$ 800</td><td class="mono pos">R$ 800</td><td class="hide-mobile"></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- COBRANÇAS -->
+    <div class="page" id="page-cobrancas">
+      <div class="alert alert-amber">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M8 6v3M8 11v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M6.8 2.5L1.5 12a1 1 0 00.9 1.5h11.2a1 1 0 00.9-1.5L9.2 2.5a1 1 0 00-1.8 0z" stroke="currentColor" stroke-width="1.3"/></svg>
+        <span>Cobranças geradas automaticamente em <strong>01/06/2025</strong>. Lembretes enviados para lojas parceiras em aberto.</span>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">Mensalidades — Junho 2025</span>
+          <div class="row-flex">
+            <button class="btn btn-sm" onclick="alert('Lembretes reenviados para Lua Cheia e Marca D.')">Reenviar lembretes</button>
+          </div>
+        </div>
+        <table>
+          <thead><tr><th>Loja parceira</th><th>Valor</th><th class="hide-mobile">Vencimento</th><th class="hide-mobile">Pagamento</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td><div class="row-flex"><div class="avatar av-g">EN</div>Marca A</div></td><td class="mono">R$ 800</td><td class="mono hide-mobile">10/06</td><td class="mono hide-mobile">07/06 · Pix</td><td><span class="badge b-green">Pago</span></td></tr>
+            <tr><td><div class="row-flex"><div class="avatar av-t">LC</div>Lua Cheia</div></td><td class="mono">R$ 600</td><td class="mono hide-mobile">10/06</td><td class="hide-mobile">—</td><td><span class="badge b-amber">Pendente</span></td></tr>
+            <tr><td><div class="row-flex"><div class="avatar av-p">MR</div>Mar e Rio</div></td><td class="mono">R$ 700</td><td class="mono hide-mobile">10/06</td><td class="mono hide-mobile">09/06 · Cartão</td><td><span class="badge b-green">Pago</span></td></tr>
+            <tr><td><div class="row-flex"><div class="avatar av-r">SO</div>Marca D</div></td><td class="mono">R$ 700</td><td class="mono hide-mobile">10/06</td><td class="hide-mobile">—</td><td><span class="badge b-red">Atrasado</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- REPASSES -->
+    <div class="page" id="page-repasses">
+      <div class="alert alert-green">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Repasses de junho serão processados até <strong>20/07/2025</strong>. O financeiro receberá notificação 3 dias antes. Clique em cada linha para registrar.</span>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">Repasses — Junho 2025</span>
+          <button class="btn btn-sm btn-primary" onclick="alert('Relatórios enviados por e-mail para todas as lojas parceiras.')">Enviar relatórios</button>
+        </div>
+        <table>
+          <thead><tr><th>Loja parceira</th><th class="hide-mobile">Vendido cliente</th><th class="hide-mobile">Fica loja</th><th>Repasse</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr class="clickable-row" onclick="openPayoutDetail('Junho 2025','R$ 2.300','R$ 1.150','R$ 1.150','—','Pendente')"><td><div class="row-flex"><div class="avatar av-g">MA</div>Marca A</div></td><td class="mono hide-mobile">R$ 2.300</td><td class="mono hide-mobile">R$ 1.150</td><td class="mono pos">R$ 1.150</td><td><span class="badge b-amber">Pendente</span></td></tr>
+            <tr class="clickable-row" onclick="openPayoutDetail('Junho 2025','R$ 1.800','R$ 720','R$ 1.080','—','Pendente')"><td><div class="row-flex"><div class="avatar av-t">LC</div>Lua Cheia</div></td><td class="mono hide-mobile">R$ 1.800</td><td class="mono hide-mobile">R$ 720</td><td class="mono pos">R$ 1.080</td><td><span class="badge b-amber">Pendente</span></td></tr>
+            <tr class="clickable-row" onclick="openPayoutDetail('Junho 2025','R$ 2.640','R$ 1.320','R$ 1.320','—','Pendente')"><td><div class="row-flex"><div class="avatar av-p">MR</div>Mar e Rio</div></td><td class="mono hide-mobile">R$ 2.640</td><td class="mono hide-mobile">R$ 1.320</td><td class="mono pos">R$ 1.320</td><td><span class="badge b-amber">Pendente</span></td></tr>
+            <tr class="clickable-row" onclick="openPayoutDetail('Junho 2025','R$ 1.600','R$ 640','Bloqueado','—','Bloqueado')"><td><div class="row-flex"><div class="avatar av-r">MD</div>Marca D</div></td><td class="mono hide-mobile">R$ 1.600</td><td class="mono hide-mobile">R$ 640</td><td class="mono" style="color:var(--ink-4)">Bloqueado</td><td><span class="badge b-gray">Bloqueado</span></td></tr>
+            <tr class="total-row"><td colspan="3" class="hide-mobile">Total</td><td colspan="1" class="pos mono" style="display:table-cell">R$ 3.550</td><td></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- FECHAMENTO -->
+    <div class="page" id="page-fechamento">
+      <div class="metrics">
+        <div class="metric"><div class="metric-label">Total vendas</div><div class="metric-value">R$8.340</div><div class="metric-sub">4 lojas parceiras</div></div>
+        <div class="metric"><div class="metric-label">Fica para loja</div><div class="metric-value">R$3.830</div><div class="metric-sub">50% das vendas elegíveis</div></div>
+        <div class="metric"><div class="metric-label">A repassar</div><div class="metric-value">R$3.550</div><div class="metric-sub">Até 20/06</div></div>
+        <div class="metric"><div class="metric-label">Mensalidades</div><div class="metric-value">R$1.500</div><div class="metric-sub">de R$ 2.800 recebidos</div></div>
+      </div>
+      <div class="alert alert-amber">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M8 6v3M8 11v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M6.8 2.5L1.5 12a1 1 0 00.9 1.5h11.2a1 1 0 00.9-1.5L9.2 2.5a1 1 0 00-1.8 0z" stroke="currentColor" stroke-width="1.3"/></svg>
+        <span>Fechamento ainda não pode ser concluído: <strong>3 SKUs sem loja parceira</strong> precisam ser resolvidos.</span>
+      </div>
+      <div class="card">
+        <div class="card-head"><span class="card-title">Checklist de fechamento</span><span class="badge b-amber">2 bloqueios</span></div>
+        <div class="checklist">
+          <div class="check-item done"><span class="badge b-green">OK</span><div class="ext-name" style="margin-top:8px">Vendas importadas</div><div class="ext-sub">42 itens lidos do Bling/PDV</div></div>
+          <div class="check-item blocked"><span class="badge b-amber">Bloqueio</span><div class="ext-name" style="margin-top:8px">SKUs sem loja parceira</div><div class="ext-sub">3 itens precisam de vínculo</div></div>
+          <div class="check-item done"><span class="badge b-green">OK</span><div class="ext-name" style="margin-top:8px">Regra 50/50 aplicada</div><div class="ext-sub">Loja e parceira calculadas por item</div></div>
+          <div class="check-item blocked"><span class="badge b-amber">Revisar</span><div class="ext-name" style="margin-top:8px">Marca D inadimplente</div><div class="ext-sub">Repasse bloqueado até regularização</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">Fechamento — Maio 2025</span>
+          <div class="row-flex">
+            <button class="btn btn-sm" onclick="alert('Todos os relatórios enviados por e-mail.')">Enviar relatórios</button>
+            <button class="btn btn-sm btn-primary" onclick="alert('NF-es emitidas via Focus NF-e para todas as lojas parceiras elegíveis.')">Emitir NF-es</button>
+          </div>
+        </div>
+        <table>
+          <thead><tr><th>Loja parceira</th><th>Vendido cliente</th><th class="hide-mobile">Fica loja</th><th>Repasse</th><th class="hide-mobile">NF-e</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Marca A</td><td class="mono">R$ 2.300</td><td class="mono hide-mobile">R$ 1.150</td><td class="mono pos">R$ 1.150</td><td class="hide-mobile"><span class="badge b-green">Emitida</span></td><td><span class="badge b-green">OK</span></td></tr>
+            <tr><td>Lua Cheia</td><td class="mono">R$ 1.800</td><td class="mono hide-mobile">R$ 720</td><td class="mono pos">R$ 1.080</td><td class="hide-mobile"><span class="badge b-gray">Aguardando</span></td><td><span class="badge b-amber">Pendente</span></td></tr>
+            <tr><td>Mar e Rio</td><td class="mono">R$ 2.640</td><td class="mono hide-mobile">R$ 1.320</td><td class="mono pos">R$ 1.320</td><td class="hide-mobile"><span class="badge b-green">Emitida</span></td><td><span class="badge b-green">OK</span></td></tr>
+            <tr><td>Marca D</td><td class="mono">R$ 1.600</td><td class="mono hide-mobile">R$ 640</td><td class="mono" style="color:var(--ink-4)">Bloqueado</td><td class="hide-mobile"><span class="badge b-gray">Bloqueado</span></td><td><span class="badge b-red">Inadimpl.</span></td></tr>
+            <tr class="total-row"><td>Total</td><td class="mono">R$ 8.340</td><td class="mono hide-mobile">R$ 3.830</td><td class="mono pos">R$ 3.550</td><td class="hide-mobile"></td><td></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- NF-E -->
+    <div class="page" id="page-nfe">
+
+      <!-- NF-es recebidas das lojas parceiras -->
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">NF-es recebidas das lojas parceiras</span>
+          <span class="badge b-amber">2 pendentes</span>
+        </div>
+        <div class="alert alert-amber" style="margin:0 1.25rem 0">
+          <svg viewBox="0 0 16 16" fill="none"><path d="M8 6v3M8 11v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M6.8 2.5L1.5 12a1 1 0 00.9 1.5h11.2a1 1 0 00.9-1.5L9.2 2.5a1 1 0 00-1.8 0z" stroke="currentColor" stroke-width="1.3"/></svg>
+          <span>Lua Cheia e Marca D ainda não enviaram a NF-e de junho. O repasse fica pendente até o recebimento.</span>
+        </div>
+        <table>
+          <thead><tr>
+            <th>Loja parceira</th>
+            <th class="hide-mobile">Referência</th>
+            <th>Valor</th>
+            <th>Recebida em</th>
+            <th>Status</th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td><div class="row-flex"><div class="avatar av-g">MA</div>Marca A</div></td>
+              <td class="hide-mobile mono">Junho 2025</td>
+              <td class="mono">R$ 1.150</td>
+              <td class="mono hide-mobile">18/06/2025</td>
+              <td><span class="badge b-green">Confirmada</span></td>
+            </tr>
+            <tr>
+              <td><div class="row-flex"><div class="avatar av-t">LC</div>Lua Cheia</div></td>
+              <td class="hide-mobile mono">Junho 2025</td>
+              <td class="mono">R$ 1.080</td>
+              <td class="mono hide-mobile">—</td>
+              <td><span class="badge b-amber">Pendente</span></td>
+            </tr>
+            <tr>
+              <td><div class="row-flex"><div class="avatar av-p">MR</div>Mar e Rio</div></td>
+              <td class="hide-mobile mono">Junho 2025</td>
+              <td class="mono">R$ 1.320</td>
+              <td class="mono hide-mobile">19/06/2025</td>
+              <td><span class="badge b-green">Confirmada</span></td>
+            </tr>
+            <tr>
+              <td><div class="row-flex"><div class="avatar av-r">MD</div>Marca D</div></td>
+              <td class="hide-mobile mono">Junho 2025</td>
+              <td class="mono" style="color:var(--ink-4)">Bloqueado</td>
+              <td class="mono hide-mobile">—</td>
+              <td><span class="badge b-gray">Bloqueado</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- NF-es emitidas pela loja -->
+      <div class="card" style="margin-top:1rem">
+        <div class="card-head">
+          <span class="card-title">NF-es emitidas pela loja</span>
+          <button class="btn btn-sm btn-primary" onclick="alert('NF-e emitida via Focus NF-e. XML e DANFE enviados por e-mail.')">+ Emitir NF-e</button>
+        </div>
+        <div class="sync-note" style="margin:0 1.25rem 1rem">
+          <span>Emissão automática no fechamento via <strong>Focus NF-e</strong> · XML e DANFE enviados à loja parceira por e-mail</span>
+          <span class="badge b-green">OK</span>
+        </div>
+        <table>
+          <thead><tr><th>Nº</th><th>Loja parceira</th><th class="hide-mobile">Emissão</th><th>Valor</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">#00423</td><td>Marca A</td><td class="mono hide-mobile">20/05/2025</td><td class="mono">R$ 1.150</td><td><span class="badge b-green">Autorizada</span></td></tr>
+            <tr><td class="mono">#00422</td><td>Mar e Rio</td><td class="mono hide-mobile">20/05/2025</td><td class="mono">R$ 1.320</td><td><span class="badge b-green">Autorizada</span></td></tr>
+            <tr><td class="mono">#00421</td><td>Lua Cheia</td><td class="mono hide-mobile">20/04/2025</td><td class="mono">R$ 980</td><td><span class="badge b-green">Autorizada</span></td></tr>
+            <tr><td class="mono">#00420</td><td>Marca A</td><td class="mono hide-mobile">20/04/2025</td><td class="mono">R$ 890</td><td><span class="badge b-green">Autorizada</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── EXPOSITOR PAGES ── -->
+
+    <!-- E-HOME -->
+    <div class="page" id="page-e-home">
+      <div class="alert alert-green">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Mensalidade de junho paga em 07/06/2025. Obrigada!</span>
+      </div>
+      <div class="metrics">
+        <div class="metric"><div class="metric-label">Vendas em junho</div><div class="metric-value">R$1.340</div><div class="metric-sub">3 vendas · 1 devolução</div></div>
+        <div class="metric"><div class="metric-label">Seu repasse</div><div class="metric-value">R$670</div><div class="metric-sub">Até 20/07/2025</div></div>
+        <div class="metric"><div class="metric-label">Mensalidade jun</div><div class="metric-value">R$800</div><div class="metric-sub metric-up">Pago em 07/06</div></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><span class="card-title">Resumo do mês</span></div>
+        <div class="card-body">
+          <div class="ext-item"><span style="color:var(--ink-3)">Valor vendido ao cliente</span><span class="mono">R$ 1.340</span></div>
+          <div class="ext-item"><span style="color:var(--ink-3)">Valor que fica para a loja (50%)</span><span class="mono neg">-R$ 670</span></div>
+          <div class="ext-item" style="border:none"><span style="font-weight:600">Seu repasse</span><span class="mono pos" style="font-size:18px;font-weight:600">R$ 670</span></div>
+          <hr class="sep">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:12px;color:var(--ink-4)">Pagamento previsto até 20/07/2025</span>
+            <span class="badge b-amber">Pendente</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- E-MENSALIDADE -->
+    <div class="page" id="page-e-mensalidade">
+      <div class="card">
+        <div class="card-head"><span class="card-title">Junho 2025 — pago</span><span class="badge b-green">Pago</span></div>
+        <div class="card-body">
+          <div style="font-size:32px;font-weight:600;font-family:var(--mono);margin-bottom:4px">R$ 800,00</div>
+          <div style="font-size:12px;color:var(--ink-4)">Pago em 07/06/2025 via Pix</div>
+        </div>
+      </div>
+      <div class="card" style="border-color:var(--amber);border-width:1.5px">
+        <div class="card-head"><span class="card-title">Julho 2025 — próxima cobrança</span><span class="badge b-amber">Em 01/07</span></div>
+        <div class="card-body">
+          <div style="font-size:28px;font-weight:600;font-family:var(--mono);margin-bottom:1rem">R$ 800,00</div>
+          <div class="pix-block">
+            <div class="pix-label">Simulação — Pix gerado automaticamente em 01/07</div>
+            <div class="pix-code">00020126580014BR.GOV.BCB.PIX01360000-0000-0000-0000-000000000000520400005303986540580.005802BR5913LOJA DEMO6008SAOPAULO62070503***6304ABCD</div>
+          </div>
+          <div class="grid2" style="margin-top:0">
+            <button class="btn btn-primary" onclick="alert('Chave Pix copiada! O sistema confirmará automaticamente em segundos.')">Copiar chave Pix</button>
+            <button class="btn" onclick="alert('Boleto gerado e enviado para seu e-mail.')">Gerar boleto</button>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><span class="card-title">Histórico</span></div>
+        <table>
+          <thead><tr><th>Mês</th><th>Valor</th><th>Forma</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Junho 2025</td><td class="mono">R$ 800</td><td>Pix</td><td><span class="badge b-green">Pago</span></td></tr>
+            <tr><td>Maio 2025</td><td class="mono">R$ 800</td><td>Pix</td><td><span class="badge b-green">Pago</span></td></tr>
+            <tr><td>Abril 2025</td><td class="mono">R$ 800</td><td>Boleto</td><td><span class="badge b-green">Pago</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- E-VENDAS -->
+    <div class="page" id="page-e-vendas">
+      <div class="card">
+        <div class="card-head"><span class="card-title">Minhas vendas — Junho 2025</span></div>
+        <table>
+          <thead><tr><th>Data</th><th>Código</th><th>Produto</th><th>Valor cliente</th><th class="hide-mobile">Loja 50%</th><th>Repasse</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">03/06</td><td><span class="sku-code">MA-COL-001</span></td><td>Colar K Moeda</td><td class="mono">R$ 620</td><td class="mono hide-mobile">R$ 310</td><td class="mono pos">R$ 310</td></tr>
+            <tr><td class="mono">10/06</td><td><span class="sku-code">MA-PUL-009</span></td><td>Pulseira Kali<br><span style="font-size:10px;color:var(--ink-4)">Devolução</span></td><td class="mono neg">-R$ 380</td><td class="mono hide-mobile neg">-R$ 190</td><td class="mono neg">-R$ 190</td></tr>
+            <tr><td class="mono">18/06</td><td><span class="sku-code">MA-COL-008</span></td><td>Colar Concha</td><td class="mono">R$ 620</td><td class="mono hide-mobile">R$ 310</td><td class="mono pos">R$ 310</td></tr>
+            <tr><td class="mono">24/06</td><td><span class="sku-code">MA-BRI-021</span></td><td>Brinco Argola P</td><td class="mono">R$ 480</td><td class="mono hide-mobile">R$ 240</td><td class="mono pos">R$ 240</td></tr>
+            <tr class="total-row"><td colspan="3">Total acumulado</td><td class="mono">R$ 1.340</td><td class="mono hide-mobile">R$ 670</td><td class="mono pos">R$ 670</td></tr>
+          </tbody>
+        </table>
+        <div class="card-body" style="border-top:1px solid var(--border);padding-top:1rem">
+          <div class="ext-item" style="padding-top:0"><span style="color:var(--ink-3)">Data prevista de pagamento</span><span class="mono">20/07/2025</span></div>
+          <div class="ext-item" style="border:none"><span style="color:var(--ink-3)">Regra aplicada</span><span class="mono">50% loja / 50% parceira</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- E-REPASSES -->
+    <div class="page" id="page-e-repasses">
+      <div class="card">
+        <div class="card-head"><span class="card-title">Histórico de repasses</span></div>
+        <table>
+          <thead><tr><th>Período</th><th>Valor</th><th class="hide-mobile">Data</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Junho 2025</td><td class="mono pos">R$ 670</td><td class="hide-mobile mono">Até 20/07</td><td><span class="badge b-amber">Pendente</span></td></tr>
+            <tr><td>Maio 2025</td><td class="mono pos">R$ 1.150</td><td class="hide-mobile mono">20/06/2025</td><td><span class="badge b-green">Pago</span></td></tr>
+            <tr><td>Abril 2025</td><td class="mono pos">R$ 530</td><td class="hide-mobile mono">20/05/2025</td><td><span class="badge b-green">Pago</span></td></tr>
+            <tr><td>Março 2025</td><td class="mono pos">R$ 720</td><td class="hide-mobile mono">20/04/2025</td><td><span class="badge b-green">Pago</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- E-NF-E -->
+    <div class="page" id="page-e-nfe">
+
+      <!-- envio da NF-e do mês atual -->
+      <div class="card" style="border-color:var(--amber);border-width:1.5px">
+        <div class="card-head">
+          <span class="card-title">NF-e de junho 2025</span>
+          <span class="badge b-amber">Pendente</span>
+        </div>
+        <div class="card-body">
+          <p style="font-size:13px;color:var(--ink-3);margin-bottom:1rem">
+            Envie a nota fiscal referente ao repasse de junho (R$ 670) para que a loja possa confirmar o recebimento.
+          </p>
+          <div class="field">
+            <label>Arquivo da NF-e (PDF ou XML)</label>
+            <input type="file" accept=".pdf,.xml" id="nfe-upload-input">
+          </div>
+          <div style="display:flex;gap:8px;margin-top:0.75rem">
+            <button class="btn btn-primary" style="width:auto" onclick="enviarNFe()">Enviar NF-e</button>
+            <button class="btn" onclick="alert('Precisa de ajuda para emitir? Entre em contato com a loja.')">Preciso de ajuda</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- NF-es que a loja emitiu para a marca -->
+      <div class="card" style="margin-top:1rem">
+        <div class="card-head"><span class="card-title">NF-es emitidas pela loja para você</span></div>
+        <div class="sync-note" style="margin:0 1.25rem 1rem">
+          <span>Emitidas automaticamente no fechamento · XML e DANFE enviados por e-mail</span>
+          <span class="badge b-green">OK</span>
+        </div>
+        <table>
+          <thead><tr><th>Nº</th><th class="hide-mobile">Referência</th><th>Valor</th><th>Ação</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">#00423</td><td class="hide-mobile">Maio 2025</td><td class="mono">R$ 1.150</td><td><button class="btn btn-sm" onclick="alert('DANFE baixado.')">Baixar PDF</button></td></tr>
+            <tr><td class="mono">#00420</td><td class="hide-mobile">Abril 2025</td><td class="mono">R$ 890</td><td><button class="btn btn-sm" onclick="alert('DANFE baixado.')">Baixar PDF</button></td></tr>
+            <tr><td class="mono">#00417</td><td class="hide-mobile">Março 2025</td><td class="mono">R$ 720</td><td><button class="btn btn-sm" onclick="alert('DANFE baixado.')">Baixar PDF</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- MODAL DETALHE REPASSE -->
+<div class="overlay hidden" id="modal-repasse-detalhe" onclick="if(event.target===this)hideModal('modal-repasse-detalhe')">
+  <div class="modal" style="max-width:500px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+      <div>
+        <div style="font-size:11px;color:var(--ink-4);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px">Repasse</div>
+        <div class="modal-title" style="margin:0" id="rd-periodo">Junho 2025</div>
+      </div>
+      <span class="badge" id="rd-badge">Pendente</span>
+    </div>
+
+    <div class="calc-preview" style="margin-bottom:1rem">
+      <div class="ext-item" style="padding-top:0"><span style="color:var(--ink-3)">Vendido ao cliente</span><span class="mono" id="rd-sold">R$ 2.300</span></div>
+      <div class="ext-item"><span style="color:var(--ink-3)">Fica para a loja</span><span class="mono" id="rd-store">R$ 1.150</span></div>
+      <div class="ext-item"><span style="color:var(--ink-3)">Repasse líquido</span><span class="mono pos" id="rd-amount">R$ 1.150</span></div>
+      <div class="ext-item" style="border:none;padding-bottom:0"><span style="color:var(--ink-3)">Forma de pagamento</span><span class="mono" id="rd-forma">—</span></div>
+    </div>
+
+    <!-- bloco pendente -->
+    <div id="rd-bloco-pendente">
+      <div style="font-size:12px;color:var(--ink-3);margin-bottom:0.75rem">Registrar pagamento</div>
+      <div class="grid2">
+        <div class="field"><label>Data do pagamento</label><input type="date" id="rd-data-pgto" value="2025-07-20"></div>
+        <div class="field"><label>Forma</label>
+          <select id="rd-metodo"><option>Pix</option><option>TED</option><option>Dinheiro</option><option>Outro</option></select>
+        </div>
+      </div>
+      <div class="field"><label>Comprovante (opcional)</label><input type="file" accept=".pdf,.png,.jpg"></div>
+      <div class="modal-actions" style="margin-top:1rem">
+        <button class="btn" onclick="hideModal('modal-repasse-detalhe')">Cancelar</button>
+        <button class="btn" onclick="alert('Extrato do período baixado.')">Baixar extrato</button>
+        <button class="btn btn-primary" style="width:auto" onclick="confirmarRepasseDetalhe()">Confirmar pagamento</button>
+      </div>
+    </div>
+
+    <!-- bloco pago -->
+    <div id="rd-bloco-pago" class="hidden">
+      <div class="alert alert-green" style="margin-bottom:1rem">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span id="rd-pago-msg">Pago em 20/05/2025 via Pix</span>
+      </div>
+      <div class="modal-actions" style="margin-top:0">
+        <button class="btn" onclick="hideModal('modal-repasse-detalhe')">Fechar</button>
+        <button class="btn" onclick="alert('Extrato do período baixado.')">Baixar extrato</button>
+        <button class="btn" onclick="alert('Comprovante baixado.')">Baixar comprovante</button>
+      </div>
+    </div>
+
+    <!-- bloco bloqueado -->
+    <div id="rd-bloco-bloqueado" class="hidden">
+      <div class="alert alert-amber">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M8 6v3M8 11v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M6.8 2.5L1.5 12a1 1 0 00.9 1.5h11.2a1 1 0 00.9-1.5L9.2 2.5a1 1 0 00-1.8 0z" stroke="currentColor" stroke-width="1.3"/></svg>
+        <span>Repasse bloqueado por inadimplência. Regularize a mensalidade para liberar.</span>
+      </div>
+      <div class="modal-actions" style="margin-top:1rem">
+        <button class="btn" onclick="hideModal('modal-repasse-detalhe')">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="overlay hidden" id="modal-exp" onclick="if(event.target===this)hideModal('modal-exp')">
+  <div class="modal">
+    <div class="modal-title">Nova loja parceira</div>
+    <div class="grid2">
+      <div class="field"><label>Nome da marca</label><input placeholder="ex: Bloom"></div>
+      <div class="field"><label>Responsável</label><input placeholder="Nome completo"></div>
+    </div>
+    <div class="field"><label>E-mail</label><input type="email" placeholder="marca@email.com"></div>
+    <div class="grid2">
+      <div class="field"><label>Mensalidade (R$)</label><input type="number" placeholder="700"></div>
+      <div class="field"><label>Comissão (%)</label><input type="number" placeholder="40"></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>Unidade</label><select><option>SP — São Paulo</option><option>RJ — Rio de Janeiro</option></select></div>
+      <div class="field"><label>Dia de cobrança</label><select><option>Dia 1</option><option>Dia 5</option><option selected>Dia 10</option><option>Dia 15</option></select></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="hideModal('modal-exp')">Cancelar</button>
+      <button class="btn btn-primary" style="width:auto" onclick="hideModal('modal-exp');alert('Loja parceira cadastrada! Cobrança automática ativada.')">Cadastrar</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="modal-venda" onclick="if(event.target===this)hideModal('modal-venda')">
+  <div class="modal">
+    <div class="modal-title">Lançar venda</div>
+    <div class="grid2">
+      <div class="field"><label>Unidade</label><select onchange="filtrarExpSelect(this.value)"><option value="sp">SP — São Paulo</option><option value="rj">RJ — Rio de Janeiro</option></select></div>
+      <div class="field"><label>Data</label><input type="date" value="2025-06-28"></div>
+    </div>
+    <div class="field"><label>Loja parceira</label><select id="select-exp-venda"><option>Marca A</option><option>Lua Cheia</option><option>Vazio</option><option>Bruta</option></select></div>
+    <div class="field"><label>Produto</label><input placeholder="Nome do produto"></div>
+    <div class="grid2">
+      <div class="field"><label>Valor (R$)</label><input type="number" placeholder="0,00"></div>
+      <div class="field"><label>Tipo</label><select><option>Venda</option><option>Devolução</option></select></div>
+    </div>
+    <div class="field"><label>Motivo (se devolução)</label><input placeholder="Descreva o motivo"></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="hideModal('modal-venda')">Cancelar</button>
+      <button class="btn btn-primary" style="width:auto" onclick="hideModal('modal-venda');alert('Venda registrada com sucesso.')">Registrar</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="modal-csv" onclick="if(event.target===this)hideModal('modal-csv')">
+  <div class="modal">
+    <div class="modal-title">Importar CSV</div>
+    <div class="field"><label>Tipo de importação</label><select><option>Vendas do PDV/e-commerce</option><option>Produtos e SKUs</option></select></div>
+    <div class="field"><label>Arquivo CSV</label><input type="file" accept=".csv"></div>
+    <div class="grid2">
+      <div class="field"><label>Origem</label><select><option>Bling</option><option>PDV manual</option><option>Shopify</option><option>WooCommerce</option><option>Outro</option></select></div>
+      <div class="field"><label>Unidade</label><select><option>Todas</option><option>SP — São Paulo</option><option>RJ — Rio de Janeiro</option></select></div>
+    </div>
+    <div class="alert alert-amber" style="margin:0">
+      <svg viewBox="0 0 16 16" fill="none"><path d="M8 6v3M8 11v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M6.8 2.5L1.5 12a1 1 0 00.9 1.5h11.2a1 1 0 00.9-1.5L9.2 2.5a1 1 0 00-1.8 0z" stroke="currentColor" stroke-width="1.3"/></svg>
+      <span>O sistema vai cruzar a coluna SKU com os produtos cadastrados e separar divergências para revisão.</span>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="hideModal('modal-csv')">Cancelar</button>
+      <button class="btn btn-primary" style="width:auto" onclick="hideModal('modal-csv');alert('CSV importado: 42 itens processados, 3 SKUs enviados para revisão.')">Importar</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="modal-link-sku" onclick="if(event.target===this)hideModal('modal-link-sku')">
+  <div class="modal">
+    <div class="modal-title">Vincular SKU à loja parceira</div>
+    <div class="sync-note" style="margin-bottom:1rem">
+      <span><strong id="link-sku-code">BLG-4491</strong> · <span id="link-sku-product">Bolsa Trama Natural</span></span>
+      <span class="badge b-amber">Pendente</span>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>Origem da venda</label><input id="link-sku-origin" value="Bling · venda #8812" readonly></div>
+      <div class="field"><label>Valor vendido ao cliente</label><input id="link-sku-amount" value="R$ 420" readonly></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>Loja parceira correta</label><select id="link-sku-exhibitor"><option>Casa Bruta</option><option>Marca A</option><option>Lua Cheia</option><option>Mar e Rio</option><option>Terra Mãe</option></select></div>
+      <div class="field"><label>Sincronização Bling</label><select><option>Salvar no Flipper e marcar para sync</option><option>Apenas salvar no Flipper</option><option>Atualizar campo personalizado no Bling</option></select></div>
+    </div>
+    <div class="calc-preview">
+      <div class="ext-item" style="padding-top:0"><span style="color:var(--ink-3)">Fica para a loja (50%)</span><span class="mono" id="link-store-amount">R$ 210</span></div>
+      <div class="ext-item"><span style="color:var(--ink-3)">Repasse à loja parceira</span><span class="mono pos" id="link-payout-amount">R$ 210</span></div>
+      <div class="ext-item"><span style="color:var(--ink-3)">Vendas corrigidas</span><span class="mono">1 item agora · futuras importações automáticas</span></div>
+      <div class="ext-item" style="border:none;padding-bottom:0"><span style="color:var(--ink-3)">Pagamento previsto</span><span class="mono">20/07/2025</span></div>
+    </div>
+    <div class="alert alert-amber" style="margin:1rem 0 0">
+      <svg viewBox="0 0 16 16" fill="none"><path d="M8 6v3M8 11v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M6.8 2.5L1.5 12a1 1 0 00.9 1.5h11.2a1 1 0 00.9-1.5L9.2 2.5a1 1 0 00-1.8 0z" stroke="currentColor" stroke-width="1.3"/></svg>
+      <span>Esse vínculo será auditado e vai recalcular vendas pendentes com o mesmo SKU.</span>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="hideModal('modal-link-sku')">Cancelar</button>
+      <button class="btn btn-primary" style="width:auto" onclick="confirmLinkSku()">Confirmar vínculo</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="modal-payout" onclick="if(event.target===this)hideModal('modal-payout')">
+  <div class="modal">
+    <div class="modal-title">Detalhe do repasse</div>
+    <div class="sync-note" style="margin-bottom:1rem">
+      <span><strong id="payout-exhibitor">Marca A</strong> · fechamento de junho</span>
+      <span class="badge b-amber" id="payout-status">Pendente</span>
+    </div>
+    <div class="calc-preview">
+      <div class="ext-item" style="padding-top:0"><span style="color:var(--ink-3)">Valor vendido ao cliente</span><span class="mono" id="payout-sold">R$ 2.300</span></div>
+      <div class="ext-item"><span style="color:var(--ink-3)">Fica para a loja</span><span class="mono" id="payout-store">R$ 1.150</span></div>
+      <div class="ext-item"><span style="color:var(--ink-3)">Repasse à loja parceira</span><span class="mono pos" id="payout-amount">R$ 1.150</span></div>
+      <div class="ext-item" style="border:none;padding-bottom:0"><span style="color:var(--ink-3)">Data prevista</span><span class="mono" id="payout-due">20/06/2025</span></div>
+    </div>
+    <div class="card" style="margin:1rem 0">
+      <div class="card-head"><span class="card-title">Composição</span><button class="btn btn-sm" onclick="alert('Extrato baixado com vendas, devoluções e cálculo 50/50.')">Baixar extrato</button></div>
+      <div class="card-body" style="padding:0">
+        <div class="ext-item" style="padding:10px 1.25rem"><div class="col"><span class="ext-name">Vendas elegíveis</span><span class="ext-sub">Itens vinculados por SKU</span></div><span class="mono">4</span></div>
+        <div class="ext-item" style="padding:10px 1.25rem"><div class="col"><span class="ext-name">Devoluções</span><span class="ext-sub">Estornam loja e parceira</span></div><span class="mono neg">-1</span></div>
+        <div class="ext-item" style="padding:10px 1.25rem"><div class="col"><span class="ext-name">Bloqueios</span><span class="ext-sub">SKU pendente ou inadimplência</span></div><span class="badge b-green">Nenhum</span></div>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>Data do pagamento</label><input id="payout-paid-date" type="date" value="2025-06-20"></div>
+      <div class="field"><label>Forma</label><select id="payout-method"><option>Pix</option><option>TED</option><option>Dinheiro</option><option>Outro</option></select></div>
+    </div>
+    <div class="field"><label>Comprovante (opcional)</label><input type="file" accept=".pdf,.png,.jpg,.jpeg"></div>
+    <div class="field"><label>Observação</label><input id="payout-note" placeholder="ex: Pix enviado para chave cadastrada"></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="hideModal('modal-payout')">Cancelar</button>
+      <button class="btn" onclick="alert('Relatório enviado à loja parceira por e-mail.')">Enviar relatório</button>
+      <button class="btn btn-primary" style="width:auto" onclick="confirmPayout()">Registrar pagamento</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const pages = {
+  loja: ['dashboard','expositores','marca','produtos','vendas','cobrancas','repasses','fechamento','nfe'],
+  expositor: ['e-home','e-mensalidade','e-vendas','e-repasses','e-nfe']
+};
+
+const titles = {
+  'dashboard':'Dashboard','expositores':'Lojas Parceiras','marca':'Perfil da Marca','produtos':'Produtos/SKUs','vendas':'Vendas',
+  'cobrancas':'Cobranças','repasses':'Repasses','fechamento':'Fechamento mensal',
+  'nfe':'Notas Fiscais','e-home':'Início','e-mensalidade':'Mensalidade',
+  'e-vendas':'Minhas Vendas','e-repasses':'Repasses','e-nfe':'Notas Fiscais'
+};
+
+let role = 'loja';
+let currentBrandKey = 'marcaA';
+
+const brandProfiles = {
+  marcaA: {
+    name:'Marca A', initials:'MA', avatar:'av-g', unit:'SP', email:'contato@marca-a.com.br', model:'Consignação', rule:'50% loja / 50% parceira', paymentDay:'Todo dia 20',
+    sales:'R$2.300', salesSub:'4 vendas · 1 devolução', payout:'R$1.150', payoutSub:'Vence 20/07/2025', finStatus:'OK', finSub:'Sem bloqueios', loginStatus:'Ativo', loginSub:'Último acesso hoje', lastInvite:'12/06/2025', lastLogin:'Hoje 09:12',
+    sold:'R$ 2.300', store:'R$ 1.150', payoutAmount:'R$ 1.150', payoutStatus:'Pendente',
+    salesRows:[['03/06','MA-COL-001','Colar K Moeda','R$ 310'],['10/06','MA-PUL-009','Pulseira Kali','-R$ 190'],['18/06','MA-COL-008','Colar Concha','R$ 310']],
+    productRows:[['MA-COL-001','Colar K Moeda','Ativo'],['MA-PUL-009','Pulseira Kali','Ativo'],['MA-BRI-021','Brinco Argola P','Ativo']],
+    historyRows:[['20/05/2025','R$ 1.150','Pix','Pago'],['20/04/2025','R$ 890','Pix','Pago']]
+  },
+  luaCheia: {
+    name:'Lua Cheia', initials:'LC', avatar:'av-t', unit:'SP', email:'lua@luacheia.com', model:'Consignação', rule:'50% loja / 50% parceira', paymentDay:'Todo dia 20',
+    sales:'R$1.800', salesSub:'3 vendas', payout:'R$1.080', payoutSub:'Vence 20/07/2025', finStatus:'Atenção', finSub:'Mensalidade pendente', loginStatus:'Pendente', loginSub:'Convite ainda não aceito', lastInvite:'18/06/2025', lastLogin:'Nunca',
+    sold:'R$ 1.800', store:'R$ 720', payoutAmount:'R$ 1.080', payoutStatus:'Pendente',
+    salesRows:[['08/06','LC-BRI-014','Brinco Pedra','R$ 160'],['16/06','LC-ANE-030','Anel Lua','R$ 420'],['21/06','LC-COL-022','Colar Astro','R$ 500']],
+    productRows:[['LC-BRI-014','Brinco Pedra','Ativo'],['LC-ANE-030','Anel Lua','Ativo'],['LC-COL-022','Colar Astro','Ativo']],
+    historyRows:[['20/05/2025','R$ 980','Pix','Pago'],['20/04/2025','R$ 760','TED','Pago']]
+  },
+  marRio: {
+    name:'Mar e Rio', initials:'MR', avatar:'av-p', unit:'RJ', email:'contato@merio.com', model:'Consignação', rule:'50% loja / 50% parceira', paymentDay:'Todo dia 20',
+    sales:'R$2.640', salesSub:'5 vendas', payout:'R$1.320', payoutSub:'Vence 20/07/2025', finStatus:'OK', finSub:'NF-e emitida', loginStatus:'Ativo', loginSub:'Último acesso ontem', lastInvite:'02/06/2025', lastLogin:'Ontem 17:40',
+    sold:'R$ 2.640', store:'R$ 1.320', payoutAmount:'R$ 1.320', payoutStatus:'Pendente',
+    salesRows:[['05/06','MR-PUL-220','Pulseira Onda','R$ 240'],['11/06','MR-COL-102','Colar Rio','R$ 380'],['23/06','MR-BRI-015','Brinco Mar','R$ 220']],
+    productRows:[['MR-PUL-220','Pulseira Onda','Ativo'],['MR-COL-102','Colar Rio','Ativo'],['MR-BRI-015','Brinco Mar','Ativo']],
+    historyRows:[['20/05/2025','R$ 1.320','Pix','Pago'],['20/04/2025','R$ 1.050','Pix','Pago']]
+  },
+  marcaD: {
+    name:'Marca D', initials:'MD', avatar:'av-r', unit:'RJ', email:'contato@marca-d.com', model:'Híbrido', rule:'Consignação + mensalidade R$ 700', paymentDay:'Bloqueado até regularização',
+    sales:'R$1.600', salesSub:'2 vendas', payout:'Bloqueado', payoutSub:'Bloqueado', finStatus:'Bloq.', finSub:'Repasse bloqueado', loginStatus:'Ativo', loginSub:'Último acesso 12/06', lastInvite:'01/06/2025', lastLogin:'12/06/2025',
+    sold:'R$ 1.600', store:'R$ 640', payoutAmount:'Bloqueado', payoutStatus:'Bloqueado',
+    salesRows:[['14/06','MD-COL-102','Colar Concha','R$ 280'],['19/06','MD-BOL-044','Bolsa Praia','R$ 360']],
+    productRows:[['MD-COL-102','Colar Concha','Repasse bloqueado'],['MD-BOL-044','Bolsa Praia','Repasse bloqueado']],
+    historyRows:[['20/05/2025','R$ 640','--','Bloqueado'],['20/04/2025','R$ 810','Pix','Pago']]
+  },
+  casaBruta: {
+    name:'Casa Bruta', initials:'CB', avatar:'av-a', unit:'RJ', email:'oi@casabruta.com', model:'Consignação', rule:'50% loja / 50% parceira', paymentDay:'Todo dia 20',
+    sales:'R$1.900', salesSub:'4 vendas', payout:'R$950', payoutSub:'Vence 20/07/2025', finStatus:'OK', finSub:'Sem bloqueios', loginStatus:'Ativo', loginSub:'Último acesso hoje', lastInvite:'05/06/2025', lastLogin:'Hoje 11:02',
+    sold:'R$ 1.900', store:'R$ 950', payoutAmount:'R$ 950', payoutStatus:'Pendente',
+    salesRows:[['06/06','CB-BOL-040','Bolsa Couro P','R$ 210'],['18/06','CB-VAS-012','Vaso Barro','R$ 340']],
+    productRows:[['CB-BOL-040','Bolsa Couro P','Ativo'],['CB-VAS-012','Vaso Barro','Ativo']],
+    historyRows:[['20/05/2025','R$ 880','Pix','Pago']]
+  }
+};
+brandProfiles.vazio = { ...brandProfiles.marcaA, name:'Vazio', initials:'VZ', avatar:'av-p', email:'contato@vazio.com', sales:'R$1.200', payout:'R$600', sold:'R$ 1.200', store:'R$ 600', payoutAmount:'R$ 600' };
+brandProfiles.bruta = { ...brandProfiles.casaBruta, name:'Bruta', initials:'BR', avatar:'av-t', unit:'SP', email:'bruta@bruta.com', sales:'R$1.460', payout:'R$730', sold:'R$ 1.460', store:'R$ 730', payoutAmount:'R$ 730' };
+brandProfiles.terraMae = { ...brandProfiles.luaCheia, name:'Terra Mãe', initials:'TM', avatar:'av-g', unit:'RJ', email:'terra@terramae.com', model:'Sem contrato', rule:'Aguardando aprovação', paymentDay:'--', finStatus:'Pend.', finSub:'Contrato pendente', loginStatus:'Convite', loginSub:'Convite pendente', payout:'--', payoutAmount:'--', payoutStatus:'Pendente' };
+
+function setTab(t, el) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('form-loja').classList.toggle('hidden', t !== 'loja');
+  document.getElementById('form-expositor').classList.toggle('hidden', t !== 'expositor');
+}
+
+function entrar(r) {
+  role = r;
+  document.getElementById('login').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  document.getElementById('nav-loja').classList.toggle('hidden', r !== 'loja');
+  document.getElementById('nav-expositor').classList.toggle('hidden', r !== 'expositor');
+  const addSaleButton = document.getElementById('btn-add-venda');
+  if (addSaleButton) addSaleButton.classList.toggle('hidden', r !== 'loja');
+  document.getElementById('sidebar-role').textContent = r === 'loja' ? 'financeiro · loja demo' : 'loja parceira · marca a';
+  document.getElementById('foot-name').textContent = r === 'loja' ? 'Financeiro' : 'Loja Parceira';
+  document.getElementById('foot-email').textContent = r === 'loja' ? 'financeiro@lojademo.com.br' : 'contato@marca-a.com.br';
+  document.getElementById('foot-av').textContent = r === 'loja' ? 'FI' : 'LP';
+  hideAllPages();
+  const first = r === 'loja' ? 'dashboard' : 'e-home';
+  document.getElementById('page-' + first).classList.add('active');
+  document.getElementById('topbar-title').textContent = titles[first];
+  document.querySelectorAll('#nav-loja .nav-item, #nav-expositor .nav-item').forEach(i => i.classList.remove('active'));
+  const activeNav = document.querySelector(`#${r === 'loja' ? 'nav-loja' : 'nav-expositor'} .nav-item`);
+  if (activeNav) activeNav.classList.add('active');
+}
+
+function sair() {
+  document.getElementById('login').classList.remove('hidden');
+  document.getElementById('app').classList.add('hidden');
+  fecharSidebar();
+}
+
+function hideAllPages() {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+}
+
+function goPage(id, el) {
+  hideAllPages();
+  document.getElementById('page-' + id).classList.add('active');
+  document.getElementById('topbar-title').textContent = titles[id] || id;
+  const nav = role === 'loja' ? document.getElementById('nav-loja') : document.getElementById('nav-expositor');
+  nav.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+  if (el) el.classList.add('active');
+  fecharSidebar();
+}
+
+function showModal(id) { document.getElementById(id).classList.remove('hidden'); }
+function hideModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+function parseMoney(value) {
+  return Number(String(value).replace(/[^\d,.-]/g, '').replace('.', '').replace(',', '.')) || 0;
+}
+
+function formatMoney(value) {
+  return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+function showLinkSkuModal(sku, product, amount, origin) {
+  const total = parseMoney(amount);
+  const half = total / 2;
+  document.getElementById('link-sku-code').textContent = sku;
+  document.getElementById('link-sku-product').textContent = product;
+  document.getElementById('link-sku-origin').value = origin;
+  document.getElementById('link-sku-amount').value = amount;
+  document.getElementById('link-store-amount').textContent = formatMoney(half);
+  document.getElementById('link-payout-amount').textContent = formatMoney(half);
+  showModal('modal-link-sku');
+}
+
+function confirmLinkSku() {
+  const sku = document.getElementById('link-sku-code').textContent;
+  const exhibitor = document.getElementById('link-sku-exhibitor').value;
+  hideModal('modal-link-sku');
+  alert(`SKU ${sku} vinculado a ${exhibitor}. Venda recalculada e marcada para sincronização com Bling.`);
+}
+
+function showPayoutModal(exhibitor, sold, store, amount, due, status) {
+  // delegate to unified modal
+  openPayoutDetail('Junho 2025', sold, store, amount, '—', status);
+}
+
+function confirmPayout() {
+  hideModal('modal-repasse-detalhe');
+  alert('Pagamento registrado. Loja parceira notificada.');
+}
+
+function badgeClass(status) {
+  if (['Pago','Ativo','OK'].includes(status)) return 'b-green';
+  if (['Bloqueado','Inadimplente'].includes(status)) return 'b-red';
+  if (['Pendente','Repasse bloqueado'].includes(status)) return 'b-amber';
+  return 'b-gray';
+}
+
+function rowsHtml(rows, mapper) {
+  return rows.map(mapper).join('');
+}
+
+function openBrandProfile(key) {
+  currentBrandKey = key;
+  const b = brandProfiles[key] || brandProfiles.marcaA;
+
+  // avatar + header
+  const av = document.getElementById('brand-profile-avatar');
+  av.className = `avatar ${b.avatar}`;
+  av.textContent = b.initials;
+  document.getElementById('brand-profile-name').textContent = b.name;
+  document.getElementById('brand-profile-sub').textContent = `${b.unit} · ${b.email}`;
+
+  // 4 metric cards
+  document.getElementById('brand-sales').textContent = b.sales;
+  document.getElementById('brand-sales-sub').textContent = b.salesSub;
+  document.getElementById('brand-payout').textContent = b.payout;
+  document.getElementById('brand-payout-sub').textContent = b.payoutSub;
+
+  // mensalidade card
+  const mensEl = document.getElementById('brand-mens-value');
+  const mensSub = document.getElementById('brand-mens-sub');
+  if (mensEl) { mensEl.textContent = 'R$800'; }
+  if (mensSub) {
+    const isPaid = !['Bloqueado','Inadimplente'].includes(b.payoutStatus);
+    mensSub.textContent = isPaid ? 'Pago em 07/06' : 'Em atraso';
+    mensSub.className = isPaid ? 'metric-sub metric-up' : 'metric-sub metric-down';
+  }
+
+  // status card
+  document.getElementById('brand-fin-status').textContent = b.finStatus;
+  document.getElementById('brand-fin-sub').textContent = b.finSub;
+
+  // contract + access (collapsed section)
+  document.getElementById('brand-model').textContent = b.model;
+  document.getElementById('brand-rule').textContent = b.rule;
+  document.getElementById('brand-payment-day').textContent = b.paymentDay;
+  document.getElementById('brand-unit').textContent = b.unit;
+  document.getElementById('brand-login-email').textContent = b.email;
+  document.getElementById('brand-last-invite').textContent = b.lastInvite;
+  document.getElementById('brand-last-login').textContent = b.lastLogin;
+  const accessBadge = document.getElementById('brand-access-badge');
+  accessBadge.textContent = b.loginStatus;
+  accessBadge.className = `badge ${badgeClass(b.loginStatus === 'Ativo' ? 'Ativo' : 'Pendente')}`;
+
+  // repasses histórico unificado (mês atual + histórico)
+  const payoutRows = [
+    `<tr class="clickable-row" style="cursor:pointer" onclick="openPayoutDetail('Junho 2025','${b.sold}','${b.store}','${b.payoutAmount}','—','${b.payoutStatus}')"><td>Junho 2025</td><td class="mono">${b.sold}</td><td class="mono hide-mobile">${b.store}</td><td class="mono pos">${b.payoutAmount}</td><td class="hide-mobile">—</td><td><span class="badge ${badgeClass(b.payoutStatus)}">${b.payoutStatus}</span></td></tr>`
+  ];
+  b.historyRows.forEach(r => {
+    const periodMap = {'20/05/2025':'Maio 2025','20/04/2025':'Abril 2025'};
+    const period = periodMap[r[0]] || r[0];
+    payoutRows.push(`<tr class="clickable-row" style="cursor:pointer" onclick="openPayoutDetail('${period}','—','—','${r[1]}','${r[2]}','${r[3]}')"><td>${period}</td><td class="mono">—</td><td class="mono hide-mobile">—</td><td class="mono">${r[1]}</td><td class="hide-mobile">${r[2]}</td><td><span class="badge ${badgeClass(r[3])}">${r[3]}</span></td></tr>`);
+  });
+  document.getElementById('brand-payouts-body').innerHTML = payoutRows.join('');
+
+  // vendas do mês com total
+  document.getElementById('brand-sales-body').innerHTML = rowsHtml(b.salesRows, r =>
+    `<tr><td class="mono">${r[0]}</td><td><span class="sku-code">${r[1]}</span></td><td>${r[2]}</td><td class="mono ${r[3].startsWith('-') ? 'neg' : 'pos'}">${r[3]}</td></tr>`
+  );
+  // calculate total
+  const total = b.salesRows.reduce((sum, r) => {
+    const v = parseMoney(r[3]);
+    return sum + (r[3].startsWith('-') ? -v : v);
+  }, 0);
+  const totalEl = document.getElementById('brand-sales-total-val');
+  if (totalEl) totalEl.textContent = formatMoney(total);
+
+  hideAllPages();
+  document.getElementById('page-marca').classList.add('active');
+  document.getElementById('topbar-title').textContent = `Perfil · ${b.name}`;
+  document.getElementById('nav-loja').querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+  fecharSidebar();
+}
+
+function currentBrand() {
+  return brandProfiles[currentBrandKey] || brandProfiles.marcaA;
+}
+
+function openBrandPayout() {
+  const b = currentBrand();
+  openPayoutDetail('Junho 2025', b.sold, b.store, b.payoutAmount, '—', b.payoutStatus);
+}
+
+function sendBrandReport() {
+  const b = currentBrand();
+  alert(`Relatório de vendas e repasses enviado para ${b.email}.`);
+}
+
+function notifyBrandPending() {
+  const b = currentBrand();
+  alert(`Notificação enviada para ${b.email}: pendências financeiras e próximos passos.`);
+}
+
+function openPayoutDetail(periodo, sold, store, amount, forma, status) {
+  document.getElementById('rd-periodo').textContent = periodo;
+  document.getElementById('rd-sold').textContent = sold;
+  document.getElementById('rd-store').textContent = store;
+  document.getElementById('rd-amount').textContent = amount;
+  document.getElementById('rd-forma').textContent = forma || '—';
+
+  const badge = document.getElementById('rd-badge');
+  const blocoP = document.getElementById('rd-bloco-pendente');
+  const blocoOk = document.getElementById('rd-bloco-pago');
+  const blocoB = document.getElementById('rd-bloco-bloqueado');
+
+  blocoP.classList.add('hidden');
+  blocoOk.classList.add('hidden');
+  blocoB.classList.add('hidden');
+
+  if (status === 'Pendente') {
+    badge.textContent = 'Pendente';
+    badge.className = 'badge b-amber';
+    blocoP.classList.remove('hidden');
+  } else if (status === 'Bloqueado') {
+    badge.textContent = 'Bloqueado';
+    badge.className = 'badge b-gray';
+    blocoB.classList.remove('hidden');
+  } else {
+    badge.textContent = 'Pago';
+    badge.className = 'badge b-green';
+    const dataStr = periodo.replace('Junho','20/06').replace('Maio','20/05').replace('Abril','20/04').replace(' 2025','');
+    document.getElementById('rd-pago-msg').textContent = `Pago em ${dataStr}/2025 via ${forma}`;
+    blocoOk.classList.remove('hidden');
+  }
+
+  showModal('modal-repasse-detalhe');
+}
+
+function confirmarRepasseDetalhe() {
+  const data = document.getElementById('rd-data-pgto').value;
+  const metodo = document.getElementById('rd-metodo').value;
+  const periodo = document.getElementById('rd-periodo').textContent;
+  const amount = document.getElementById('rd-amount').textContent;
+  hideModal('modal-repasse-detalhe');
+  alert(`Pagamento registrado: ${periodo} · ${amount} · ${metodo}. Loja parceira notificada.`);
+}
+
+function enviarNFe() {
+  const input = document.getElementById('nfe-upload-input');
+  if (!input || !input.files || input.files.length === 0) {
+    alert('Selecione o arquivo da NF-e antes de enviar.');
+    return;
+  }
+  const card = input.closest('.card');
+  card.style.borderColor = 'var(--green)';
+  card.querySelector('.badge').textContent = 'Enviada';
+  card.querySelector('.badge').className = 'badge b-green';
+  card.querySelector('.card-title').textContent = 'NF-e de junho 2025 — enviada';
+  card.querySelector('.card-body p').textContent = 'NF-e enviada em ' + new Date().toLocaleDateString('pt-BR') + '. Aguardando confirmação da loja.';
+  card.querySelector('.card-body .field').style.display = 'none';
+  card.querySelector('.card-body div[style]').style.display = 'none';
+  alert('NF-e enviada com sucesso! A loja será notificada para confirmar o recebimento.');
+}
+
+function resendInvite() {
+  const b = currentBrand();
+  alert(`Convite de login reenviado para ${b.email}. Link válido por 7 dias.`);
+}
+
+function previewExhibitorPanel() {
+  const b = currentBrand();
+  alert(`Prévia do painel da loja parceira: ${b.name}. A marca vê vendas, repasses, mensalidade e notas apenas dela.`);
+}
+
+function toggleSidebar() {
+  const s = document.getElementById('sidebar');
+  const o = document.getElementById('sidebar-overlay');
+  s.classList.toggle('open');
+  o.style.display = s.classList.contains('open') ? 'block' : 'none';
+}
+
+function fecharSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').style.display = 'none';
+}
+
+let unidadeAtual = 'todas';
+const unidadeCiclo = ['todas', 'sp', 'rj'];
+
+const unidadeData = {
+  todas: { vendas:'R$8.340', exp:'8', expSub:'8 lojas parceiras ativas', mens:'R$5.200', mensSub:'R$2.200 em aberto', repasse:'R$7.890', repasseSub:'Vence em 20/06', label:'Todas as unidades', btnLabel:'Todas as unidades' },
+  sp:    { vendas:'R$4.300', exp:'4', expSub:'4 lojas parceiras ativas', mens:'R$2.950', mensSub:'R$600 em aberto', repasse:'R$3.820', repasseSub:'Vence em 20/06', label:'Unidade 1', btnLabel:'Unidade 1' },
+  rj:    { vendas:'R$4.040', exp:'4', expSub:'4 lojas parceiras ativas', mens:'R$2.250', mensSub:'R$1.600 em aberto', repasse:'R$4.070', repasseSub:'Vence em 20/06', label:'Unidade 2', btnLabel:'Unidade 2' }
+};
+
+function toggleDropdown(e) {
+  e.stopPropagation();
+  const btn  = document.getElementById('unit-dropdown-btn');
+  const menu = document.getElementById('unit-dropdown-menu');
+  const open = menu.classList.contains('open');
+  menu.classList.toggle('open', !open);
+  btn.classList.toggle('open', !open);
+}
+
+function selectUnidade(e, u) {
+  e.stopPropagation();
+  aplicarUnidade(u);
+  document.getElementById('unit-dropdown-menu').classList.remove('open');
+  document.getElementById('unit-dropdown-btn').classList.remove('open');
+}
+
+document.addEventListener('click', function() {
+  document.getElementById('unit-dropdown-menu').classList.remove('open');
+  document.getElementById('unit-dropdown-btn').classList.remove('open');
+});
+
+function aplicarUnidade(u) {
+  unidadeAtual = u;
+  const d = unidadeData[u];
+
+  // update button label
+  const label = document.getElementById('unit-dropdown-label');
+  const btn   = document.getElementById('unit-dropdown-btn');
+  if (label) label.textContent = d.btnLabel;
+  if (btn)   btn.classList.toggle('filtered', u !== 'todas');
+
+  // update active state in menu items
+  ['todas','sp','rj'].forEach(key => {
+    const el = document.getElementById('uopt-' + key);
+    if (!el) return;
+    el.classList.toggle('active', key === u);
+    const check = el.querySelector('.check');
+    if (check) check.style.display = key === u ? '' : 'none';
+  });
+
+  // update metrics
+  document.getElementById('m-vendas').textContent = d.vendas;
+  document.getElementById('m-exp').textContent = d.exp;
+  document.getElementById('m-exp-sub').textContent = d.expSub;
+  document.getElementById('m-mens').textContent = d.mens;
+  document.getElementById('m-mens-sub').textContent = d.mensSub;
+  document.getElementById('m-repasse').textContent = d.repasse;
+  document.getElementById('m-repasse-sub').textContent = d.repasseSub;
+  document.getElementById('dash-unit-label').textContent = d.label;
+
+  // filter rows
+  document.querySelectorAll('.dash-exp-row').forEach(row => {
+    row.style.display = (u === 'todas' || row.dataset.unidade === u) ? '' : 'none';
+  });
+  document.querySelectorAll('.exp-row').forEach(row => {
+    row.style.display = (u === 'todas' || row.dataset.unidade === u) ? '' : 'none';
+  });
+  document.querySelectorAll('.product-row').forEach(row => {
+    row.style.display = (u === 'todas' || row.dataset.unidade === u) ? '' : 'none';
+  });
+}
+
+function setUnidade(u, el) { aplicarUnidade(u); }
+
+function filtrarExpStatus(status, el) {
+  // update button states
+  document.querySelectorAll('#filt-todos,#filt-ativo,#filt-inadimplente,#filt-pendente').forEach(b => {
+    b.classList.remove('active-filter');
+  });
+  el.classList.add('active-filter');
+
+  document.querySelectorAll('.exp-row').forEach(row => {
+    const s = row.dataset.status || '';
+    const unitOk = (unidadeAtual === 'todas' || row.dataset.unidade === unidadeAtual);
+    const statusOk = (status === 'todos' || s === status);
+    row.style.display = (unitOk && statusOk) ? '' : 'none';
+  });
+}
+
+function filtrarExpSelect(unidade) {
+  const sel = document.getElementById('select-exp-venda');
+  const opts = {
+    sp: ['Marca A','Lua Cheia','Vazio','Bruta'],
+    rj: ['Mar e Rio','Marca D','Casa Bruta','Terra Mãe']
+  };
+  sel.innerHTML = (opts[unidade]||[]).map(n => `<option>${n}</option>`).join('');
+}
+</script>
+</body>
+</html>
