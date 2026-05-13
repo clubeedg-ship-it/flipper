@@ -8,6 +8,15 @@ const DashboardPage = lazy(() => import('./pages/DashboardPage'));
 const LojasPage = lazy(() => import('./pages/LojasPage'));
 const FechamentoPage = lazy(() => import('./pages/FechamentoPage'));
 const BrandHomePage = lazy(() => import('./pages/BrandHomePage'));
+const VendasPage = lazy(() => import('./pages/VendasPage'));
+const ProdutosPage = lazy(() => import('./pages/ProdutosPage'));
+const CobrancasPage = lazy(() => import('./pages/CobrancasPage'));
+const RepassesPage = lazy(() => import('./pages/RepassesPage'));
+const NFePage = lazy(() => import('./pages/NFePage'));
+const BrandVendasPage = lazy(() => import('./pages/BrandVendasPage'));
+const BrandRepassesPage = lazy(() => import('./pages/BrandRepassesPage'));
+const BrandMensalidadePage = lazy(() => import('./pages/BrandMensalidadePage'));
+const BrandNFePage = lazy(() => import('./pages/BrandNFePage'));
 const PlaceholderPage = lazy(() => import('./pages/PlaceholderPage'));
 
 type Role = 'financeiro' | 'expositor';
@@ -51,8 +60,26 @@ function renderPage(page: string, onNavigate: (p: string) => void) {
       return <LojasPage />;
     case 'fechamento':
       return <FechamentoPage />;
+    case 'vendas':
+      return <VendasPage />;
+    case 'produtos':
+      return <ProdutosPage />;
+    case 'cobrancas':
+      return <CobrancasPage />;
+    case 'repasses':
+      return <RepassesPage />;
+    case 'nfe':
+      return <NFePage />;
     case 'brand-home':
       return <BrandHomePage />;
+    case 'brand-vendas':
+      return <BrandVendasPage />;
+    case 'brand-repasses':
+      return <BrandRepassesPage />;
+    case 'brand-mensalidade':
+      return <BrandMensalidadePage />;
+    case 'brand-nfe':
+      return <BrandNFePage />;
     default:
       return <PlaceholderPage title={pageLabels[page] || page} />;
   }
