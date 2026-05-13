@@ -1,4 +1,6 @@
+import { useState, useRef, useEffect } from 'react';
 import type { JSX } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 type Role = 'financeiro' | 'expositor';
 
@@ -57,6 +59,65 @@ const expositorNav: NavSection[] = [
   },
 ];
 
+function AccountPopover({ role, userName, userEmail, onSwitchRole }: { role: Role; userName: string; userEmail: string; onSwitchRole: () => void }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  const otherRole = role === 'financeiro' ? 'Loja Parceira' : 'Financeiro';
+
+  return (
+    <div ref={ref} className="relative px-3 py-4 border-t border-[--border]">
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 6 }}
+            transition={{ duration: 0.15 }}
+            className="absolute bottom-full left-3 right-3 mb-2 bg-[--bg-content] border border-[--border] rounded-xl shadow-lg overflow-hidden"
+            style={{ boxShadow: '0 -4px 24px rgba(0,0,0,0.08)' }}
+          >
+            <div className="px-4 py-3 border-b border-[--border]">
+              <p className="font-label text-[11px] text-[--text-tertiary] uppercase tracking-[1px] mb-1">Visualizando como</p>
+              <p className="font-subheading text-[13px] text-[--text-primary]">{userName}</p>
+            </div>
+            <button
+              onClick={() => { onSwitchRole(); setOpen(false); }}
+              className="w-full flex items-center gap-2.5 px-4 py-3 text-left font-label text-[13px] text-[--text-secondary] hover:bg-[--bg-primary] hover:text-[--accent] transition-colors cursor-pointer bg-transparent border-none"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+              Ver como {otherRole}
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center gap-2.5 px-2 py-1 rounded-lg hover:bg-[--bg-primary] transition-colors cursor-pointer bg-transparent border-none"
+      >
+        <div className="w-8 h-8 rounded-full bg-[--accent-light] text-[--accent] flex items-center justify-center font-subheading text-[12px] shrink-0">
+          {role === 'financeiro' ? 'FI' : 'LP'}
+        </div>
+        <div className="flex-1 min-w-0 text-left">
+          <p className="font-label text-[12px] text-[--text-primary] truncate">{userName}</p>
+          <p className="font-caption text-[--text-tertiary] truncate">{userEmail}</p>
+        </div>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`text-[--text-tertiary] transition-transform duration-200 ${open ? 'rotate-180' : ''}`}><polyline points="6 15 12 9 18 15"/></svg>
+      </button>
+    </div>
+  );
+}
+
 interface SidebarProps {
   role: Role;
   currentPage: string;
@@ -108,20 +169,7 @@ export default function Sidebar({ role, currentPage, onNavigate, onLogout }: Sid
         ))}
       </nav>
 
-      <div className="px-3 py-4 border-t border-[--border]">
-        <div className="flex items-center gap-2.5 px-2">
-          <div className="w-8 h-8 rounded-full bg-[--accent-light] text-[--accent] flex items-center justify-center font-subheading text-[12px] shrink-0">
-            {role === 'financeiro' ? 'FI' : 'LP'}
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="font-label text-[12px] text-[--text-primary] truncate">{userName}</p>
-            <p className="font-caption text-[--text-tertiary] truncate">{userEmail}</p>
-          </div>
-          <button onClick={onLogout} className="text-[--text-tertiary] hover:text-[--accent] transition-colors cursor-pointer bg-transparent border-none p-1" aria-label={role === 'financeiro' ? 'Ver como loja parceira' : 'Ver como financeiro'} title={role === 'financeiro' ? 'Ver como loja parceira' : 'Ver como financeiro'}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
-          </button>
-        </div>
-      </div>
+      <AccountPopover role={role} userName={userName} userEmail={userEmail} onSwitchRole={onLogout} />
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { useState, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import SetupWizard from './components/SetupWizard';
 import Sidebar from './components/Sidebar';
 
 const DashboardPage = lazy(() => import('./pages/DashboardPage'));
@@ -54,8 +55,15 @@ function renderPage(page: string) {
 }
 
 export default function App() {
+  const [setupDone, setSetupDone] = useState(false);
   const [role, setRole] = useState<Role>('financeiro');
   const [currentPage, setCurrentPage] = useState('dashboard');
+
+  const handleSetupComplete = (config: { language: string; role: Role }) => {
+    setRole(config.role);
+    setCurrentPage(config.role === 'financeiro' ? 'dashboard' : 'brand-home');
+    setSetupDone(true);
+  };
 
   const handleNavigate = (page: string) => {
     setCurrentPage(page);
@@ -66,14 +74,19 @@ export default function App() {
     }
   };
 
-  const switchRole = (r: Role) => {
-    setRole(r);
-    setCurrentPage(r === 'financeiro' ? 'dashboard' : 'brand-home');
+  const switchRole = () => {
+    const next: Role = role === 'financeiro' ? 'expositor' : 'financeiro';
+    setRole(next);
+    setCurrentPage(next === 'financeiro' ? 'dashboard' : 'brand-home');
   };
+
+  if (!setupDone) {
+    return <SetupWizard onComplete={handleSetupComplete} />;
+  }
 
   return (
     <div className="flex h-screen overflow-hidden">
-      <Sidebar role={role} currentPage={currentPage} onNavigate={handleNavigate} onLogout={() => switchRole(role === 'financeiro' ? 'expositor' : 'financeiro')} />
+      <Sidebar role={role} currentPage={currentPage} onNavigate={handleNavigate} onLogout={switchRole} />
       <div className="flex-1 flex flex-col min-w-0">
         <header className="h-14 border-b border-[--border] bg-[--bg-content] flex items-center justify-between px-8 shrink-0">
           <h1 className="font-heading text-[17px] text-[--text-primary]">{pageLabels[currentPage] || ''}</h1>
