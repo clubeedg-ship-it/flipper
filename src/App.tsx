@@ -1,6 +1,5 @@
-import { useState, useCallback, lazy, Suspense } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Login from './components/Login';
 import Sidebar from './components/Sidebar';
 
 const DashboardPage = lazy(() => import('./pages/DashboardPage'));
@@ -55,30 +54,27 @@ function renderPage(page: string) {
 }
 
 export default function App() {
-  const [loggedIn, setLoggedIn] = useState(false);
   const [role, setRole] = useState<Role>('financeiro');
   const [currentPage, setCurrentPage] = useState('dashboard');
 
-  const handleLogin = useCallback((r: Role) => {
+  const handleNavigate = (page: string) => {
+    setCurrentPage(page);
+    if (page.startsWith('brand-')) {
+      setRole('expositor');
+    } else {
+      setRole('financeiro');
+    }
+  };
+
+  const switchRole = (r: Role) => {
     setRole(r);
     setCurrentPage(r === 'financeiro' ? 'dashboard' : 'brand-home');
-    setLoggedIn(true);
-  }, []);
-
-  const handleLogout = useCallback(() => {
-    setLoggedIn(false);
-    setCurrentPage('dashboard');
-  }, []);
-
-  if (!loggedIn) {
-    return <Login onLogin={handleLogin} />;
-  }
+  };
 
   return (
     <div className="flex h-screen overflow-hidden">
-      <Sidebar role={role} currentPage={currentPage} onNavigate={setCurrentPage} onLogout={handleLogout} />
+      <Sidebar role={role} currentPage={currentPage} onNavigate={handleNavigate} onLogout={() => switchRole(role === 'financeiro' ? 'expositor' : 'financeiro')} />
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Top bar */}
         <header className="h-14 border-b border-[--border] bg-[--bg-content] flex items-center justify-between px-8 shrink-0">
           <h1 className="font-heading text-[17px] text-[--text-primary]">{pageLabels[currentPage] || ''}</h1>
           <div className="flex items-center gap-3">
@@ -89,7 +85,6 @@ export default function App() {
           </div>
         </header>
 
-        {/* Content */}
         <main className="flex-1 overflow-y-auto p-8" style={{ background: 'var(--bg-primary)' }}>
           <Suspense fallback={<div className="flex items-center justify-center h-64 text-[--text-tertiary] font-label">Carregando...</div>}>
             <AnimatePresence mode="wait">

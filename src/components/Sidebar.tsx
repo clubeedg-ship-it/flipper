@@ -117,8 +117,8 @@ export default function Sidebar({ role, currentPage, onNavigate, onLogout }: Sid
             <p className="font-label text-[12px] text-[--text-primary] truncate">{userName}</p>
             <p className="font-caption text-[--text-tertiary] truncate">{userEmail}</p>
           </div>
-          <button onClick={onLogout} className="text-[--text-tertiary] hover:text-[--text-primary] transition-colors cursor-pointer bg-transparent border-none p-1" aria-label="Sair">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          <button onClick={onLogout} className="text-[--text-tertiary] hover:text-[--accent] transition-colors cursor-pointer bg-transparent border-none p-1" aria-label={role === 'financeiro' ? 'Ver como loja parceira' : 'Ver como financeiro'} title={role === 'financeiro' ? 'Ver como loja parceira' : 'Ver como financeiro'}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
           </button>
         </div>
       </div>
