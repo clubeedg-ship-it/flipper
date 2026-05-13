@@ -2,7 +2,7 @@
 
 repo: clubeedg-ship-it/flipper
 branch: main
-phase: visual-polish — Phase 2 in progress
+phase: placeholder-pages — 9 pages to build
 url: https://flipper.abbamarkt.nl
 
 runtime:
@@ -10,45 +10,42 @@ runtime:
   tunnel: Cloudflare → 192.168.0.222:3005
 
 completed:
-  - P0: Data layer (brands, metrics, sales) ✓
-  - P1: UI primitives (GlassCard, MetricCard, Badge, CountUp, SectionTransition, useInView) ✓
-  - P2: App shell (loader, progress dots, IntersectionObserver, logo, context badge) ✓
-  - P3: Act 1 Hero (chaos grid, floating cards, chevron) ✓
-  - P4: Act 2 Dashboard (metrics, brand table, drawer, checklist sandbox) ✓
-  - P5: Act 3 Brand Portal (Amira perspective, filterable sales, repasse, NF-e) ✓
-  - P6: Act 4 BlockChain (cascade, dual view, modals, state machine) ✓
-  - P7: Act 5 Closing (headline, roadmap, WhatsApp CTA) ✓
-  - Fix: Tailwind padding (removed unlayered `* { padding: 0 }` conflicting with Tailwind 4 @layer) ✓
-  - Fix: Build errors (JSX namespace, unused params, useRef types) ✓
-  - Fix: Vite host + allowedHosts for Cloudflare Tunnel ✓
-  - Cleanup: removed dead lucide-react dep, unused imports, gitignored .playwright-mcp/ ✓
-  - P2.7: Product demo feel — app toolbar with nav tabs for Acts 2-4 ✓
-  - P2.2: Keyboard navigation (↑↓ arrows between acts) ✓
-  - P2.3: Progress dot pulse verified (10px active, 8px inactive, 2s opacity pulse) ✓
-  - P2.4: Glassmorphism consistency audit — all glass elements use .glass class ✓
-  - P2.5: Animation timing audit — all timings match spec values ✓
-  - P2.6: Mobile responsive (hide toolbar + progress dots on mobile, responsive badge positioning) ✓
-  - Production build clean ✓
+  - Data layer (brands, metrics, sales) ✓
+  - UI primitives (Badge, CountUp, Sidebar, Login, SetupWizard) ✓
+  - Rebuild: scroll narrative → SaaS dashboard with sidebar ✓
+  - Login screen → replaced with setup wizard (3 steps: intro, language, perspective) ✓
+  - Account popover with role switching ✓
+  - DemoPage v2: sticky pill nav, inline platform components, callouts ✓
+  - DashboardPage: metrics, alert banners, action queue, brand table, bottom cards ✓
+  - LojasPage: brand list with filters, avatars, status badges ✓
+  - FechamentoPage: metrics, checklist cards, closing table ✓
+  - BrandHomePage: success banner, metrics, resumo, sales, repasse history ✓
+  - Emoji removal: all replaced with monochrome SVGs ✓
+  - Color scheme: teal accent, warm cream background ✓
+  - Demo tools research document ✓
+  - Reference demo HTML saved ✓
 
 blockers:
-  - None. Demo is functional.
+  - Tailwind 4 Vite plugin doesn't generate utility classes for new files in src/pages/
+    Workaround: use inline styles for grid layouts and accent colors
 
 pending:
-  - QA audit (Playwright walkthrough) — qa-plan.md written, not executed
-  - Git: uncommitted Phase 2 changes — needs commit + push
+  - 9 placeholder pages to implement (see NEXT-SESSION.md for full plan)
+  - Data files to create: products.ts, nfe.ts
+  - Data files to expand: sales.ts (multi-brand)
 
 truths:
-  - spec (docs/demo-spec.md) is READ-ONLY — never edit
-  - all copy is PT-BR, all data is hardcoded
-  - no backend, no API calls, no external images
-  - Tailwind 4 uses @layer utilities — unlayered CSS beats layered regardless of specificity
-  - Vite config needs host: '0.0.0.0' + allowedHosts for tunnel access
-  - lucide-react was installed but never used — removed
-  - App toolbar appears for Acts 2-4 (desktop only), standalone logo/badge for Acts 1/5
+  - All copy is PT-BR, all data is hardcoded
+  - No backend, no API calls
+  - Tailwind 4 arbitrary-value classes (bg-[--accent], grid-cols-N) don't work in src/pages/ — use inline styles
+  - App starts with SetupWizard → Dashboard (or brand-home based on role)
+  - Role switching via account popover in sidebar footer
+  - Demo guide page is first sidebar item with star icon
 
 retrieval:
   project_context: CLAUDE.md
   state: .project/STATE.md
   queue: .project/QUEUE.md
-  spec: docs/demo-spec.md (READ-ONLY)
-  qa_plan: docs/qa-plan.md
+  next_session: .project/NEXT-SESSION.md
+  reference: docs/reference-demo.html
+  research: docs/demo-tools-research.md
