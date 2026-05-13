@@ -69,6 +69,9 @@ export default function SetupWizard({ onComplete }: SetupWizardProps) {
       subtitle: 'Como deseja começar?',
       content: (
         <div className="space-y-3">
+          <p className="font-body text-[13px] text-[--text-tertiary] mb-1">
+            Escolha qualquer uma — você pode alternar entre as duas visões a qualquer momento pelo menu da conta.
+          </p>
           <button
             onClick={() => setRole('financeiro')}
             className="w-full text-left px-5 py-4 rounded-xl transition-all duration-150 cursor-pointer"
