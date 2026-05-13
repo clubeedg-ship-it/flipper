@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import SetupWizard from './components/SetupWizard';
 import Sidebar from './components/Sidebar';
 
+const DemoPage = lazy(() => import('./pages/DemoPage'));
 const DashboardPage = lazy(() => import('./pages/DashboardPage'));
 const LojasPage = lazy(() => import('./pages/LojasPage'));
 const FechamentoPage = lazy(() => import('./pages/FechamentoPage'));
@@ -12,6 +13,7 @@ const PlaceholderPage = lazy(() => import('./pages/PlaceholderPage'));
 type Role = 'financeiro' | 'expositor';
 
 const pageLabels: Record<string, string> = {
+  demo: 'Conheça o Flipper',
   dashboard: 'Dashboard',
   lojas: 'Lojas Parceiras',
   produtos: 'Produtos/SKUs',
@@ -39,8 +41,10 @@ function PageWrapper({ children }: { children: React.ReactNode }) {
   );
 }
 
-function renderPage(page: string) {
+function renderPage(page: string, onNavigate: (p: string) => void) {
   switch (page) {
+    case 'demo':
+      return <DemoPage onNavigate={onNavigate} />;
     case 'dashboard':
       return <DashboardPage />;
     case 'lojas':
@@ -102,7 +106,7 @@ export default function App() {
           <Suspense fallback={<div className="flex items-center justify-center h-64 text-[--text-tertiary] font-label">Carregando...</div>}>
             <AnimatePresence mode="wait">
               <PageWrapper key={currentPage}>
-                {renderPage(currentPage)}
+                {renderPage(currentPage, handleNavigate)}
               </PageWrapper>
             </AnimatePresence>
           </Suspense>

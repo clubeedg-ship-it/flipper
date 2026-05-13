@@ -20,10 +20,19 @@ const icon = (d: string) => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d={d}/></svg>
 );
 
+const starIcon = (
+  <span style={{ filter: 'drop-shadow(0 0 4px rgba(13,148,136,0.5))' }}>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+    </svg>
+  </span>
+);
+
 const financeiroNav: NavSection[] = [
   {
     title: 'VISÃO GERAL',
     items: [
+      { id: 'demo', label: 'Conheça o Flipper', icon: starIcon },
       { id: 'dashboard', label: 'Dashboard', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg> },
     ],
   },
@@ -47,6 +56,12 @@ const financeiroNav: NavSection[] = [
 ];
 
 const expositorNav: NavSection[] = [
+  {
+    title: 'GUIA',
+    items: [
+      { id: 'demo', label: 'Conheça o Flipper', icon: starIcon },
+    ],
+  },
   {
     title: 'MINHA CONTA',
     items: [
