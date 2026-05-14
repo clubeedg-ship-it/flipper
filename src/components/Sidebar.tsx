@@ -38,7 +38,7 @@ const financeiroNav: NavSection[] = [
     title: 'OPERAÇÃO',
     items: [
       { id: 'lojas', label: 'Lojas Parceiras', icon: icon('M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75') },
-      { id: 'produtos', label: 'Produtos/SKUs', icon: icon('M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82zM7 7h.01') },
+      // Produtos/SKUs removed from sidebar per client spec — SKU management lives in brand profiles
       { id: 'vendas', label: 'Vendas', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> },
     ],
   },
