@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { brands } from '../data/brands';
 import Badge from '../components/ui/Badge';
 import BrandProfileDrawer from '../components/ui/BrandProfileDrawer';
-import type { BrandStatus } from '../data/brands';
+import type { BrandStatus, UnitFilter } from '../data/brands';
 
 interface Cobranca {
   brand: string;
@@ -31,11 +31,22 @@ const cobrancas: Cobranca[] = brands
     statusType: b.mensalidadeStatus,
   }));
 
-export default function CobrancasPage() {
+interface CobrancasPageProps {
+  unitFilter?: UnitFilter;
+}
+
+export default function CobrancasPage({ unitFilter = 'Todas' }: CobrancasPageProps) {
   const [reminderSent, setReminderSent] = useState(false);
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
 
-  const pendingCount = cobrancas.filter(c => c.statusType !== 'success').length;
+  const filteredCobrancas = useMemo(() =>
+    unitFilter === 'Todas' ? cobrancas : cobrancas.filter(c => {
+      const brand = brands.find(b => b.name === c.brand);
+      return brand && brand.location === unitFilter;
+    }),
+    [unitFilter]
+  );
+  const pendingCount = filteredCobrancas.filter(c => c.statusType !== 'success').length;
 
   return (
     <div className="content-max space-y-6">
@@ -73,7 +84,7 @@ export default function CobrancasPage() {
             </tr>
           </thead>
           <tbody>
-            {cobrancas.map(c => (
+            {filteredCobrancas.map(c => (
               <tr key={c.brand} className="border-b border-[--border] last:border-b-0 hover:bg-[--bg-primary]/50 transition-colors cursor-pointer" onClick={() => setSelectedBrand(c.brand)}>
                 <td className="py-3.5 pr-4">
                   <div className="flex items-center gap-3">

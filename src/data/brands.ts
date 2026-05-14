@@ -28,8 +28,11 @@ export interface BrandDrawer {
   history: BrandHistory[];
 }
 
+export type UnitFilter = 'Todas' | 'SP' | 'RJ';
+
 export interface Brand {
   name: string;
+  location: 'SP' | 'RJ';
   mensalidade: string;
   mensalidadeStatus: BrandStatus;
   vendasJun: number;
@@ -45,6 +48,7 @@ export interface Brand {
 export const brands: Brand[] = [
   {
     name: 'Amira',
+    location: 'SP',
     mensalidade: 'Paga',
     mensalidadeStatus: 'success',
     vendasJun: 5840,
@@ -74,6 +78,7 @@ export const brands: Brand[] = [
   },
   {
     name: 'Lua Cheia',
+    location: 'SP',
     mensalidade: 'Pendente',
     mensalidadeStatus: 'warning',
     vendasJun: 4210,
@@ -101,6 +106,7 @@ export const brands: Brand[] = [
   },
   {
     name: 'Mar e Rio',
+    location: 'RJ',
     mensalidade: 'Paga',
     mensalidadeStatus: 'success',
     vendasJun: 6320,
@@ -131,6 +137,7 @@ export const brands: Brand[] = [
   },
   {
     name: 'Dona Sol',
+    location: 'RJ',
     mensalidade: 'Inadimplente',
     mensalidadeStatus: 'danger',
     vendasJun: 2180,
@@ -158,6 +165,7 @@ export const brands: Brand[] = [
   },
   {
     name: 'Casa Bruta',
+    location: 'RJ',
     mensalidade: 'Paga',
     mensalidadeStatus: 'success',
     vendasJun: 4950,
@@ -188,6 +196,7 @@ export const brands: Brand[] = [
   },
   {
     name: 'Brisa',
+    location: 'SP',
     mensalidade: 'Paga',
     mensalidadeStatus: 'success',
     vendasJun: 3780,
@@ -218,6 +227,7 @@ export const brands: Brand[] = [
   },
   {
     name: 'Bruta',
+    location: 'SP',
     mensalidade: 'Paga',
     mensalidadeStatus: 'success',
     vendasJun: 5120,
@@ -248,6 +258,7 @@ export const brands: Brand[] = [
   },
   {
     name: 'Terra Mãe',
+    location: 'SP',
     mensalidade: 'Sem contrato',
     mensalidadeStatus: 'neutral',
     vendasJun: 1800,

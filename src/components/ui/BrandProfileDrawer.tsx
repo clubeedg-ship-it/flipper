@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { brands } from '../../data/brands';
 import Badge from './Badge';
@@ -19,11 +20,14 @@ interface BrandProfileDrawerProps {
 }
 
 export default function BrandProfileDrawer({ brandName, onClose }: BrandProfileDrawerProps) {
+  const [actionDone, setActionDone] = useState<string | null>(null);
   const brand = brandName ? brands.find(b => b.name === brandName) : null;
   if (!brand) return null;
 
   const avatar = brandAvatars[brand.name] || { letters: brand.name.slice(0, 2).toUpperCase(), color: '#6B7280' };
   const { contract, june, history } = brand.drawer;
+
+  const vencimentoDate = contract.vencimento === '—' ? '—' : `05/07`;
 
   return (
     <AnimatePresence>
@@ -41,11 +45,12 @@ export default function BrandProfileDrawer({ brandName, onClose }: BrandProfileD
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-            className="w-full max-w-md bg-[--bg-content] h-full overflow-y-auto shadow-2xl"
+            className="w-full max-w-md h-full overflow-y-auto shadow-2xl"
+            style={{ background: '#FFFFFF' }}
             onClick={e => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="sticky top-0 bg-[--bg-content] border-b border-[--border] px-6 py-5 flex items-center justify-between z-10">
+            <div className="sticky top-0 border-b border-[--border] px-6 py-5 flex items-center justify-between z-10" style={{ background: '#FFFFFF' }}>
               <div className="flex items-center gap-3">
                 <span
                   className="w-10 h-10 rounded-full flex items-center justify-center text-[13px] font-bold text-white shrink-0"
@@ -53,7 +58,7 @@ export default function BrandProfileDrawer({ brandName, onClose }: BrandProfileD
                 >{avatar.letters}</span>
                 <div>
                   <h2 className="font-heading text-[18px] text-[--text-primary]">{brand.name}</h2>
-                  <p className="font-caption text-[--text-tertiary]">{brand.drawer.description}</p>
+                  <p className="font-caption text-[--text-tertiary]">{brand.drawer.description} · {brand.location}</p>
                 </div>
               </div>
               <button
@@ -65,11 +70,50 @@ export default function BrandProfileDrawer({ brandName, onClose }: BrandProfileD
             </div>
 
             <div className="px-6 py-6 space-y-6">
-              {/* Status */}
-              <div className="flex items-center gap-2">
-                <Badge status={brand.status} label={brand.status === 'success' ? 'Ativo' : brand.status === 'danger' ? 'Inadimplente' : brand.status === 'warning' ? 'Pendente' : 'Sem contrato'} showDot />
-                <span className="font-caption text-[--text-tertiary]">desde {brand.drawer.activeSince}</span>
+              {/* Status + actions */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Badge status={brand.status} label={brand.status === 'success' ? 'Ativo' : brand.status === 'danger' ? 'Inadimplente' : brand.status === 'warning' ? 'Pendente' : 'Sem contrato'} showDot />
+                  <span className="font-caption text-[--text-tertiary]">desde {brand.drawer.activeSince}</span>
+                </div>
               </div>
+
+              {/* Action buttons */}
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setActionDone('repasse')}
+                  className="flex-1 px-3 py-2 rounded-lg font-label text-[12px] text-white cursor-pointer border-none transition-colors"
+                  style={{ background: '#0D9488' }}
+                >
+                  {actionDone === 'repasse' ? 'Repasse registrado' : 'Registrar repasse'}
+                </button>
+                <button
+                  onClick={() => setActionDone('relatorio')}
+                  className="flex-1 px-3 py-2 rounded-lg font-label text-[12px] border border-[--border] hover:bg-[--bg-primary] transition-colors cursor-pointer bg-white text-[--text-primary]"
+                >
+                  {actionDone === 'relatorio' ? 'Enviado' : 'Enviar relatório'}
+                </button>
+                {brand.status !== 'success' && brand.status !== 'neutral' && (
+                  <button
+                    onClick={() => setActionDone('notificar')}
+                    className="px-3 py-2 rounded-lg font-label text-[12px] border transition-colors cursor-pointer bg-white text-[--text-primary]"
+                    style={{ borderColor: '#F59E0B' }}
+                  >
+                    {actionDone === 'notificar' ? 'Notificado' : 'Notificar'}
+                  </button>
+                )}
+              </div>
+
+              {actionDone && (
+                <div className="alert-banner alert-banner-success">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                  <span>
+                    {actionDone === 'repasse' && `Repasse de ${brand.name} registrado com sucesso.`}
+                    {actionDone === 'relatorio' && `Relatório enviado por e-mail para ${brand.name}.`}
+                    {actionDone === 'notificar' && `Notificação enviada para ${brand.name}.`}
+                  </span>
+                </div>
+              )}
 
               {/* Contract */}
               <div className="rounded-xl border border-[--border] p-5 space-y-3">
@@ -85,7 +129,7 @@ export default function BrandProfileDrawer({ brandName, onClose }: BrandProfileD
                   </div>
                   <div>
                     <p className="font-label text-[11px] text-[--text-tertiary] uppercase tracking-[1px] mb-1">VENCIMENTO</p>
-                    <p className="font-mono text-[15px] text-[--text-primary]">{contract.vencimento}</p>
+                    <p className="font-mono text-[15px] text-[--text-primary]">{vencimentoDate}</p>
                   </div>
                 </div>
               </div>

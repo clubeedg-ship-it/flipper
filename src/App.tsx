@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import SetupWizard from './components/SetupWizard';
 import Sidebar from './components/Sidebar';
 
-type UnitFilter = 'Todas' | 'SP' | 'RJ';
+import type { UnitFilter } from './data/brands';
 const unitLabels: Record<UnitFilter, string> = {
   'Todas': 'Todas as unidades',
   'SP': 'SP — Jardins',
@@ -57,26 +57,26 @@ function PageWrapper({ children }: { children: React.ReactNode }) {
   );
 }
 
-function renderPage(page: string, onNavigate: (p: string) => void) {
+function renderPage(page: string, onNavigate: (p: string) => void, unitFilter: UnitFilter) {
   switch (page) {
     case 'demo':
       return <DemoPage onNavigate={onNavigate} />;
     case 'dashboard':
-      return <DashboardPage onNavigate={onNavigate} />;
+      return <DashboardPage onNavigate={onNavigate} unitFilter={unitFilter} />;
     case 'lojas':
       return <LojasPage />;
     case 'fechamento':
-      return <FechamentoPage />;
+      return <FechamentoPage onNavigate={onNavigate} unitFilter={unitFilter} />;
     case 'vendas':
-      return <VendasPage />;
+      return <VendasPage unitFilter={unitFilter} />;
     case 'produtos':
       return <ProdutosPage />;
     case 'cobrancas':
-      return <CobrancasPage />;
+      return <CobrancasPage unitFilter={unitFilter} />;
     case 'repasses':
-      return <RepassesPage />;
+      return <RepassesPage onNavigate={onNavigate} unitFilter={unitFilter} />;
     case 'nfe':
-      return <NFePage />;
+      return <NFePage unitFilter={unitFilter} />;
     case 'brand-home':
       return <BrandHomePage />;
     case 'brand-vendas':
@@ -184,7 +184,7 @@ export default function App() {
           <Suspense fallback={<div className="flex items-center justify-center h-64 text-[--text-tertiary] font-label">Carregando...</div>}>
             <AnimatePresence mode="wait">
               <PageWrapper key={currentPage}>
-                {renderPage(currentPage, handleNavigate)}
+                {renderPage(currentPage, handleNavigate, unitFilter)}
               </PageWrapper>
             </AnimatePresence>
           </Suspense>

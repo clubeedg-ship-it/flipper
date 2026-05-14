@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { dashboardMetrics } from '../data/metrics';
 import { brands } from '../data/brands';
+import type { UnitFilter } from '../data/brands';
 import CountUp from '../components/ui/CountUp';
 import Badge from '../components/ui/Badge';
 import BrandProfileDrawer from '../components/ui/BrandProfileDrawer';
@@ -17,11 +17,6 @@ const brandInitials: Record<string, { letters: string; color: string }> = {
   'Terra Mãe': { letters: 'TM', color: '#6B7280' },
 };
 
-const locationBadge: Record<string, string> = {
-  'Amira': 'SP', 'Lua Cheia': 'SP', 'Mar e Rio': 'RJ', 'Dona Sol': 'RJ',
-  'Casa Bruta': 'RJ', 'Brisa': 'SP', 'Bruta': 'SP', 'Terra Mãe': 'SP',
-};
-
 const actionQueue = [
   { id: 1, title: 'Vincular 3 SKUs sem loja parceira', sub: 'R$ 890 travados fora do fechamento', action: 'Resolver' },
   { id: 2, title: 'Confirmar contrato de Terra Mãe', sub: 'Modelo comercial pendente de aprovação', action: 'Revisar' },
@@ -30,17 +25,37 @@ const actionQueue = [
 
 interface DashboardPageProps {
   onNavigate?: (page: string) => void;
+  unitFilter?: UnitFilter;
 }
 
-export default function DashboardPage({ onNavigate }: DashboardPageProps) {
+export default function DashboardPage({ onNavigate, unitFilter = 'Todas' }: DashboardPageProps) {
   const [resolvedActions, setResolvedActions] = useState<number[]>([]);
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
+
+  const filteredBrands = useMemo(() =>
+    unitFilter === 'Todas' ? brands : brands.filter(b => b.location === unitFilter),
+    [unitFilter]
+  );
+
+  const metrics = useMemo(() => {
+    const vendasBrutas = filteredBrands.reduce((s, b) => s + b.vendasJun, 0);
+    const repasseMarcas = filteredBrands.reduce((s, b) => s + (b.repasseValue || Math.round(b.vendasJun * 0.5)), 0);
+    const mensalidadesTotal = filteredBrands.reduce((s, b) => s + b.drawer.contract.mensalidade, 0);
+    const mensalidadesAberto = filteredBrands.filter(b => b.mensalidadeStatus !== 'success' && b.mensalidadeStatus !== 'neutral').reduce((s, b) => s + b.drawer.contract.mensalidade, 0);
+    const pendentes = filteredBrands.filter(b => b.mensalidadeStatus !== 'success' && b.mensalidadeStatus !== 'neutral').length;
+    return [
+      { label: 'Vendas brutas', value: vendasBrutas, variation: '+12% vs mai', variationType: 'success' as const, detail: `${filteredBrands.length} lojas parceiras` },
+      { label: 'Repasse marcas', value: repasseMarcas, detail: `${filteredBrands.filter(b => b.repasseStatus === 'success').length} de ${filteredBrands.length} processados` },
+      { label: 'Mensalidades', value: mensalidadesTotal, variation: mensalidadesAberto > 0 ? `R$ ${mensalidadesAberto.toLocaleString('pt-BR')} em aberto` : undefined, variationType: 'warning' as const, detail: pendentes > 0 ? `${pendentes} pendentes` : 'Todas em dia' },
+      { label: 'Margem loja', value: vendasBrutas - repasseMarcas, variation: vendasBrutas > 0 ? `${((1 - repasseMarcas / vendasBrutas) * 100).toFixed(1)}%` : '—', variationType: 'neutral' as const, detail: 'Após repasses' },
+    ];
+  }, [filteredBrands]);
 
   return (
     <div className="content-max space-y-8">
       {/* Metrics */}
       <div className="grid gap-5" style={{ gridTemplateColumns: "repeat(4, minmax(0, 1fr))" }}>
-        {dashboardMetrics.map((m, i) => (
+        {metrics.map((m, i) => (
           <motion.div
             key={m.label}
             initial={{ opacity: 0, y: 12 }}
@@ -140,16 +155,15 @@ export default function DashboardPage({ onNavigate }: DashboardPageProps) {
             </tr>
           </thead>
           <tbody>
-            {brands.slice(0, 6).map((b) => {
+            {filteredBrands.slice(0, 6).map((b) => {
               const ini = brandInitials[b.name] || { letters: b.name.slice(0, 2).toUpperCase(), color: '#6B7280' };
-              const loc = locationBadge[b.name] || 'SP';
               return (
                 <tr key={b.name} className="border-b border-[--border] last:border-b-0 hover:bg-[--bg-primary]/50 transition-colors cursor-pointer" onClick={() => setSelectedBrand(b.name)}>
                   <td className="py-3.5 pr-4">
                     <div className="flex items-center gap-3">
                       <span className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold text-white shrink-0" style={{ background: ini.color }}>{ini.letters}</span>
                       <span className="font-subheading text-[14px]">{b.name}</span>
-                      <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[--bg-primary] text-[--text-tertiary] border border-[--border]">{loc}</span>
+                      <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[--bg-primary] text-[--text-tertiary] border border-[--border]">{b.location}</span>
                     </div>
                   </td>
                   <td className="py-3.5 pr-4"><Badge status={b.mensalidadeStatus} label={b.mensalidade} showDot /></td>
