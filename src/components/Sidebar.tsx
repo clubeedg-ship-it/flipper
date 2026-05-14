@@ -76,18 +76,17 @@ function FlipperLogo({ collapsed }: { collapsed: boolean }) {
   return (
     <div className="flex items-center gap-2.5 overflow-hidden">
       <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'linear-gradient(135deg, #0D9488, #0B7A70)' }}>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-          <path d="M4 4h16v2H4V4zm0 7h12v2H4v-2zm0 7h16v2H4v-2z" fill="white" fillOpacity="0.9"/>
-          <circle cx="19" cy="14" r="3" fill="white" fillOpacity="0.7"/>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M7 17V7h6a4 4 0 0 1 0 8H7" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M7 12h5" stroke="white" strokeWidth="2.2" strokeLinecap="round"/>
         </svg>
       </div>
-      <motion.div
-        animate={{ opacity: collapsed ? 0 : 1, width: collapsed ? 0 : 'auto' }}
-        transition={{ duration: 0.2 }}
-        className="overflow-hidden whitespace-nowrap"
-      >
-        <p className="font-heading text-[17px] text-[--text-primary] leading-tight">Flipper</p>
-      </motion.div>
+      {!collapsed && (
+        <div className="overflow-hidden whitespace-nowrap">
+          <p className="font-heading text-[17px] text-[--text-primary] leading-tight">Flipper</p>
+          <p className="font-caption text-[10px] text-[--text-tertiary] -mt-0.5">gestão de consignações</p>
+        </div>
+      )}
     </div>
   );
 }
@@ -194,20 +193,29 @@ export default function Sidebar({ role, currentPage, onNavigate, onLogout }: Sid
       }}
     >
       {/* Logo + collapse toggle */}
-      <div className="px-4 py-4 flex items-center justify-between">
-        <FlipperLogo collapsed={collapsed} />
-        <button
-          onClick={() => setCollapsed(!collapsed)}
-          className="w-7 h-7 rounded-lg flex items-center justify-center cursor-pointer bg-transparent border-none text-[--text-tertiary] hover:text-[--text-primary] transition-colors shrink-0"
-        >
-          <motion.svg
-            width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-            animate={{ rotate: collapsed ? 180 : 0 }}
-            transition={{ duration: 0.2 }}
+      <div className="py-4 flex items-center" style={{ padding: collapsed ? '16px 0' : '16px', justifyContent: collapsed ? 'center' : 'space-between' }}>
+        {collapsed ? (
+          <button
+            onClick={() => setCollapsed(false)}
+            className="w-9 h-9 rounded-xl flex items-center justify-center cursor-pointer border-none shrink-0"
+            style={{ background: 'linear-gradient(135deg, #0D9488, #0B7A70)' }}
+            title="Expandir menu"
           >
-            <polyline points="15 18 9 12 15 6"/>
-          </motion.svg>
-        </button>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M4 6h16M4 12h10M4 18h16"/></svg>
+          </button>
+        ) : (
+          <>
+            <FlipperLogo collapsed={false} />
+            <button
+              onClick={() => setCollapsed(true)}
+              className="w-7 h-7 rounded-lg flex items-center justify-center cursor-pointer bg-transparent border-none text-[--text-tertiary] hover:text-[--text-primary] transition-colors shrink-0"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="15 18 9 12 15 6"/>
+              </svg>
+            </button>
+          </>
+        )}
       </div>
 
       {/* Nav */}
