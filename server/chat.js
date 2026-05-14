@@ -12,7 +12,7 @@
 import { dataContext } from './context.js';
 
 const OLLAMA_URL   = 'http://127.0.0.1:11434/api/chat';
-const OLLAMA_MODEL = 'qwen3:27b';
+const OLLAMA_MODEL = 'qwen3.6:27b';
 
 const SYSTEM_PROMPT = `Você é o Assistente Flipper, um assistente virtual integrado ao painel financeiro Flipper.
 
