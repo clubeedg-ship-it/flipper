@@ -37,8 +37,26 @@ export default function VendasPage({ unitFilter = 'Todas' }: VendasPageProps) {
     setTimeout(() => setSyncing(false), 1500);
   };
 
+  const totalDevolutions = filtered.filter(s => s.isReturn).reduce((s, r) => s + Math.abs(r.value), 0);
+  const blockedCount = filtered.filter(s => s.pgto === 'Bloqueado').length;
+
   return (
     <div className="content-max space-y-6">
+      {/* KPIs */}
+      <div className="grid gap-5" style={{ gridTemplateColumns: "repeat(4, minmax(0, 1fr))" }}>
+        {[
+          { label: 'Total vendido', value: `R$ ${totalCliente.toLocaleString('pt-BR')}`, color: 'var(--text-primary)' },
+          { label: 'Devoluções', value: `R$ ${totalDevolutions.toLocaleString('pt-BR')}`, color: 'var(--danger)' },
+          { label: 'Repasse gerado', value: `R$ ${totalRepasse.toLocaleString('pt-BR')}`, color: 'var(--success)' },
+          { label: 'Itens bloqueados', value: String(blockedCount), color: blockedCount > 0 ? 'var(--warning)' : 'var(--text-tertiary)' },
+        ].map(k => (
+          <div key={k.label} className="metric-card">
+            <p className="font-label text-[11px] text-[--text-tertiary] uppercase tracking-[1px] mb-2">{k.label}</p>
+            <p className="text-[24px] font-bold" style={{ color: k.color }}>{k.value}</p>
+          </div>
+        ))}
+      </div>
+
       {/* Sync banner */}
       <div className="alert-banner alert-banner-success">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
@@ -80,12 +98,16 @@ export default function VendasPage({ unitFilter = 'Todas' }: VendasPageProps) {
             </button>
           ))}
         </div>
+        <button className="px-3 py-2 border border-[--border] rounded-lg font-label text-[13px] text-[--text-secondary] bg-[--bg-content] hover:bg-[--bg-primary] cursor-pointer transition-colors">+ Lançamento manual</button>
         <span className="ml-auto font-caption text-[--text-tertiary]">{filtered.length} registros</span>
       </div>
 
       {/* Sales table */}
       <div className="card p-6">
-        <h3 className="font-subheading text-[16px] text-[--text-primary] mb-5">Vendas — Junho 2025</h3>
+        <div className="flex items-center justify-between mb-5">
+          <h3 className="font-subheading text-[16px] text-[--text-primary]">Vendas — Junho 2025</h3>
+          <button className="px-3 py-1.5 border border-[--border] rounded-lg font-label text-[12px] text-[--text-secondary] hover:bg-[--bg-primary] cursor-pointer bg-[--bg-content] transition-colors">Exportar CSV</button>
+        </div>
         <table className="w-full">
           <thead>
             <tr className="border-b border-[--border]">
@@ -107,7 +129,10 @@ export default function VendasPage({ unitFilter = 'Todas' }: VendasPageProps) {
                     <p className="font-caption text-[--text-tertiary]">{s.brand}</p>
                   </div>
                 </td>
-                <td className="py-3.5 pr-4 font-body text-[14px] text-[--text-primary]">{s.product}</td>
+                <td className="py-3.5 pr-4 font-body text-[14px] text-[--text-primary]">
+                  {s.product}
+                  {s.isReturn && <span className="ml-2 px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-50 text-red-600 border border-red-200">Devolução</span>}
+                </td>
                 <td className="py-3.5 pr-4 font-mono text-[14px]" style={s.isReturn ? { color: '#DC2626' } : undefined}>
                   {s.isReturn ? '−' : ''}R$ {Math.abs(s.value).toLocaleString('pt-BR')}
                 </td>
@@ -117,19 +142,16 @@ export default function VendasPage({ unitFilter = 'Todas' }: VendasPageProps) {
                 <td className="py-3.5 pr-4 font-mono text-[14px]" style={s.isReturn ? { color: '#DC2626' } : { color: '#0D9488' }}>
                   {s.isReturn ? '−' : ''}R$ {Math.abs(s.repasse).toLocaleString('pt-BR')}
                 </td>
-                <td className="py-3.5 font-body text-[13px] text-[--text-secondary]">{s.pgto}</td>
+                <td className="py-3.5">
+                  {s.pgto === 'Bloqueado'
+                    ? <Badge status="warning" label="Bloqueado" showDot />
+                    : <span className="font-body text-[13px] text-[--text-secondary]">{s.pgto}</span>
+                  }
+                </td>
               </tr>
             ))}
           </tbody>
-          <tfoot>
-            <tr className="border-t-2 border-[--border]">
-              <td colSpan={3} className="py-3.5 pr-4 font-subheading text-[14px] text-[--text-primary]">Total</td>
-              <td className="py-3.5 pr-4 font-mono text-[14px] font-bold">R$ {totalCliente.toLocaleString('pt-BR')}</td>
-              <td className="py-3.5 pr-4 font-mono text-[14px] font-bold">R$ {totalLoja.toLocaleString('pt-BR')}</td>
-              <td className="py-3.5 pr-4 font-mono text-[14px] font-bold" style={{ color: '#0D9488' }}>R$ {totalRepasse.toLocaleString('pt-BR')}</td>
-              <td className="py-3.5"></td>
-            </tr>
-          </tfoot>
+          {/* Total moved to KPIs at top */}
         </table>
       </div>
     </div>
