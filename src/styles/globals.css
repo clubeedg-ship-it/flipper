@@ -426,6 +426,33 @@ body {
   }
 }
 
+/* ── Modal responsive: bottom sheet on mobile, centered on desktop ── */
+.modal-center-md {
+  /* items-end on mobile by default in markup */
+}
+
+.modal-p-md {
+  padding: 0;
+}
+
+.modal-rounded {
+  border-radius: 16px 16px 0 0;
+}
+
+@media (min-width: 640px) {
+  .modal-center-md {
+    align-items: center;
+  }
+
+  .modal-p-md {
+    padding: 24px;
+  }
+
+  .modal-rounded {
+    border-radius: 16px;
+  }
+}
+
 /* ── Pending items alert: stack button below text on mobile ── */
 .pending-item-row {
   display: flex;
