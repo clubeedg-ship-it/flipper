@@ -72,14 +72,30 @@ const expositorNav: NavSection[] = [
   },
 ];
 
+// Stylized F logo — main brand identity. Used in both collapsed
+// and expanded sidebar states and anywhere the mark needs to stand alone.
+// Geometry: bold vertical stem, full top bar with a "flipped" tab on the
+// right end (the pivot motif), and a shorter middle bar.
+export function FlipperMark({ size = 20 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      {/* Vertical stem */}
+      <path d="M6.5 4.5v15" stroke="white" strokeWidth="2.6" strokeLinecap="round" />
+      {/* Top horizontal bar */}
+      <path d="M6.5 4.5h10" stroke="white" strokeWidth="2.6" strokeLinecap="round" />
+      {/* "Flip" pivot — subtle accent dot above the top bar's right end */}
+      <circle cx="17.5" cy="4.5" r="1.4" fill="white" />
+      {/* Middle horizontal bar (shorter, the F's defining feature) */}
+      <path d="M6.5 11.5h6.5" stroke="white" strokeWidth="2.6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 function FlipperLogo({ collapsed }: { collapsed: boolean }) {
   return (
     <div className="flex items-center gap-2.5 overflow-hidden">
       <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'linear-gradient(135deg, #0D9488, #0B7A70)' }}>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-          <path d="M7 17V7h6a4 4 0 0 1 0 8H7" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
-          <path d="M7 12h5" stroke="white" strokeWidth="2.2" strokeLinecap="round"/>
-        </svg>
+        <FlipperMark size={20} />
       </div>
       {!collapsed && (
         <div className="overflow-hidden whitespace-nowrap">
@@ -201,7 +217,7 @@ export default function Sidebar({ role, currentPage, onNavigate, onLogout }: Sid
             style={{ background: 'linear-gradient(135deg, #0D9488, #0B7A70)' }}
             title="Expandir menu"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M4 6h16M4 12h10M4 18h16"/></svg>
+            <FlipperMark size={18} />
           </button>
         ) : (
           <>

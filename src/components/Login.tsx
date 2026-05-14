@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { FlipperMark } from './Sidebar';
 
 type Role = 'financeiro' | 'expositor';
 
@@ -24,8 +25,8 @@ export default function Login({ onLogin }: LoginProps) {
         className="card w-[440px] max-w-[90vw] p-10"
       >
         <div className="flex items-center gap-3 mb-8">
-          <div className="w-10 h-10 rounded-xl bg-[#0D9488] flex items-center justify-center">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #0D9488, #0B7A70)' }}>
+            <FlipperMark size={22} />
           </div>
           <div>
             <h1 className="font-heading text-[22px] text-[--text-primary]">Flipper</h1>
