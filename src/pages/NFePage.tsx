@@ -47,7 +47,7 @@ export default function NFePage({ unitFilter = 'Todas' }: NFePageProps) {
   return (
     <div className="content-max space-y-6">
       {/* KPI strip */}
-      <div className="grid gap-5" style={{ gridTemplateColumns: "repeat(3, minmax(0, 1fr))" }}>
+      <div className="kpi-grid-3">
         {[
           { label: 'NF-ES CONFIRMADAS', value: confirmadas, isCurrency: false },
           { label: 'NF-ES PENDENTES', value: pendentes, isCurrency: false },
@@ -94,7 +94,8 @@ export default function NFePage({ unitFilter = 'Todas' }: NFePageProps) {
         </div>
         <p className="font-caption text-[--text-tertiary] mb-4">Emitidas pelas marcas parceiras, referentes ao consignado</p>
 
-        <table className="w-full">
+        <div className="table-scroll">
+        <table className="w-full" style={{ minWidth: 560 }}>
           <thead>
             <tr className="border-b border-[--border]">
               {['NÚMERO', 'LOJA PARCEIRA', 'REFERÊNCIA', 'VALOR', 'RECEBIDA EM', 'STATUS', ''].map(h => (
@@ -138,6 +139,7 @@ export default function NFePage({ unitFilter = 'Todas' }: NFePageProps) {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
 
       {/* NF-es emitidas */}
@@ -154,7 +156,8 @@ export default function NFePage({ unitFilter = 'Todas' }: NFePageProps) {
         </div>
         <p className="font-caption text-[--text-tertiary] mb-4">Emitidas pela loja, referentes ao repasse pago</p>
 
-        <table className="w-full">
+        <div className="table-scroll">
+        <table className="w-full" style={{ minWidth: 500 }}>
           <thead>
             <tr className="border-b border-[--border]">
               {['NÚMERO', 'LOJA PARCEIRA', 'TIPO', 'VALOR', 'EMITIDA EM', 'STATUS'].map(h => (
@@ -180,6 +183,7 @@ export default function NFePage({ unitFilter = 'Todas' }: NFePageProps) {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
 
       {/* Emitir NF-e modal */}

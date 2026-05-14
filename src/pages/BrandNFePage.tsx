@@ -127,6 +127,7 @@ export default function BrandNFePage() {
       <div className="card p-6">
         <h3 className="font-subheading text-[16px] text-[--text-primary] mb-1">NF-es enviadas</h3>
         <p className="font-caption text-[--text-tertiary] mb-5">Emitidas por você, referentes à sua mensalidade</p>
+        <div className="table-scroll">
         <table className="w-full">
           <thead>
             <tr className="border-b border-[--border]">
@@ -163,12 +164,14 @@ export default function BrandNFePage() {
             })}
           </tbody>
         </table>
+        </div>
       </div>
 
       {/* NF-es recebidas (repasses) */}
       <div className="card p-6">
         <h3 className="font-subheading text-[16px] text-[--text-primary] mb-1">NF-es recebidas</h3>
         <p className="font-caption text-[--text-tertiary] mb-5">Emitidas pela loja, referentes aos seus repasses</p>
+        <div className="table-scroll">
         <table className="w-full">
           <thead>
             <tr className="border-b border-[--border]">
@@ -205,6 +208,7 @@ export default function BrandNFePage() {
             })}
           </tbody>
         </table>
+        </div>
       </div>
 
       {/* Guide link — replaces "Preciso de ajuda" */}

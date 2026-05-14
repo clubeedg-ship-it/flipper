@@ -51,7 +51,7 @@ export default function BrandVendasPage({ onNavigate }: BrandVendasPageProps) {
       </div>
 
       {/* KPIs */}
-      <div className="grid gap-5" style={{ gridTemplateColumns: "repeat(3, minmax(0, 1fr))" }}>
+      <div className="kpi-grid-3">
         {[
           { label: 'TOTAL VENDIDO', value: totalValue, sub: `${filtered.length} vendas` },
           { label: 'ITENS VENDIDOS', value: totalItems, sub: `Em ${filter === 'Todas' ? 'todas as unidades' : filter}`, raw: true },
@@ -102,7 +102,8 @@ export default function BrandVendasPage({ onNavigate }: BrandVendasPageProps) {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
           >
-            <table className="w-full">
+            <div className="table-scroll">
+            <table className="w-full" style={{ minWidth: 480 }}>
               <thead>
                 <tr className="border-b border-[--border]">
                   {['DATA', 'PRODUTO', 'SKU', 'QTD', 'VALOR', 'LOJA'].map(h => (
@@ -123,6 +124,7 @@ export default function BrandVendasPage({ onNavigate }: BrandVendasPageProps) {
                 ))}
               </tbody>
             </table>
+            </div>
           </motion.div>
         </AnimatePresence>
         <div className="flex items-center justify-between mt-4 pt-4 border-t border-[--border]">

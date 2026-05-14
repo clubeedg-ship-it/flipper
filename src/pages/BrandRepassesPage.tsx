@@ -45,7 +45,7 @@ export default function BrandRepassesPage() {
   return (
     <div className="content-max space-y-6">
       {/* KPIs */}
-      <div className="grid gap-5" style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))" }}>
+      <div className="kpi-grid-2">
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -120,6 +120,7 @@ export default function BrandRepassesPage() {
             {exporting ? 'Exportando...' : 'Exportar CSV'}
           </button>
         </div>
+        <div className="table-scroll">
         <table className="w-full">
           <thead>
             <tr className="border-b border-[--border]">
@@ -144,6 +145,7 @@ export default function BrandRepassesPage() {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
 
       {/* Detail modal */}
