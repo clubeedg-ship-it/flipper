@@ -1,7 +1,8 @@
 import { useState, useMemo } from 'react';
-import { storeSales } from '../data/sales';
+import { storeSales, type StoreSale } from '../data/sales';
 import type { UnitFilter } from '../data/brands';
 import Badge from '../components/ui/Badge';
+import VendaDetailModal from '../components/ui/VendaDetailModal';
 
 type TypeFilter = 'Todas' | 'Vendas' | 'Devoluções';
 
@@ -9,10 +10,14 @@ interface VendasPageProps {
   unitFilter?: UnitFilter;
 }
 
+const periods = ['Junho 2025', 'Maio 2025', 'Abril 2025', 'Março 2025'];
+
 export default function VendasPage({ unitFilter = 'Todas' }: VendasPageProps) {
   const [brandFilter, setBrandFilter] = useState('Todas');
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('Todas');
   const [syncing, setSyncing] = useState(false);
+  const [period, setPeriod] = useState(periods[0]);
+  const [selectedSale, setSelectedSale] = useState<StoreSale | null>(null);
 
   const brandNames = useMemo(() => {
     const names = [...new Set(storeSales.map(s => s.brand))];
@@ -41,6 +46,43 @@ export default function VendasPage({ unitFilter = 'Todas' }: VendasPageProps) {
 
   return (
     <div className="content-max space-y-6">
+      {/* Period nav */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => {
+              const i = periods.indexOf(period);
+              if (i < periods.length - 1) setPeriod(periods[i + 1]);
+            }}
+            disabled={period === periods[periods.length - 1]}
+            className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer border border-[--border] text-[--text-secondary] hover:bg-[--bg-primary] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            style={{ background: 'var(--bg-content-solid)' }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <select
+            value={period}
+            onChange={e => setPeriod(e.target.value)}
+            className="px-3 py-1.5 border border-[--border] rounded-lg font-body text-[13px] text-[--text-primary] cursor-pointer"
+            style={{ background: 'var(--bg-content-solid)' }}
+          >
+            {periods.map(p => <option key={p}>{p}</option>)}
+          </select>
+          <button
+            onClick={() => {
+              const i = periods.indexOf(period);
+              if (i > 0) setPeriod(periods[i - 1]);
+            }}
+            disabled={period === periods[0]}
+            className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer border border-[--border] text-[--text-secondary] hover:bg-[--bg-primary] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            style={{ background: 'var(--bg-content-solid)' }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+        <p className="font-caption text-[--text-tertiary]">{filtered.length} registros · {period}</p>
+      </div>
+
       {/* KPIs */}
       <div className="grid gap-5" style={{ gridTemplateColumns: "repeat(4, minmax(0, 1fr))" }}>
         {[
@@ -104,7 +146,7 @@ export default function VendasPage({ unitFilter = 'Todas' }: VendasPageProps) {
       {/* Sales table */}
       <div className="card p-6">
         <div className="flex items-center justify-between mb-5">
-          <h3 className="font-subheading text-[16px] text-[--text-primary]">Vendas — Junho 2025</h3>
+          <h3 className="font-subheading text-[16px] text-[--text-primary]">Vendas — {period}</h3>
           <button className="px-3 py-1.5 border border-[--border] rounded-lg font-label text-[12px] text-[--text-secondary] hover:bg-[--bg-primary] cursor-pointer bg-[--bg-content] transition-colors">Exportar CSV</button>
         </div>
         <table className="w-full">
@@ -119,7 +161,8 @@ export default function VendasPage({ unitFilter = 'Todas' }: VendasPageProps) {
             {filtered.map((s, i) => (
               <tr
                 key={`${s.sku}-${i}`}
-                className={`border-b border-[--border] last:border-b-0 ${s.isReturn ? 'opacity-70' : ''}`}
+                onClick={() => setSelectedSale(s)}
+                className={`border-b border-[--border] last:border-b-0 cursor-pointer hover:bg-[--bg-primary]/50 transition-colors ${s.isReturn ? 'opacity-70' : ''}`}
               >
                 <td className="py-3.5 pr-4 font-body text-[13px] text-[--text-secondary]">{s.date}</td>
                 <td className="py-3.5 pr-4">
@@ -153,6 +196,8 @@ export default function VendasPage({ unitFilter = 'Todas' }: VendasPageProps) {
           {/* Total moved to KPIs at top */}
         </table>
       </div>
+
+      <VendaDetailModal sale={selectedSale} onClose={() => setSelectedSale(null)} />
     </div>
   );
 }
