@@ -152,7 +152,7 @@ export default function BrandMensalidadePage({ onNavigate }: BrandMensalidadePag
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
                 {showPixPanel ? 'Ocultar Pix' : 'Gerar Pix / Copia-e-cola'}
               </button>
-              <button className="flex-1 px-4 py-3 rounded-lg font-label text-[13px] border border-[--border] hover:bg-[--bg-primary] transition-colors cursor-pointer bg-white text-[--text-primary] flex items-center justify-center gap-2">
+              <button className="flex-1 px-4 py-3 rounded-lg font-label text-[13px] border border-[--border] hover:bg-[--bg-primary] transition-colors cursor-pointer bg-[--bg-content-solid] text-[--text-primary] flex items-center justify-center gap-2">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="6" width="18" height="12" rx="1"/><line x1="7" y1="6" x2="7" y2="18"/><line x1="11" y1="6" x2="11" y2="18"/><line x1="15" y1="6" x2="15" y2="18"/></svg>
                 Gerar boleto bancário
               </button>
@@ -179,7 +179,7 @@ export default function BrandMensalidadePage({ onNavigate }: BrandMensalidadePag
                   </div>
                   <div>
                     <p className="font-label text-[11px] text-[--text-tertiary] uppercase tracking-[1px] mb-1">PIX COPIA-E-COLA</p>
-                    <code className="font-mono text-[11px] text-[--text-primary] block break-all bg-white border border-[--border] rounded-lg p-2 mb-2">
+                    <code className="font-mono text-[11px] text-[--text-primary] block break-all bg-[--bg-content-solid] border border-[--border] rounded-lg p-2 mb-2">
                       00020126580014br.gov.bcb.pix0136fbb...e2152040000530398654041800.0...
                     </code>
                     <p className="font-caption text-[--text-tertiary]">
@@ -293,7 +293,7 @@ export default function BrandMensalidadePage({ onNavigate }: BrandMensalidadePag
         </div>
         <div className="mt-5 pt-5 border-t border-[--border] flex items-center justify-between">
           <p className="font-caption text-[--text-tertiary]">Dúvidas sobre o contrato? Fale com a loja.</p>
-          <button className="px-4 py-2 rounded-lg font-label text-[12px] border border-[--border] hover:bg-[--bg-primary] transition-colors cursor-pointer bg-white text-[--text-primary]">
+          <button className="px-4 py-2 rounded-lg font-label text-[12px] border border-[--border] hover:bg-[--bg-primary] transition-colors cursor-pointer bg-[--bg-content-solid] text-[--text-primary]">
             Baixar contrato (PDF)
           </button>
         </div>

@@ -115,7 +115,7 @@ export default function BrandHomePage({ onNavigate }: BrandHomePageProps) {
             </div>
             <button
               onClick={() => onNavigate?.('brand-repasses')}
-              className="mt-4 px-4 py-2 rounded-lg font-label text-[13px] border border-[--border] hover:bg-[--bg-primary] transition-colors cursor-pointer bg-white text-[--text-primary] text-left"
+              className="mt-4 px-4 py-2 rounded-lg font-label text-[13px] border border-[--border] hover:bg-[--bg-primary] transition-colors cursor-pointer bg-[--bg-content-solid] text-[--text-primary] text-left"
             >
               Ver detalhes do repasse →
             </button>

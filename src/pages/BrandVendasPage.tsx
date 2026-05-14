@@ -33,7 +33,7 @@ export default function BrandVendasPage({ onNavigate }: BrandVendasPageProps) {
           <select
             value={period}
             onChange={e => setPeriod(e.target.value)}
-            className="px-3 py-1.5 border border-[--border] rounded-lg font-body text-[13px] text-[--text-primary] bg-white cursor-pointer"
+            className="px-3 py-1.5 border border-[--border] rounded-lg font-body text-[13px] text-[--text-primary] bg-[--bg-content-solid] cursor-pointer"
           >
             <option>Junho 2025</option>
             <option>Maio 2025</option>
@@ -44,7 +44,7 @@ export default function BrandVendasPage({ onNavigate }: BrandVendasPageProps) {
         <button
           onClick={handleExport}
           disabled={exporting}
-          className="px-4 py-2 rounded-lg font-label text-[12px] border border-[--border] hover:bg-[--bg-primary] transition-colors cursor-pointer bg-white text-[--text-primary] disabled:opacity-60"
+          className="px-4 py-2 rounded-lg font-label text-[12px] border border-[--border] hover:bg-[--bg-primary] transition-colors cursor-pointer bg-[--bg-content-solid] text-[--text-primary] disabled:opacity-60"
         >
           {exporting ? 'Exportando...' : 'Exportar CSV'}
         </button>

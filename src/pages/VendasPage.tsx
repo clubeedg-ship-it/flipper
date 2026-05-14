@@ -106,7 +106,7 @@ export default function VendasPage({ unitFilter = 'Todas' }: VendasPageProps) {
         <button
           onClick={handleSync}
           disabled={syncing}
-          className="ml-auto px-3 py-1 border border-[--border] rounded-lg font-label text-[12px] text-[--text-secondary] hover:bg-white transition-colors cursor-pointer bg-transparent disabled:opacity-50"
+          className="ml-auto px-3 py-1 border border-[--border] rounded-lg font-label text-[12px] text-[--text-secondary] hover:bg-[--bg-content-solid] transition-colors cursor-pointer bg-transparent disabled:opacity-50"
         >
           {syncing ? 'Sincronizando...' : 'Atualizar sync'}
         </button>

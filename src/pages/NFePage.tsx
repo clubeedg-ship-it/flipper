@@ -197,7 +197,7 @@ export default function NFePage({ unitFilter = 'Todas' }: NFePageProps) {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white rounded-2xl p-8 w-full max-w-md shadow-2xl"
+              className="bg-[--bg-content-solid] rounded-2xl p-8 w-full max-w-md shadow-2xl"
               style={{ border: '1px solid var(--border)' }}
               onClick={e => e.stopPropagation()}
             >
@@ -213,7 +213,7 @@ export default function NFePage({ unitFilter = 'Todas' }: NFePageProps) {
                   <select
                     value={emitirBrand}
                     onChange={e => setEmitirBrand(e.target.value)}
-                    className="w-full px-3 py-2 border border-[--border] rounded-lg font-body text-[14px] text-[--text-primary] bg-white cursor-pointer"
+                    className="w-full px-3 py-2 border border-[--border] rounded-lg font-body text-[14px] text-[--text-primary] bg-[--bg-content-solid] cursor-pointer"
                   >
                     <option value="">Selecione...</option>
                     {brands.filter(b => b.status !== 'neutral' && b.status !== 'danger').map(b => (
@@ -223,7 +223,7 @@ export default function NFePage({ unitFilter = 'Todas' }: NFePageProps) {
                 </div>
                 <div>
                   <label className="font-label text-[11px] text-[--text-tertiary] uppercase tracking-[1px] mb-1.5 block">Período</label>
-                  <select className="w-full px-3 py-2 border border-[--border] rounded-lg font-body text-[14px] text-[--text-primary] bg-white cursor-pointer">
+                  <select className="w-full px-3 py-2 border border-[--border] rounded-lg font-body text-[14px] text-[--text-primary] bg-[--bg-content-solid] cursor-pointer">
                     <option>Junho 2025</option>
                     <option>Maio 2025</option>
                   </select>
@@ -257,7 +257,7 @@ export default function NFePage({ unitFilter = 'Todas' }: NFePageProps) {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white rounded-2xl p-8 w-full max-w-md shadow-2xl"
+              className="bg-[--bg-content-solid] rounded-2xl p-8 w-full max-w-md shadow-2xl"
               style={{ border: '1px solid var(--border)' }}
               onClick={e => e.stopPropagation()}
             >
@@ -290,10 +290,10 @@ export default function NFePage({ unitFilter = 'Todas' }: NFePageProps) {
                 </div>
               </div>
               <div className="flex gap-2">
-                <button className="flex-1 px-4 py-2 rounded-lg font-label text-[13px] border border-[--border] hover:bg-[--bg-primary] transition-colors cursor-pointer bg-white text-[--text-primary]">
+                <button className="flex-1 px-4 py-2 rounded-lg font-label text-[13px] border border-[--border] hover:bg-[--bg-primary] transition-colors cursor-pointer bg-[--bg-content-solid] text-[--text-primary]">
                   Baixar XML
                 </button>
-                <button className="flex-1 px-4 py-2 rounded-lg font-label text-[13px] border border-[--border] hover:bg-[--bg-primary] transition-colors cursor-pointer bg-white text-[--text-primary]">
+                <button className="flex-1 px-4 py-2 rounded-lg font-label text-[13px] border border-[--border] hover:bg-[--bg-primary] transition-colors cursor-pointer bg-[--bg-content-solid] text-[--text-primary]">
                   Baixar DANFE
                 </button>
               </div>

@@ -115,7 +115,7 @@ export default function BrandRepassesPage() {
           <button
             onClick={handleExport}
             disabled={exporting}
-            className="px-4 py-2 rounded-lg font-label text-[12px] border border-[--border] hover:bg-[--bg-primary] transition-colors cursor-pointer bg-white text-[--text-primary] disabled:opacity-60"
+            className="px-4 py-2 rounded-lg font-label text-[12px] border border-[--border] hover:bg-[--bg-primary] transition-colors cursor-pointer bg-[--bg-content-solid] text-[--text-primary] disabled:opacity-60"
           >
             {exporting ? 'Exportando...' : 'Exportar CSV'}
           </button>
@@ -161,7 +161,7 @@ export default function BrandRepassesPage() {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white rounded-2xl p-8 w-full max-w-lg shadow-2xl"
+              className="bg-[--bg-content-solid] rounded-2xl p-8 w-full max-w-lg shadow-2xl"
               style={{ border: '1px solid var(--border)' }}
               onClick={e => e.stopPropagation()}
             >
@@ -212,11 +212,11 @@ export default function BrandRepassesPage() {
                 </div>
               </div>
               <div className="flex gap-2">
-                <button className="flex-1 px-4 py-2 rounded-lg font-label text-[13px] border border-[--border] hover:bg-[--bg-primary] transition-colors cursor-pointer bg-white text-[--text-primary]">
+                <button className="flex-1 px-4 py-2 rounded-lg font-label text-[13px] border border-[--border] hover:bg-[--bg-primary] transition-colors cursor-pointer bg-[--bg-content-solid] text-[--text-primary]">
                   Baixar extrato
                 </button>
                 {selected.statusType === 'success' && (
-                  <button className="flex-1 px-4 py-2 rounded-lg font-label text-[13px] border border-[--border] hover:bg-[--bg-primary] transition-colors cursor-pointer bg-white text-[--text-primary]">
+                  <button className="flex-1 px-4 py-2 rounded-lg font-label text-[13px] border border-[--border] hover:bg-[--bg-primary] transition-colors cursor-pointer bg-[--bg-content-solid] text-[--text-primary]">
                     Baixar comprovante
                   </button>
                 )}

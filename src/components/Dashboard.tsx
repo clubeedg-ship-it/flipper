@@ -253,7 +253,7 @@ export default function Dashboard() {
 
         {/* 2D - Checklist */}
         <SectionTransition>
-          <div className="rounded-2xl border border-[#E5E7EB] bg-white p-8 border-l-4 border-l-[#2563EB]">
+          <div className="rounded-2xl border border-[#E5E7EB] bg-[--bg-content-solid] p-8 border-l-4 border-l-[#2563EB]">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-subheading text-[20px] text-[#111111]">Fechamento · Junho 2025</h3>
               <span className="font-label text-[#6B7280]">{completedCount} de {checklist.length} itens concluídos</span>

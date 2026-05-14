@@ -69,7 +69,7 @@ export default function FechamentoPage({ onNavigate, unitFilter = 'Todas' }: Fec
           <select
             value={period}
             onChange={e => setPeriod(e.target.value)}
-            className="px-3 py-1.5 border border-[--border] rounded-lg font-body text-[13px] text-[--text-primary] bg-white cursor-pointer"
+            className="px-3 py-1.5 border border-[--border] rounded-lg font-body text-[13px] text-[--text-primary] bg-[--bg-content-solid] cursor-pointer"
           >
             <option>Junho 2025</option>
             <option>Maio 2025</option>

@@ -183,7 +183,7 @@ export default function RepassesPage({ onNavigate, unitFilter = 'Todas' }: Repas
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white rounded-2xl p-8 w-full max-w-lg shadow-2xl"
+              className="bg-[--bg-content-solid] rounded-2xl p-8 w-full max-w-lg shadow-2xl"
               style={{ border: '1px solid var(--border)' }}
               onClick={e => e.stopPropagation()}
             >
@@ -243,11 +243,11 @@ export default function RepassesPage({ onNavigate, unitFilter = 'Todas' }: Repas
                   <div className="flex gap-2">
                     <button
                       onClick={handleDownloadExtrato}
-                      className="flex-1 px-4 py-2 rounded-lg font-label text-[13px] border border-[--border] hover:bg-[--bg-primary] transition-colors cursor-pointer bg-white text-[--text-primary]"
+                      className="flex-1 px-4 py-2 rounded-lg font-label text-[13px] border border-[--border] hover:bg-[--bg-primary] transition-colors cursor-pointer bg-[--bg-content-solid] text-[--text-primary]"
                     >
                       {downloadingExtrato ? 'Baixando...' : 'Baixar extrato'}
                     </button>
-                    <button className="flex-1 px-4 py-2 rounded-lg font-label text-[13px] border border-[--border] hover:bg-[--bg-primary] transition-colors cursor-pointer bg-white text-[--text-primary]">
+                    <button className="flex-1 px-4 py-2 rounded-lg font-label text-[13px] border border-[--border] hover:bg-[--bg-primary] transition-colors cursor-pointer bg-[--bg-content-solid] text-[--text-primary]">
                       Baixar comprovante
                     </button>
                   </div>
@@ -305,7 +305,7 @@ function PendenteForm({ selected, onConfirm, onDownload, downloading }: {
             placeholder="dd/mm/aaaa"
             value={date}
             onChange={e => setDate(e.target.value)}
-            className="w-full px-3 py-2 border border-[--border] rounded-lg font-body text-[14px] text-[--text-primary] bg-white"
+            className="w-full px-3 py-2 border border-[--border] rounded-lg font-body text-[14px] text-[--text-primary] bg-[--bg-content-solid]"
             style={{ outline: 'none' }}
           />
         </div>
@@ -314,7 +314,7 @@ function PendenteForm({ selected, onConfirm, onDownload, downloading }: {
           <select
             value={method}
             onChange={e => setMethod(e.target.value)}
-            className="w-full px-3 py-2 border border-[--border] rounded-lg font-body text-[14px] text-[--text-primary] bg-white cursor-pointer"
+            className="w-full px-3 py-2 border border-[--border] rounded-lg font-body text-[14px] text-[--text-primary] bg-[--bg-content-solid] cursor-pointer"
           >
             <option>Pix</option>
             <option>TED</option>
@@ -340,7 +340,7 @@ function PendenteForm({ selected, onConfirm, onDownload, downloading }: {
         </button>
         <button
           onClick={onDownload}
-          className="px-4 py-2.5 rounded-lg font-label text-[13px] border border-[--border] hover:bg-[--bg-primary] transition-colors cursor-pointer bg-white text-[--text-primary]"
+          className="px-4 py-2.5 rounded-lg font-label text-[13px] border border-[--border] hover:bg-[--bg-primary] transition-colors cursor-pointer bg-[--bg-content-solid] text-[--text-primary]"
         >
           {downloading ? 'Baixando...' : 'Baixar extrato'}
         </button>

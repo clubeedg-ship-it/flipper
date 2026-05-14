@@ -92,7 +92,7 @@ export default function BrandProfileDrawer({ brandName, onClose }: BrandProfileD
                 {brand.status !== 'success' && brand.status !== 'neutral' && (
                   <button
                     onClick={() => setActionDone('notificar')}
-                    className="flex-1 px-3 py-2 rounded-lg font-label text-[12px] border transition-colors cursor-pointer bg-white text-[--text-primary]"
+                    className="flex-1 px-3 py-2 rounded-lg font-label text-[12px] border transition-colors cursor-pointer bg-[--bg-content-solid] text-[--text-primary]"
                     style={{ borderColor: '#F59E0B' }}
                   >
                     {actionDone === 'notificar' ? 'Notificada' : 'Notificar'}
