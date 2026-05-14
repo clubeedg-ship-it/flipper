@@ -137,58 +137,66 @@ export default function App() {
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar role={role} currentPage={currentPage} onNavigate={handleNavigate} onLogout={switchRole} />
-      <div className="flex-1 flex flex-col min-w-0">
-        <header className="h-14 border-b border-[--border] bg-[--bg-content] flex items-center justify-between px-8 shrink-0">
-          <h1 className="font-heading text-[17px] text-[--text-primary]">{pageLabels[currentPage] || ''}</h1>
-          <div className="flex items-center gap-3">
-            <div ref={unitRef} className="relative">
-              <button
-                onClick={() => setUnitOpen(!unitOpen)}
-                className="border border-[--border] rounded-lg px-3 py-1.5 font-label text-[12px] text-[--text-secondary] flex items-center gap-1.5 cursor-pointer bg-[--bg-content] hover:bg-[--bg-primary] transition-colors"
-              >
-                {unitLabels[unitFilter]}
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`transition-transform duration-150 ${unitOpen ? 'rotate-180' : ''}`}><polyline points="6 9 12 15 18 9"/></svg>
-              </button>
-              <AnimatePresence>
-                {unitOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -4 }}
-                    transition={{ duration: 0.12 }}
-                    className="absolute right-0 top-full mt-1 bg-[--bg-content] border border-[--border] rounded-lg shadow-lg overflow-hidden z-50"
-                    style={{ minWidth: 180 }}
-                  >
-                    {(['Todas', 'SP', 'RJ'] as UnitFilter[]).map(u => (
-                      <button
-                        key={u}
-                        onClick={() => { setUnitFilter(u); setUnitOpen(false); }}
-                        className={`w-full text-left px-4 py-2.5 font-label text-[13px] transition-colors cursor-pointer border-none ${
-                          unitFilter === u ? 'bg-[--accent-subtle] text-[--accent]' : 'bg-transparent text-[--text-secondary] hover:bg-[--bg-primary]'
-                        }`}
-                      >
-                        {unitLabels[u]}
-                        {unitFilter === u && (
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="inline ml-2"><polyline points="20 6 9 17 4 12"/></svg>
-                        )}
-                      </button>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
+      <div className="flex-1 flex flex-col min-w-0" style={{ padding: '12px 12px 12px 0' }}>
+        <div className="flex-1 flex flex-col min-w-0 overflow-hidden" style={{ borderRadius: 'var(--radius-xl)', background: 'var(--bg-content)', backdropFilter: 'blur(var(--blur))', WebkitBackdropFilter: 'blur(var(--blur))', border: '1px solid var(--border-glass)', boxShadow: 'var(--shadow-glass)' }}>
+          <header className="h-14 flex items-center justify-between px-8 shrink-0" style={{ borderBottom: '1px solid var(--border)' }}>
+            <h1 className="font-heading text-[17px] text-[--text-primary]">{pageLabels[currentPage] || ''}</h1>
+            <div className="flex items-center gap-3">
+              <div ref={unitRef} className="relative">
+                <button
+                  onClick={() => setUnitOpen(!unitOpen)}
+                  className="rounded-xl px-3 py-1.5 font-label text-[12px] text-[--text-secondary] flex items-center gap-1.5 cursor-pointer transition-colors border-none"
+                  style={{ background: 'rgba(0,0,0,0.04)' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.07)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.04)')}
+                >
+                  {unitLabels[unitFilter]}
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`transition-transform duration-150 ${unitOpen ? 'rotate-180' : ''}`}><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <AnimatePresence>
+                  {unitOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -4 }}
+                      transition={{ duration: 0.12 }}
+                      className="absolute right-0 top-full mt-1 rounded-xl overflow-hidden z-50 glass-surface"
+                      style={{ minWidth: 180 }}
+                    >
+                      {(['Todas', 'SP', 'RJ'] as UnitFilter[]).map(u => (
+                        <button
+                          key={u}
+                          onClick={() => { setUnitFilter(u); setUnitOpen(false); }}
+                          className={`w-full text-left px-4 py-2.5 font-label text-[13px] transition-colors cursor-pointer border-none ${
+                            unitFilter === u ? 'text-[--accent]' : 'text-[--text-secondary]'
+                          }`}
+                          style={{ background: unitFilter === u ? 'var(--accent-subtle)' : 'transparent' }}
+                          onMouseEnter={e => { if (unitFilter !== u) e.currentTarget.style.background = 'var(--bg-glass-hover)'; }}
+                          onMouseLeave={e => { if (unitFilter !== u) e.currentTarget.style.background = 'transparent'; }}
+                        >
+                          {unitLabels[u]}
+                          {unitFilter === u && (
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="inline ml-2"><polyline points="20 6 9 17 4 12"/></svg>
+                          )}
+                        </button>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
-          </div>
-        </header>
+          </header>
 
-        <main className="flex-1 overflow-y-auto p-8" style={{ background: 'var(--bg-primary)' }}>
-          <Suspense fallback={<div className="flex items-center justify-center h-64 text-[--text-tertiary] font-label">Carregando...</div>}>
-            <AnimatePresence mode="wait">
-              <PageWrapper key={currentPage}>
-                {renderPage(currentPage, handleNavigate, unitFilter)}
-              </PageWrapper>
-            </AnimatePresence>
-          </Suspense>
-        </main>
+          <main className="flex-1 overflow-y-auto p-8">
+            <Suspense fallback={<div className="flex items-center justify-center h-64 text-[--text-tertiary] font-label">Carregando...</div>}>
+              <AnimatePresence mode="wait">
+                <PageWrapper key={currentPage}>
+                  {renderPage(currentPage, handleNavigate, unitFilter)}
+                </PageWrapper>
+              </AnimatePresence>
+            </Suspense>
+          </main>
+        </div>
       </div>
     </div>
   );
