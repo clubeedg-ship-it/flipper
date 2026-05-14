@@ -87,19 +87,13 @@ export default function BrandProfileDrawer({ brandName, onClose }: BrandProfileD
                 >
                   {actionDone === 'repasse' ? 'Repasse registrado' : 'Registrar repasse'}
                 </button>
-                <button
-                  onClick={() => setActionDone('relatorio')}
-                  className="flex-1 px-3 py-2 rounded-lg font-label text-[12px] border border-[--border] hover:bg-[--bg-primary] transition-colors cursor-pointer bg-white text-[--text-primary]"
-                >
-                  {actionDone === 'relatorio' ? 'Enviado' : 'Enviar relatório'}
-                </button>
                 {brand.status !== 'success' && brand.status !== 'neutral' && (
                   <button
                     onClick={() => setActionDone('notificar')}
-                    className="px-3 py-2 rounded-lg font-label text-[12px] border transition-colors cursor-pointer bg-white text-[--text-primary]"
+                    className="flex-1 px-3 py-2 rounded-lg font-label text-[12px] border transition-colors cursor-pointer bg-white text-[--text-primary]"
                     style={{ borderColor: '#F59E0B' }}
                   >
-                    {actionDone === 'notificar' ? 'Notificado' : 'Notificar'}
+                    {actionDone === 'notificar' ? 'Notificada' : 'Notificar'}
                   </button>
                 )}
               </div>
@@ -109,7 +103,6 @@ export default function BrandProfileDrawer({ brandName, onClose }: BrandProfileD
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
                   <span>
                     {actionDone === 'repasse' && `Repasse de ${brand.name} registrado com sucesso.`}
-                    {actionDone === 'relatorio' && `Relatório enviado por e-mail para ${brand.name}.`}
                     {actionDone === 'notificar' && `Notificação enviada para ${brand.name}.`}
                   </span>
                 </div>
