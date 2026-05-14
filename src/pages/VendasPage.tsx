@@ -29,7 +29,6 @@ export default function VendasPage({ unitFilter = 'Todas' }: VendasPageProps) {
   }, [unitFilter, brandFilter, typeFilter]);
 
   const totalCliente = filtered.reduce((s, r) => s + r.value, 0);
-  const totalLoja = filtered.reduce((s, r) => s + r.ficaLoja, 0);
   const totalRepasse = filtered.reduce((s, r) => s + r.repasse, 0);
 
   const handleSync = () => {
