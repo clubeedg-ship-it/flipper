@@ -7,6 +7,6 @@ export default defineConfig({
   server: {
     port: 3005,
     host: '0.0.0.0',
-    allowedHosts: ['flipper.abbamarkt.nl', 'localhost'],
+    allowedHosts: ['flipper.abbamarkt.nl', 'flipper.oopuo.com', 'localhost'],
   },
 })
