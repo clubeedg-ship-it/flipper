@@ -2,6 +2,8 @@ import express from 'express';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { chat } from './server/chat.js';
+import { logExchange } from './server/observability.js';
+import adminRouter from './server/admin.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -9,6 +11,9 @@ const PORT = process.env.PORT || 3005;
 
 app.use(express.json());
 app.use(express.static(join(__dirname, 'dist')));
+
+// Admin panel + API
+app.use(adminRouter);
 
 // ---------------------------------------------------------------------------
 // POST /api/chat
@@ -27,11 +32,15 @@ app.post('/api/chat', async (req, res) => {
     ? sessionId.trim()
     : `session-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
+  const t0 = Date.now();
+
   try {
     const reply = await chat(sid, message.trim());
+    logExchange({ sessionId: sid, message: message.trim(), reply, latencyMs: Date.now() - t0 });
     res.json({ reply, sessionId: sid });
   } catch (err) {
     const detail = err instanceof Error ? err.message : String(err);
+    logExchange({ sessionId: sid, message: message.trim(), reply: '', latencyMs: Date.now() - t0, error: detail });
     console.error('[/api/chat] Erro ao processar mensagem:', detail);
     res.status(502).json({
       error: 'Não foi possível obter resposta do assistente.',
