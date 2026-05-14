@@ -468,6 +468,10 @@ body {
   flex-direction: column;
 }
 
+.chat-resize-handle:hover > div {
+  background: var(--accent) !important;
+}
+
 .chat-mobile-backdrop {
   display: none;
 }
@@ -481,6 +485,10 @@ body {
     height: 100% !important;
     z-index: 50;
     padding: 6px !important;
+  }
+
+  .chat-resize-handle {
+    display: none !important;
   }
 
   .chat-mobile-backdrop {

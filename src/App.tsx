@@ -101,6 +101,10 @@ export default function App() {
   const [unitOpen, setUnitOpen] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
+  const [chatWidth, setChatWidth] = useState(360);
+  const chatDragging = useRef(false);
+  const chatStartX = useRef(0);
+  const chatStartW = useRef(360);
   const unitRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -116,6 +120,27 @@ export default function App() {
   useEffect(() => {
     setMobileSidebarOpen(false);
   }, [currentPage]);
+
+  useEffect(() => {
+    const onMove = (e: MouseEvent) => {
+      if (!chatDragging.current) return;
+      const delta = chatStartX.current - e.clientX;
+      const newW = Math.min(Math.max(chatStartW.current + delta, 280), 700);
+      setChatWidth(newW);
+    };
+    const onUp = () => { chatDragging.current = false; document.body.style.cursor = ''; document.body.style.userSelect = ''; };
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+    return () => { window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp); };
+  }, []);
+
+  const startChatResize = (e: React.MouseEvent) => {
+    chatDragging.current = true;
+    chatStartX.current = e.clientX;
+    chatStartW.current = chatWidth;
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+  };
 
   const handleSetupComplete = (config: { language: string; role: Role }) => {
     const page = config.role === 'financeiro' ? 'dashboard' : 'brand-home';
@@ -291,11 +316,10 @@ export default function App() {
         </div>
       </div>
 
-      {/* Chat right sidebar — desktop: inline flex, mobile: overlay from right */}
+      {/* Chat right sidebar — desktop: resizable inline, mobile: overlay */}
       <AnimatePresence>
         {chatOpen && (
           <>
-            {/* Mobile backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -306,13 +330,41 @@ export default function App() {
             />
             <motion.div
               initial={{ width: 0, opacity: 0 }}
-              animate={{ width: 360, opacity: 1 }}
+              animate={{ width: chatWidth, opacity: 1 }}
               exit={{ width: 0, opacity: 0 }}
               transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
               className="chat-sidebar h-full shrink-0 overflow-hidden"
-              style={{ padding: '12px 12px 12px 4px' }}
+              style={{ padding: '12px 12px 12px 0', position: 'relative' }}
             >
-              <ChatPanel onClose={() => setChatOpen(false)} />
+              {/* Resize handle */}
+              <div
+                onMouseDown={startChatResize}
+                className="chat-resize-handle"
+                style={{
+                  position: 'absolute',
+                  left: 0,
+                  top: 0,
+                  bottom: 0,
+                  width: 6,
+                  cursor: 'col-resize',
+                  zIndex: 10,
+                }}
+              >
+                <div style={{
+                  position: 'absolute',
+                  left: 2,
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  width: 3,
+                  height: 32,
+                  borderRadius: 2,
+                  background: 'var(--border)',
+                  transition: 'background 0.15s',
+                }} />
+              </div>
+              <div style={{ marginLeft: 6, height: '100%' }}>
+                <ChatPanel onClose={() => setChatOpen(false)} />
+              </div>
             </motion.div>
           </>
         )}
