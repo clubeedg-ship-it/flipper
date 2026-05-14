@@ -43,11 +43,34 @@ export default function DashboardPage({ onNavigate, unitFilter = 'Todas' }: Dash
     const mensalidadesTotal = filteredBrands.reduce((s, b) => s + b.drawer.contract.mensalidade, 0);
     const mensalidadesAberto = filteredBrands.filter(b => b.mensalidadeStatus !== 'success' && b.mensalidadeStatus !== 'neutral').reduce((s, b) => s + b.drawer.contract.mensalidade, 0);
     const pendentes = filteredBrands.filter(b => b.mensalidadeStatus !== 'success' && b.mensalidadeStatus !== 'neutral').length;
+
+    // Margem loja = retido em vendas (por split contratual) + mensalidades confirmadas
+    const retidoVendas = filteredBrands.reduce((s, b) => {
+      const split = b.drawer.contract.split; // e.g. "50/50", "45/55"
+      const lojaPct = split.includes('/') ? Number(split.split('/')[0]) / 100 : 0.5;
+      return s + Math.round(b.vendasJun * lojaPct);
+    }, 0);
+    const mensalidadesConfirmadas = filteredBrands
+      .filter(b => b.mensalidadeStatus === 'success')
+      .reduce((s, b) => s + b.drawer.contract.mensalidade, 0);
+    const margemLoja = retidoVendas + mensalidadesConfirmadas;
+
+    // Previous-month estimate: derive loja's retained portion from history (Mai/2025)
+    const previousRetido = filteredBrands.reduce((s, b) => {
+      const last = b.drawer.history[0];
+      const split = b.drawer.contract.split;
+      const lojaPct = split.includes('/') ? Number(split.split('/')[0]) / 100 : 0.5;
+      return s + (last ? Math.round((last.value / (1 - lojaPct)) * lojaPct) : 0);
+    }, 0);
+    const previousMargem = previousRetido + mensalidadesTotal;
+    const margemDelta = previousMargem > 0 ? ((margemLoja - previousMargem) / previousMargem) * 100 : 0;
+    const deltaSign = margemDelta >= 0 ? '+' : '';
+
     return [
       { label: 'Vendas brutas', value: vendasBrutas, variation: '+12% vs mai', variationType: 'success' as const, detail: `${filteredBrands.length} lojas parceiras` },
       { label: 'Repasse previsto', value: repasseMarcas, variation: `${filteredBrands.filter(b => b.repasseStatus === 'success').length} de ${filteredBrands.length} pagos`, variationType: 'neutral' as const, detail: `Dia 20/07/2025` },
       { label: 'Mensalidades', value: mensalidadesTotal, variation: mensalidadesAberto > 0 ? `R$ ${mensalidadesAberto.toLocaleString('pt-BR')} em aberto` : undefined, variationType: 'warning' as const, detail: pendentes > 0 ? `${pendentes} pendentes` : 'Todas em dia' },
-      { label: 'Margem loja', value: vendasBrutas - repasseMarcas, variation: vendasBrutas > 0 ? `${((1 - repasseMarcas / vendasBrutas) * 100).toFixed(1)}%` : '—', variationType: 'neutral' as const, detail: 'Após repasses' },
+      { label: 'Margem loja', value: margemLoja, variation: previousMargem > 0 ? `${deltaSign}${margemDelta.toFixed(1)}% vs mai` : '—', variationType: (margemDelta >= 0 ? 'success' : 'warning') as 'success' | 'warning' | 'neutral', detail: `Retido vendas + ${mensalidadesConfirmadas > 0 ? `R$ ${mensalidadesConfirmadas.toLocaleString('pt-BR')} mensalidades` : 'sem mensalidades'}` },
     ];
   }, [filteredBrands]);
 
