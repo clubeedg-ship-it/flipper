@@ -157,7 +157,7 @@ export default function App() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             className="fixed inset-0 z-40"
-            style={{ background: 'rgba(0,0,0,0.35)', backdropFilter: 'blur(2px)' }}
+            style={{ background: 'rgba(0,0,0,0.18)' }}
             onClick={() => setMobileSidebarOpen(false)}
           />
         )}
@@ -185,7 +185,7 @@ export default function App() {
       </div>
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col min-w-0" style={{ padding: '12px 12px 12px 8px' }}>
+      <div className="flex-1 flex flex-col min-w-0 main-area-padding">
         <div
           className="flex-1 flex flex-col min-w-0 overflow-hidden"
           style={{

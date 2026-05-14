@@ -191,7 +191,12 @@ body {
   min-width: 500px;
 }
 
-/* ── Main content padding ── */
+/* ── Main area (outer wrapper around content panel) ── */
+.main-area-padding {
+  padding: 12px 12px 12px 8px;
+}
+
+/* ── Main content padding (inner scrollable area) ── */
 .main-content-padding {
   padding: 32px;
 }
@@ -226,6 +231,10 @@ body {
 
   .desktop-sidebar {
     display: none;
+  }
+
+  .main-area-padding {
+    padding: 6px;
   }
 
   .main-content-padding {

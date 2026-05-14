@@ -196,9 +196,10 @@ export default function Sidebar({ role, currentPage, onNavigate, onLogout }: Sid
     <motion.div
       animate={{ width: collapsed ? 68 : 240 }}
       transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-      className="h-full flex flex-col shrink-0 overflow-hidden"
+      className="flex flex-col shrink-0 overflow-hidden"
       style={{
         width: sidebarWidth,
+        height: 'calc(100% - 2 * var(--sidebar-gap))',
         margin: 'var(--sidebar-gap)',
         borderRadius: 'var(--radius-xl)',
         background: 'var(--bg-sidebar)',
