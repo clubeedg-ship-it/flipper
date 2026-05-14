@@ -97,7 +97,7 @@ export default function NFePage({ unitFilter = 'Todas' }: NFePageProps) {
         <table className="w-full">
           <thead>
             <tr className="border-b border-[--border]">
-              {['LOJA PARCEIRA', 'REFERÊNCIA', 'VALOR', 'RECEBIDA EM', 'STATUS', ''].map(h => (
+              {['NÚMERO', 'LOJA PARCEIRA', 'REFERÊNCIA', 'VALOR', 'RECEBIDA EM', 'STATUS', ''].map(h => (
                 <th key={h} className="text-left font-label text-[11px] text-[--text-tertiary] uppercase tracking-[1px] py-3 pr-4 last:pr-0">{h}</th>
               ))}
             </tr>
@@ -109,6 +109,7 @@ export default function NFePage({ unitFilter = 'Todas' }: NFePageProps) {
                 className={`border-b border-[--border] last:border-b-0 transition-colors ${n.statusType === 'success' ? 'hover:bg-[--bg-primary]/50 cursor-pointer' : ''}`}
                 onClick={() => n.statusType === 'success' && setSelectedNfe(n.brand)}
               >
+                <td className="py-3.5 pr-4 font-mono text-[13px]">{n.numero}</td>
                 <td className="py-3.5 pr-4">
                   <div className="flex items-center gap-3">
                     <span className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold text-white shrink-0" style={{ background: n.brandAvatar.color }}>{n.brandAvatar.letters}</span>
