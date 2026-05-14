@@ -170,7 +170,7 @@ export default function DemoPage({ onNavigate }: { onNavigate?: (page: string) =
         {/* 2. Vendas */}
         <SectionBlock id="vendas" title="Importação de vendas" headline="Vendas entram do PDV automaticamente." navTarget="vendas" onNavigate={onNavigate}>
           <p className="font-body text-[14px] leading-relaxed mb-2" style={{ color: 'var(--text-secondary)' }}>
-            O Flipper importa cada venda do sistema da loja (Bling, Tiny) com produto, SKU, valor e loja de origem.
+            O Flipper importa cada venda do sistema da loja (ERP, PDV) com produto, SKU, valor e loja de origem.
           </p>
           <PreviewFrame label="Vendas — Amira · Junho 2025">
             <table className="w-full" style={{ fontSize: 13 }}>

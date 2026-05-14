@@ -248,7 +248,7 @@ export default function DashboardPage({ onNavigate, unitFilter = 'Todas' }: Dash
             {[
               { title: 'Mensalidade paga', sub: 'Amira · Pix · agora', badge: '+R$ 1.800', badgeColor: 'text-[--success]' },
               { title: 'NF-e emitida', sub: 'Mar e Rio · #4590', badge: 'NF-e', badgeColor: 'text-[--accent]' },
-              { title: 'Vendas importadas', sub: 'Bling · 42 itens · 09:12', badge: 'Sync', badgeColor: 'text-[--text-tertiary]' },
+              { title: 'Vendas importadas', sub: 'ERP · 42 itens · 09:12', badge: 'Sync', badgeColor: 'text-[--text-tertiary]' },
             ].map(a => (
               <div key={a.title} className="flex items-center justify-between py-2">
                 <div>

@@ -6,7 +6,7 @@ import CountUp from '../components/ui/CountUp';
 import Badge from '../components/ui/Badge';
 
 const checklistSteps = [
-  { label: 'Vendas importadas', sub: '42 itens lidos do Bling/PDV', status: 'ok' as const, link: null },
+  { label: 'Vendas importadas', sub: '42 itens lidos do ERP/PDV', status: 'ok' as const, link: null },
   { label: 'SKUs sem loja parceira', sub: '3 itens precisam de vínculo', status: 'block' as const, link: 'produtos' },
   { label: 'Regra 50/50 aplicada', sub: 'Loja e parceira calculadas por item', status: 'ok' as const, link: null },
   { label: 'Dona Sol inadimplente', sub: 'Repasse bloqueado até regularização', status: 'review' as const, link: 'cobrancas' },

@@ -54,7 +54,7 @@ export interface ChecklistItem {
 }
 
 export const checklistItems: ChecklistItem[] = [
-  { id: 1, label: 'Sync de vendas (Bling)', status: 'done', statusText: 'Concluído 01/jul 09:12', interactive: false },
+  { id: 1, label: 'Sync de vendas (ERP)', status: 'done', statusText: 'Concluído 01/jul 09:12', interactive: false },
   { id: 2, label: 'Vincular SKUs pendentes', status: 'warning', statusText: '3 SKUs sem marca', interactive: true },
   { id: 3, label: 'Conferir splits por marca', status: 'done', statusText: 'Concluído 01/jul 10:30', interactive: false },
   { id: 4, label: 'Cobrar mensalidades pendentes', status: 'warning', statusText: '2 pendentes', interactive: true },

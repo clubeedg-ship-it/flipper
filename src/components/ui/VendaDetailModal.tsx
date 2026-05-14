@@ -107,7 +107,7 @@ export default function VendaDetailModal({ sale, onClose }: VendaDetailModalProp
                   </div>
                   <div>
                     <p className="font-label text-[11px] text-[--text-tertiary] uppercase tracking-[1px] mb-1">ORIGEM DA IMPORTAÇÃO</p>
-                    <p className="font-body text-[14px] text-[--text-primary]">ERP · Bling</p>
+                    <p className="font-body text-[14px] text-[--text-primary]">ERP · Integração</p>
                   </div>
                 </div>
                 {isBlocked && (
