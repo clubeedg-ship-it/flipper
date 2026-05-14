@@ -33,6 +33,8 @@ export default function FechamentoPage({ onNavigate, unitFilter = 'Todas' }: Fec
   const [nfeSent, setNfeSent] = useState(false);
   const [reportsSent, setReportsSent] = useState(false);
   const [closed, setClosed] = useState(false);
+  const [period, setPeriod] = useState('Junho 2025');
+  const [rowsEmitted, setRowsEmitted] = useState<string[]>([]);
 
   const filteredClosing = useMemo(() =>
     unitFilter === 'Todas' ? closingBrands : closingBrands.filter(cb => {
@@ -60,6 +62,26 @@ export default function FechamentoPage({ onNavigate, unitFilter = 'Todas' }: Fec
 
   return (
     <div className="content-max space-y-8">
+      {/* Period selector */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="font-label text-[11px] text-[--text-tertiary] uppercase tracking-[1px]">Período</span>
+          <select
+            value={period}
+            onChange={e => setPeriod(e.target.value)}
+            className="px-3 py-1.5 border border-[--border] rounded-lg font-body text-[13px] text-[--text-primary] bg-white cursor-pointer"
+          >
+            <option>Junho 2025</option>
+            <option>Maio 2025</option>
+            <option>Abril 2025</option>
+            <option>Março 2025</option>
+          </select>
+        </div>
+        <p className="font-caption text-[--text-tertiary]">
+          Visualizando: <span className="text-[--text-secondary] font-medium">{period}</span>
+        </p>
+      </div>
+
       {/* Section: Junho 2025 — em andamento */}
       <div>
         <h2 className="font-heading text-[20px] text-[--text-primary] mb-6">Junho 2025 — em andamento</h2>
@@ -171,27 +193,47 @@ export default function FechamentoPage({ onNavigate, unitFilter = 'Todas' }: Fec
           <table className="w-full">
             <thead>
               <tr className="border-b border-[--border]">
-                {['LOJA PARCEIRA', 'VENDIDO CLIENTE', 'FICA LOJA', 'REPASSE', 'NF-E', 'STATUS'].map(h => (
+                {['LOJA PARCEIRA', 'VENDIDO CLIENTE', 'FICA LOJA', 'REPASSE', 'NF-E', 'STATUS', ''].map(h => (
                   <th key={h} className="text-left font-label text-[11px] text-[--text-tertiary] uppercase tracking-[1px] py-3 pr-4 last:pr-0">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {filteredClosing.map(b => (
-                <tr key={b.name} className="border-b border-[--border] last:border-b-0">
-                  <td className="py-3.5 pr-4">
-                    <div>
-                      <span className="font-subheading text-[14px]">{b.name}</span>
-                      {b.statusSub && <p className="font-caption text-[--text-tertiary]">{b.statusSub}</p>}
-                    </div>
-                  </td>
-                  <td className="py-3.5 pr-4 font-mono text-[14px]">R$ {b.vendido.toLocaleString('pt-BR')}</td>
-                  <td className="py-3.5 pr-4 font-mono text-[14px]">R$ {b.ficaLoja.toLocaleString('pt-BR')}</td>
-                  <td className="py-3.5 pr-4 font-mono text-[14px]" style={{ color: '#0D9488' }}>R$ {b.repasse.toLocaleString('pt-BR')}</td>
-                  <td className="py-3.5 pr-4"><Badge status={nfeSent && b.nfeStatus !== 'danger' ? 'success' : b.nfeStatus} label={nfeSent && b.nfeStatus !== 'danger' ? 'Emitida' : b.nfe} showDot /></td>
-                  <td className="py-3.5"><Badge status={b.statusType} label={b.statusLabel} showDot /></td>
-                </tr>
-              ))}
+              {filteredClosing.map(b => {
+                const rowEmitted = rowsEmitted.includes(b.name);
+                const effectiveNfeStatus = (nfeSent || rowEmitted) && b.nfeStatus !== 'danger' ? 'success' : b.nfeStatus;
+                const effectiveNfeLabel = (nfeSent || rowEmitted) && b.nfeStatus !== 'danger' ? 'Emitida' : b.nfe;
+                const canEmit = b.nfeStatus !== 'success' && b.nfeStatus !== 'danger' && !nfeSent && !rowEmitted;
+                return (
+                  <tr key={b.name} className="border-b border-[--border] last:border-b-0">
+                    <td className="py-3.5 pr-4">
+                      <div>
+                        <span className="font-subheading text-[14px]">{b.name}</span>
+                        {b.statusSub && <p className="font-caption text-[--text-tertiary]">{b.statusSub}</p>}
+                      </div>
+                    </td>
+                    <td className="py-3.5 pr-4 font-mono text-[14px]">R$ {b.vendido.toLocaleString('pt-BR')}</td>
+                    <td className="py-3.5 pr-4 font-mono text-[14px]">R$ {b.ficaLoja.toLocaleString('pt-BR')}</td>
+                    <td className="py-3.5 pr-4 font-mono text-[14px]" style={{ color: '#0D9488' }}>R$ {b.repasse.toLocaleString('pt-BR')}</td>
+                    <td className="py-3.5 pr-4"><Badge status={effectiveNfeStatus} label={effectiveNfeLabel} showDot /></td>
+                    <td className="py-3.5 pr-4"><Badge status={b.statusType} label={b.statusLabel} showDot /></td>
+                    <td className="py-3.5 text-right">
+                      {canEmit && (
+                        <button
+                          onClick={() => setRowsEmitted(prev => [...prev, b.name])}
+                          className="px-3 py-1.5 rounded-lg font-label text-[12px] text-white cursor-pointer border-none transition-colors"
+                          style={{ background: '#0D9488' }}
+                        >
+                          Emitir
+                        </button>
+                      )}
+                      {rowEmitted && !nfeSent && (
+                        <span className="font-caption text-[--success]">Emitida</span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
