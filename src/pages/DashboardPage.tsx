@@ -45,7 +45,7 @@ export default function DashboardPage({ onNavigate, unitFilter = 'Todas' }: Dash
     const pendentes = filteredBrands.filter(b => b.mensalidadeStatus !== 'success' && b.mensalidadeStatus !== 'neutral').length;
     return [
       { label: 'Vendas brutas', value: vendasBrutas, variation: '+12% vs mai', variationType: 'success' as const, detail: `${filteredBrands.length} lojas parceiras` },
-      { label: 'Repasse marcas', value: repasseMarcas, detail: `${filteredBrands.filter(b => b.repasseStatus === 'success').length} de ${filteredBrands.length} processados` },
+      { label: 'Repasse previsto', value: repasseMarcas, variation: `${filteredBrands.filter(b => b.repasseStatus === 'success').length} de ${filteredBrands.length} pagos`, variationType: 'neutral' as const, detail: `Dia 20/07/2025` },
       { label: 'Mensalidades', value: mensalidadesTotal, variation: mensalidadesAberto > 0 ? `R$ ${mensalidadesAberto.toLocaleString('pt-BR')} em aberto` : undefined, variationType: 'warning' as const, detail: pendentes > 0 ? `${pendentes} pendentes` : 'Todas em dia' },
       { label: 'Margem loja', value: vendasBrutas - repasseMarcas, variation: vendasBrutas > 0 ? `${((1 - repasseMarcas / vendasBrutas) * 100).toFixed(1)}%` : '—', variationType: 'neutral' as const, detail: 'Após repasses' },
     ];
@@ -82,15 +82,24 @@ export default function DashboardPage({ onNavigate, unitFilter = 'Todas' }: Dash
         ))}
       </div>
 
-      {/* Alert banners */}
-      <div className="space-y-3">
-        <div className="alert-banner alert-banner-warning">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-          <span><strong>2 lojas parceiras</strong> com mensalidade em aberto · Lembretes enviados automaticamente em 01/06</span>
-        </div>
-        <div className="alert-banner alert-banner-warning">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-          <span><strong>3 itens importados sem loja parceira</strong> · vincule os SKUs antes do fechamento para liberar R$ 890 em vendas</span>
+      {/* Unified alert block */}
+      <div className="card p-5" style={{ borderLeft: '3px solid var(--warning)' }}>
+        <h4 className="font-label text-[11px] text-[--warning] uppercase tracking-[1px] mb-3">Pendências críticas</h4>
+        <div className="space-y-2.5">
+          <div className="flex items-center gap-3">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" strokeWidth="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <span className="font-body text-[13px] text-[--text-primary]"><strong>2 lojas parceiras</strong> com mensalidade em aberto — Lua Cheia e Marca D · Lembretes enviados em 01/06</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" strokeWidth="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <span className="font-body text-[13px] text-[--text-primary]"><strong>3 SKUs sem loja parceira</strong> · R$ 890 travados fora do fechamento</span>
+            <button onClick={() => onNavigate?.('produtos')} className="ml-auto px-3 py-1 border border-[--border] rounded-md font-label text-[11px] text-[--text-primary] hover:bg-[--bg-primary] transition-colors cursor-pointer bg-[--bg-content]">Resolver</button>
+          </div>
+          <div className="flex items-center gap-3">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-tertiary)" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            <span className="font-body text-[13px] text-[--text-secondary]"><strong>Terra Mãe</strong> — cadastro incompleto, sem contrato definido</span>
+            <button onClick={() => setSelectedBrand('Terra Mãe')} className="ml-auto px-3 py-1 border border-[--border] rounded-md font-label text-[11px] text-[--text-primary] hover:bg-[--bg-primary] transition-colors cursor-pointer bg-[--bg-content]">Revisar</button>
+          </div>
         </div>
       </div>
 
@@ -155,7 +164,7 @@ export default function DashboardPage({ onNavigate, unitFilter = 'Todas' }: Dash
             </tr>
           </thead>
           <tbody>
-            {filteredBrands.slice(0, 6).map((b) => {
+            {filteredBrands.map((b) => {
               const ini = brandInitials[b.name] || { letters: b.name.slice(0, 2).toUpperCase(), color: '#6B7280' };
               return (
                 <tr key={b.name} className="border-b border-[--border] last:border-b-0 hover:bg-[--bg-primary]/50 transition-colors cursor-pointer" onClick={() => setSelectedBrand(b.name)}>
@@ -183,13 +192,22 @@ export default function DashboardPage({ onNavigate, unitFilter = 'Todas' }: Dash
           <h3 className="font-subheading text-[16px] text-[--text-primary] mb-4">Próximos vencimentos</h3>
           <div className="space-y-3">
             {[
-              { brand: 'Amira', status: 'Pendente', statusType: 'warning' as const, value: 'R$ 2.920', due: 'Vence 20/06/2025 · 47 vendas no extrato' },
-              { brand: 'Lua Cheia', status: 'Pendente', statusType: 'warning' as const, value: 'R$ 2.105', due: 'Vence 20/06/2025 · 31 vendas no extrato' },
+              { type: 'mensalidade', brand: 'Lua Cheia', status: 'Atrasada', statusType: 'danger' as const, value: 'R$ 1.200', due: 'Venceu 05/06/2025' },
+              { type: 'mensalidade', brand: 'Marca D', status: 'Pendente', statusType: 'warning' as const, value: 'R$ 800', due: 'Vence 10/06/2025' },
+              { type: 'repasse', brand: 'Amira', status: 'Pendente', statusType: 'warning' as const, value: 'R$ 2.920', due: 'Vence 20/07 · NF-e recebida', nfe: true },
+              { type: 'repasse', brand: 'Lua Cheia', status: 'Bloqueado', statusType: 'danger' as const, value: 'R$ 2.105', due: 'Vence 20/07 · NF-e pendente', nfe: false },
             ].map(r => (
-              <div key={r.brand} className="flex items-center justify-between py-2">
+              <div key={`${r.type}-${r.brand}`} className="flex items-center justify-between py-2">
                 <div>
-                  <p className="font-body text-[14px] text-[--text-primary]">Repasse — {r.brand}</p>
-                  <p className="font-caption text-[--text-tertiary]">{r.due}</p>
+                  <p className="font-body text-[14px] text-[--text-primary]">{r.type === 'mensalidade' ? 'Mensalidade' : 'Repasse'} — {r.brand}</p>
+                  <p className="font-caption text-[--text-tertiary] flex items-center gap-1.5">
+                    {r.due}
+                    {r.type === 'repasse' && (
+                      <span className={`inline-flex items-center gap-1 ${r.nfe ? 'text-[--success]' : 'text-[--warning]'}`}>
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                      </span>
+                    )}
+                  </p>
                 </div>
                 <div className="flex items-center gap-3">
                   <Badge status={r.statusType} label={r.status} showDot />
