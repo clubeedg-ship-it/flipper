@@ -137,7 +137,7 @@ export default function App() {
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar role={role} currentPage={currentPage} onNavigate={handleNavigate} onLogout={switchRole} />
-      <div className="flex-1 flex flex-col min-w-0" style={{ padding: '12px 12px 12px 0' }}>
+      <div className="flex-1 flex flex-col min-w-0" style={{ padding: '12px 12px 12px 8px' }}>
         <div className="flex-1 flex flex-col min-w-0 overflow-hidden" style={{ borderRadius: 'var(--radius-xl)', background: 'var(--bg-content)', backdropFilter: 'blur(var(--blur))', WebkitBackdropFilter: 'blur(var(--blur))', border: '1px solid var(--border-glass)', boxShadow: 'var(--shadow-glass)' }}>
           <header className="h-14 flex items-center justify-between px-8 shrink-0" style={{ borderBottom: '1px solid var(--border)' }}>
             <h1 className="font-heading text-[17px] text-[--text-primary]">{pageLabels[currentPage] || ''}</h1>

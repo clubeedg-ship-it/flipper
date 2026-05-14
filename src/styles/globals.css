@@ -1,12 +1,12 @@
 @import "tailwindcss";
 
 :root {
-  --bg-primary: #F0EEEB;
-  --bg-content: rgba(255,255,255,0.72);
+  --bg-primary: #E8E6E1;
+  --bg-content: rgba(255,255,255,0.65);
   --bg-content-solid: #FFFFFF;
-  --bg-sidebar: rgba(255,255,255,0.55);
-  --bg-glass: rgba(255,255,255,0.6);
-  --bg-glass-hover: rgba(255,255,255,0.8);
+  --bg-sidebar: rgba(255,255,255,0.42);
+  --bg-glass: rgba(255,255,255,0.5);
+  --bg-glass-hover: rgba(255,255,255,0.7);
   --text-primary: #111111;
   --text-secondary: #555555;
   --text-tertiary: #999999;
@@ -23,10 +23,10 @@
   --border: rgba(0,0,0,0.08);
   --border-warm: rgba(0,0,0,0.06);
   --border-glass: rgba(255,255,255,0.45);
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
   --blur: 20px;
   --shadow-card: 0 1px 2px rgba(0,0,0,0.04), 0 2px 8px rgba(0,0,0,0.03);
   --shadow-hover: 0 4px 16px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
@@ -49,8 +49,9 @@ body {
   height: 100%;
   background: var(--bg-primary);
   background-image:
-    radial-gradient(ellipse 80% 60% at 10% 90%, rgba(13,148,136,0.05) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 50% at 90% 20%, rgba(13,148,136,0.04) 0%, transparent 50%);
+    radial-gradient(ellipse 80% 60% at 5% 95%, rgba(13,148,136,0.09) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 40% at 95% 10%, rgba(13,148,136,0.07) 0%, transparent 40%),
+    radial-gradient(ellipse 40% 30% at 50% 50%, rgba(180,160,140,0.06) 0%, transparent 40%);
   background-attachment: fixed;
 }
 

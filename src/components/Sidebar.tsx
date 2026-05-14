@@ -185,13 +185,12 @@ export default function Sidebar({ role, currentPage, onNavigate, onLogout }: Sid
       style={{
         width: sidebarWidth,
         margin: 'var(--sidebar-gap)',
-        marginRight: 0,
         borderRadius: 'var(--radius-xl)',
         background: 'var(--bg-sidebar)',
-        backdropFilter: 'blur(var(--blur))',
-        WebkitBackdropFilter: 'blur(var(--blur))',
+        backdropFilter: 'blur(24px)',
+        WebkitBackdropFilter: 'blur(24px)',
         border: '1px solid var(--border-glass)',
-        boxShadow: 'var(--shadow-glass)',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)',
       }}
     >
       {/* Logo + collapse toggle */}
@@ -231,7 +230,7 @@ export default function Sidebar({ role, currentPage, onNavigate, onLogout }: Sid
                   <button
                     key={item.id}
                     onClick={() => onNavigate(item.id)}
-                    className="w-full flex items-center rounded-xl text-[13px] font-medium transition-all duration-200 cursor-pointer border-none"
+                    className="w-full flex items-center rounded-lg text-[13px] font-medium transition-all duration-200 cursor-pointer border-none"
                     style={{
                       gap: collapsed ? 0 : 10,
                       padding: collapsed ? '8px' : '8px 10px',
