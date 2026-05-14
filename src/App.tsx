@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import SetupWizard from './components/SetupWizard';
 import Sidebar from './components/Sidebar';
-import ChatWidget from './components/ChatWidget';
+import ChatPanel from './components/ChatPanel';
 
 import type { UnitFilter } from './data/brands';
 const unitLabels: Record<UnitFilter, string> = {
@@ -100,6 +100,7 @@ export default function App() {
   const [unitFilter, setUnitFilter] = useState<UnitFilter>('Todas');
   const [unitOpen, setUnitOpen] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
   const unitRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -185,9 +186,6 @@ export default function App() {
         <Sidebar role={role} currentPage={currentPage} onNavigate={handleNavigate} onLogout={switchRole} />
       </div>
 
-      {/* Chat assistant — rendered on all pages, above content, below modals */}
-      <ChatWidget />
-
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0 main-area-padding">
         <div
@@ -222,6 +220,19 @@ export default function App() {
               <h1 className="font-heading text-[--text-primary] truncate" style={{ fontSize: 17 }}>{pageLabels[currentPage] || ''}</h1>
             </div>
             <div className="flex items-center gap-3 shrink-0">
+              <button
+                onClick={() => setChatOpen(prev => !prev)}
+                className="w-9 h-9 rounded-lg flex items-center justify-center cursor-pointer border-none transition-colors shrink-0"
+                style={{ background: chatOpen ? 'var(--accent-subtle)' : 'rgba(0,0,0,0.04)', color: chatOpen ? 'var(--accent)' : 'var(--text-secondary)' }}
+                onMouseEnter={e => { if (!chatOpen) e.currentTarget.style.background = 'rgba(0,0,0,0.07)'; }}
+                onMouseLeave={e => { if (!chatOpen) e.currentTarget.style.background = 'rgba(0,0,0,0.04)'; }}
+                aria-label={chatOpen ? 'Fechar assistente' : 'Abrir assistente'}
+                aria-expanded={chatOpen}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                </svg>
+              </button>
               <div ref={unitRef} className="relative">
                 <button
                   onClick={() => setUnitOpen(!unitOpen)}
@@ -279,6 +290,33 @@ export default function App() {
           </main>
         </div>
       </div>
+
+      {/* Chat right sidebar — desktop: inline flex, mobile: overlay from right */}
+      <AnimatePresence>
+        {chatOpen && (
+          <>
+            {/* Mobile backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="chat-mobile-backdrop"
+              style={{ background: 'rgba(0,0,0,0.18)' }}
+              onClick={() => setChatOpen(false)}
+            />
+            <motion.div
+              initial={{ width: 0, opacity: 0 }}
+              animate={{ width: 360, opacity: 1 }}
+              exit={{ width: 0, opacity: 0 }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              className="chat-sidebar h-full shrink-0 overflow-hidden"
+              style={{ padding: '12px 12px 12px 4px' }}
+            >
+              <ChatPanel onClose={() => setChatOpen(false)} />
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

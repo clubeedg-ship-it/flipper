@@ -462,42 +462,32 @@ body {
   }
 }
 
-/* ── Chat widget ── */
-/* FAB wrapper — panel sits above the button, right-aligned */
-.chat-panel-wrapper {
-  position: fixed;
-  bottom: 88px; /* 24px bottom + 52px FAB + 12px gap */
-  right: 24px;
-  z-index: 30;
-  width: 380px;
-  max-height: 500px;
+/* ── Chat sidebar ── */
+.chat-sidebar {
   display: flex;
   flex-direction: column;
 }
 
-.chat-panel {
-  width: 100%;
-  max-height: 500px;
+.chat-mobile-backdrop {
+  display: none;
 }
 
-/* Mobile: full-width bottom sheet */
+/* Mobile: chat sidebar becomes a fixed overlay from the right */
 @media (max-width: 639px) {
-  .chat-panel-wrapper {
-    bottom: 0;
+  .chat-sidebar {
+    position: fixed !important;
+    top: 0;
     right: 0;
-    left: 0;
-    width: 100%;
-    max-height: 70vh;
+    height: 100% !important;
+    z-index: 50;
+    padding: 6px !important;
   }
 
-  .chat-panel {
-    max-height: 70vh;
-    border-radius: 16px 16px 0 0 !important;
-  }
-
-  .chat-fab {
-    bottom: 16px !important;
-    right: 16px !important;
+  .chat-mobile-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 40;
   }
 }
 

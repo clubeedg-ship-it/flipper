@@ -145,15 +145,17 @@ export default function ChatPanel({ onClose }: ChatPanelProps) {
 
   return (
     <div
-      className="chat-panel flex flex-col overflow-hidden"
+      className="chat-panel flex flex-col overflow-hidden h-full"
       role="dialog"
       aria-label="Assistente Flipper"
       aria-modal="false"
       style={{
-        background: 'var(--bg-content-solid)',
+        background: 'var(--bg-content)',
         borderRadius: 'var(--radius-xl)',
-        boxShadow: 'var(--shadow-elevated)',
-        border: '1px solid var(--border)',
+        backdropFilter: 'blur(var(--blur))',
+        WebkitBackdropFilter: 'blur(var(--blur))',
+        border: '1px solid var(--border-glass)',
+        boxShadow: 'var(--shadow-glass)',
       }}
     >
       {/* Header */}
