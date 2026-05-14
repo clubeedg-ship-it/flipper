@@ -80,7 +80,7 @@ function renderPage(page: string, onNavigate: (p: string) => void, unitFilter: U
     case 'brand-home':
       return <BrandHomePage onNavigate={onNavigate} />;
     case 'brand-vendas':
-      return <BrandVendasPage />;
+      return <BrandVendasPage onNavigate={onNavigate} />;
     case 'brand-repasses':
       return <BrandRepassesPage />;
     case 'brand-mensalidade':
