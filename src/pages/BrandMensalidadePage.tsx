@@ -33,15 +33,19 @@ const paymentHistory: PaymentRecord[] = [
 
 type ComprovanteState = 'idle' | 'uploading' | 'aguardando' | 'pago' | 'rejeitado';
 
-export default function BrandMensalidadePage() {
+interface BrandMensalidadePageProps {
+  onNavigate?: (page: string) => void;
+}
+
+export default function BrandMensalidadePage({ onNavigate }: BrandMensalidadePageProps = {}) {
   const [showHistory, setShowHistory] = useState(false);
   const [comprovanteState, setComprovanteState] = useState<ComprovanteState>('idle');
   const [showPixPanel, setShowPixPanel] = useState(false);
 
   // Simulated "now" relative to next mensalidade (Jul/2025, due 05/07)
-  // Demo: vencimento is in 6 days → Pix/boleto liberado
-  const daysToVencimento = 6;
-  const nearVencimento = daysToVencimento <= 7;
+  // Spec: Pix/boleto liberado a partir de 5 dias antes do vencimento
+  const daysToVencimento = 4;
+  const nearVencimento = daysToVencimento <= 5;
 
   const cycleComprovante = () => {
     if (comprovanteState === 'idle') {
@@ -103,6 +107,22 @@ export default function BrandMensalidadePage() {
             <p className="font-label text-[11px] text-[--text-tertiary] uppercase tracking-[1px] mb-1">MÉTODO</p>
             <p className="font-body text-[16px] text-[--text-primary]">Pix</p>
           </div>
+        </div>
+        <div className="mt-5 pt-4 border-t border-[--border] flex items-center justify-between gap-3 flex-wrap">
+          <button
+            onClick={() => onNavigate?.('brand-repasses')}
+            className="font-label text-[13px] text-[--accent] cursor-pointer bg-transparent border-none hover:underline inline-flex items-center gap-1"
+          >
+            Ver repasse de Junho
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+          <button
+            className="px-3 py-1.5 rounded-lg font-label text-[12px] border border-[--border] hover:bg-[--bg-primary] transition-colors cursor-pointer text-[--text-primary] inline-flex items-center gap-1.5"
+            style={{ background: 'var(--bg-content-solid)' }}
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Baixar comprovante
+          </button>
         </div>
       </motion.div>
 
@@ -192,7 +212,7 @@ export default function BrandMensalidadePage() {
           </div>
         ) : (
           <p className="font-body text-[14px] text-[--text-secondary]">
-            Pix e boleto serão liberados a partir de 7 dias antes do vencimento.
+            Pix e boleto serão liberados a partir de 5 dias antes do vencimento.
           </p>
         )}
       </div>

@@ -84,7 +84,7 @@ function renderPage(page: string, onNavigate: (p: string) => void, unitFilter: U
     case 'brand-repasses':
       return <BrandRepassesPage />;
     case 'brand-mensalidade':
-      return <BrandMensalidadePage />;
+      return <BrandMensalidadePage onNavigate={onNavigate} />;
     case 'brand-nfe':
       return <BrandNFePage />;
     default:
