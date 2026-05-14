@@ -8,5 +8,8 @@ export default defineConfig({
     port: 3005,
     host: '0.0.0.0',
     allowedHosts: ['flipper.abbamarkt.nl', 'flipper.oopuo.com', 'localhost'],
+    proxy: {
+      '/api': 'http://localhost:3007',
+    },
   },
 })
