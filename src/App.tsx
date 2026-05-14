@@ -304,7 +304,7 @@ export default function App() {
             </div>
           </header>
 
-          <main className="flex-1 overflow-y-auto main-content-padding">
+          <main className="flex-1 overflow-y-auto main-content-padding" style={{ containerType: 'inline-size' }}>
             <Suspense fallback={<div className="flex items-center justify-center h-64 text-[--text-tertiary] font-label">Carregando...</div>}>
               <AnimatePresence mode="wait">
                 <PageWrapper key={currentPage}>

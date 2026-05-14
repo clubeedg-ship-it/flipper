@@ -272,57 +272,22 @@ body {
   }
 }
 
-/* ── Responsive KPI grids — mobile: 2 col, tablet: 2-3 col, desktop: 4 col ── */
-.kpi-grid-4 {
+/* ── Responsive KPI grids — uses container queries so they reflow when chat sidebar opens ── */
+.kpi-grid-4, .kpi-grid-3, .kpi-grid-2 {
   display: grid;
   gap: 16px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.kpi-grid-3 {
-  display: grid;
-  gap: 16px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+@container (min-width: 600px) {
+  .kpi-grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+  .kpi-grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+  .kpi-grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
 }
 
-.kpi-grid-2 {
-  display: grid;
-  gap: 16px;
-  grid-template-columns: repeat(1, minmax(0, 1fr));
-}
-
-@media (min-width: 640px) {
-  .kpi-grid-4 {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 20px;
-  }
-
-  .kpi-grid-3 {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 20px;
-  }
-
-  .kpi-grid-2 {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 20px;
-  }
-}
-
-@media (min-width: 1024px) {
-  .kpi-grid-4 {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 20px;
-  }
-
-  .kpi-grid-3 {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 20px;
-  }
-
-  .kpi-grid-2 {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 20px;
-  }
+@container (min-width: 860px) {
+  .kpi-grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; }
+  .kpi-grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
 }
 
 /* ── Checklist grid ── */
@@ -332,18 +297,12 @@ body {
   grid-template-columns: repeat(1, minmax(0, 1fr));
 }
 
-@media (min-width: 640px) {
-  .checklist-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 16px;
-  }
+@container (min-width: 600px) {
+  .checklist-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 }
 
-@media (min-width: 1024px) {
-  .checklist-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 16px;
-  }
+@container (min-width: 860px) {
+  .checklist-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
 }
 
 /* ── Repasse breakdown grid ── */
@@ -353,10 +312,8 @@ body {
   grid-template-columns: repeat(1, minmax(0, 1fr));
 }
 
-@media (min-width: 640px) {
-  .repasse-grid {
-    grid-template-columns: 1.4fr 1fr;
-  }
+@container (min-width: 600px) {
+  .repasse-grid { grid-template-columns: 1.4fr 1fr; }
 }
 
 /* ── Contract detail grid ── */
@@ -366,10 +323,8 @@ body {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-@media (min-width: 1024px) {
-  .contract-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
+@container (min-width: 860px) {
+  .contract-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
 
 /* ── Pix panel grid ── */
@@ -380,11 +335,8 @@ body {
   align-items: center;
 }
 
-@media (min-width: 480px) {
-  .pix-grid {
-    grid-template-columns: auto 1fr;
-    gap: 20px;
-  }
+@container (min-width: 440px) {
+  .pix-grid { grid-template-columns: auto 1fr; gap: 20px; }
 }
 
 /* ── Filter bar — wrap on small screens ── */
@@ -402,10 +354,8 @@ body {
   grid-template-columns: repeat(1, minmax(0, 1fr));
 }
 
-@media (min-width: 768px) {
-  .two-col-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+@container (min-width: 700px) {
+  .two-col-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 /* ── BrandHome shortcuts grid ── */
@@ -415,11 +365,8 @@ body {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-@media (min-width: 640px) {
-  .shortcuts-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 16px;
-  }
+@container (min-width: 600px) {
+  .shortcuts-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
 }
 
 /* ── BrandHome products+history 2-col ── */
@@ -429,10 +376,8 @@ body {
   grid-template-columns: repeat(1, minmax(0, 1fr));
 }
 
-@media (min-width: 768px) {
-  .brand-home-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+@container (min-width: 700px) {
+  .brand-home-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 /* ── Modal responsive: bottom sheet on mobile, centered on desktop ── */

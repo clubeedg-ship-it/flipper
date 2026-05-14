@@ -110,7 +110,7 @@ export default function RepassesPage({ onNavigate, unitFilter = 'Todas' }: Repas
           </motion.div>
         ))}
       </div>
-      <style>{`@media (min-width: 768px) { .kpi-grid-repasses { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; gap: 1.25rem; } .kpi-grid-repasses .text-\\[20px\\] { font-size: 28px; } }`}</style>
+      <style>{`@container (min-width: 700px) { .kpi-grid-repasses { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; gap: 1.25rem; } .kpi-grid-repasses .text-\\[20px\\] { font-size: 28px; } }`}</style>
 
       {/* Alert */}
       <div className="alert-banner alert-banner-success">
