@@ -117,7 +117,10 @@ export default function LojasPage() {
                   <p className="font-subheading text-[14px] text-[--text-primary]">{b.name}</p>
                   <p className="font-caption text-[--text-tertiary]">Sem contrato definido</p>
                 </div>
-                <button className="px-3 py-1.5 border border-[--border] rounded-lg font-label text-[12px] text-[--text-primary] hover:bg-[--bg-primary] transition-colors cursor-pointer bg-[--bg-content]">
+                <button
+                  onClick={(e) => { e.stopPropagation(); setSelectedBrand(b.name); }}
+                  className="px-3 py-1.5 border border-[--border] rounded-lg font-label text-[12px] text-[--text-primary] hover:bg-[--bg-primary] transition-colors cursor-pointer bg-[--bg-content]"
+                >
                   Finalizar cadastro
                 </button>
               </div>
