@@ -8,6 +8,7 @@ export default function ProdutosPage() {
   const [linkedSkus, setLinkedSkus] = useState<string[]>([]);
   const [modalSku, setModalSku] = useState<string | null>(null);
   const [csvImported, setCsvImported] = useState(false);
+  const [productAdded, setProductAdded] = useState(false);
 
   const unmappedCount = unmappedSkus.filter(s => !linkedSkus.includes(s.sku)).length;
 
@@ -45,6 +46,13 @@ export default function ProdutosPage() {
         <div className="alert-banner alert-banner-success">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
           <span>CSV importado com sucesso — 12 produtos atualizados.</span>
+        </div>
+      )}
+
+      {productAdded && (
+        <div className="alert-banner alert-banner-success">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <span>Produto cadastrado com sucesso.</span>
         </div>
       )}
 
@@ -94,7 +102,10 @@ export default function ProdutosPage() {
         <div className="flex items-center justify-between mb-5">
           <h3 className="font-subheading text-[16px] text-[--text-primary]">Produtos cadastrados</h3>
           <div className="flex gap-2">
-            <button className="px-4 py-2 border border-[--border] rounded-lg font-label text-[12px] text-[--text-primary] hover:bg-[--bg-primary] transition-colors cursor-pointer bg-[--bg-content]">
+            <button
+              onClick={() => setProductAdded(true)}
+              className="px-4 py-2 border border-[--border] rounded-lg font-label text-[12px] text-[--text-primary] hover:bg-[--bg-primary] transition-colors cursor-pointer bg-[--bg-content]"
+            >
               + Novo produto
             </button>
             <button

@@ -8,6 +8,9 @@ const repasseHistory = [
   { month: 'Mai/2025', value: 2650, status: 'Pago em 08/jun' },
   { month: 'Abr/2025', value: 3100, status: 'Pago em 07/mai' },
   { month: 'Mar/2025', value: 2200, status: 'Pago em 08/abr' },
+  { month: 'Fev/2025', value: 1980, status: 'Pago em 07/mar' },
+  { month: 'Jan/2025', value: 2400, status: 'Pago em 06/fev' },
+  { month: 'Dez/2024', value: 2850, status: 'Pago em 08/jan' },
 ];
 
 export default function BrandHomePage() {
@@ -89,7 +92,7 @@ export default function BrandHomePage() {
             </button>
           </div>
           <div className="space-y-0">
-            {repasseHistory.map(h => (
+            {(showHistory ? repasseHistory : repasseHistory.slice(0, 3)).map(h => (
               <div key={h.month} className="flex items-center justify-between py-3 border-b border-[--border] last:border-b-0">
                 <span className="font-label text-[--text-secondary]">{h.month}</span>
                 <span className="font-mono text-[14px]">R$ {h.value.toLocaleString('pt-BR')}</span>

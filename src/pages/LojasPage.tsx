@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { brands } from '../data/brands';
 import Badge from '../components/ui/Badge';
+import BrandProfileDrawer from '../components/ui/BrandProfileDrawer';
 
 type Filter = 'Todos' | 'Ativos' | 'Inadimplentes' | 'Pendentes';
 
@@ -30,6 +31,8 @@ const filters: Filter[] = ['Todos', 'Ativos', 'Inadimplentes', 'Pendentes'];
 
 export default function LojasPage() {
   const [filter, setFilter] = useState<Filter>('Todos');
+  const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
+  const [inviteSent, setInviteSent] = useState(false);
 
   const filtered = brands.filter(b => {
     if (filter === 'Ativos') return b.status === 'success';
@@ -56,10 +59,20 @@ export default function LojasPage() {
         ))}
       </div>
 
+      {inviteSent && (
+        <div className="alert-banner alert-banner-success">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <span>Convite enviado com sucesso. A nova loja parceira receberá as instruções por e-mail.</span>
+        </div>
+      )}
+
       <div className="card p-6">
         <div className="flex items-center justify-between mb-5">
           <h3 className="font-subheading text-[16px] text-[--text-primary]">Lojas parceiras</h3>
-          <button className="px-4 py-2 bg-[--accent] hover:bg-[--accent-hover] text-white rounded-lg font-label text-[13px] transition-colors cursor-pointer border-none">
+          <button
+            onClick={() => setInviteSent(true)}
+            className="px-4 py-2 bg-[--accent] hover:bg-[--accent-hover] text-white rounded-lg font-label text-[13px] transition-colors cursor-pointer border-none"
+          >
             + Nova loja parceira
           </button>
         </div>
@@ -79,7 +92,7 @@ export default function LojasPage() {
               const modelo = b.mensalidadeStatus === 'neutral' ? 'Sem contrato' : 'Consignação';
               const statusLabel = b.status === 'success' ? 'Ativo' : b.status === 'danger' ? 'Inadimplente' : b.status === 'warning' ? 'Ativo' : 'Pendente';
               return (
-                <tr key={b.name} className="border-b border-[--border] last:border-b-0 hover:bg-[--bg-primary]/50 transition-colors cursor-pointer">
+                <tr key={b.name} className="border-b border-[--border] last:border-b-0 hover:bg-[--bg-primary]/50 transition-colors cursor-pointer" onClick={() => setSelectedBrand(b.name)}>
                   <td className="py-4 pr-4">
                     <div className="flex items-center gap-3">
                       <span className="w-9 h-9 rounded-full flex items-center justify-center text-[11px] font-bold text-white shrink-0" style={{ background: ini.color }}>{ini.letters}</span>
@@ -98,6 +111,8 @@ export default function LojasPage() {
           </tbody>
         </table>
       </div>
+
+      <BrandProfileDrawer brandName={selectedBrand} onClose={() => setSelectedBrand(null)} />
     </div>
   );
 }

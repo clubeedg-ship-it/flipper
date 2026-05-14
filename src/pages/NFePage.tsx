@@ -45,7 +45,7 @@ export default function NFePage() {
           </thead>
           <tbody>
             {nfesRecebidas.map(n => (
-              <tr key={`${n.brand}-rec`} className="border-b border-[--border] last:border-b-0 hover:bg-[--bg-primary]/50 transition-colors">
+              <tr key={`${n.brand}-rec`} className="border-b border-[--border] last:border-b-0 hover:bg-[--bg-primary]/50 transition-colors select-none">
                 <td className="py-3.5 pr-4">
                   <div className="flex items-center gap-3">
                     <span className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold text-white shrink-0" style={{ background: n.brandAvatar.color }}>{n.brandAvatar.letters}</span>
@@ -87,7 +87,7 @@ export default function NFePage() {
           </thead>
           <tbody>
             {nfesEmitidas.map(n => (
-              <tr key={`${n.brand}-emit`} className="border-b border-[--border] last:border-b-0 hover:bg-[--bg-primary]/50 transition-colors">
+              <tr key={`${n.brand}-emit`} className="border-b border-[--border] last:border-b-0 hover:bg-[--bg-primary]/50 transition-colors select-none">
                 <td className="py-3.5 pr-4 font-mono text-[13px]">{n.numero}</td>
                 <td className="py-3.5 pr-4">
                   <div className="flex items-center gap-3">

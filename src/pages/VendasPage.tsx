@@ -7,6 +7,7 @@ type UnitFilter = 'Todas' | 'SP' | 'RJ';
 export default function VendasPage() {
   const [unit, setUnit] = useState<UnitFilter>('Todas');
   const [showManual, setShowManual] = useState(false);
+  const [csvImported, setCsvImported] = useState(false);
 
   const filtered = storeSales.filter(s => unit === 'Todas' || s.store === unit);
   const totalCliente = filtered.reduce((s, r) => s + r.value, 0);
@@ -47,7 +48,10 @@ export default function VendasPage() {
           >
             + Lançamento manual
           </button>
-          <button className="px-4 py-2 border border-[--border] rounded-lg font-label text-[12px] text-[--text-primary] hover:bg-[--bg-primary] transition-colors cursor-pointer bg-[--bg-content]">
+          <button
+            onClick={() => setCsvImported(true)}
+            className="px-4 py-2 border border-[--border] rounded-lg font-label text-[12px] text-[--text-primary] hover:bg-[--bg-primary] transition-colors cursor-pointer bg-[--bg-content]"
+          >
             Importar CSV
           </button>
         </div>
@@ -57,6 +61,13 @@ export default function VendasPage() {
         <div className="alert-banner alert-banner-success">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
           <span>Lançamento manual registrado com sucesso.</span>
+        </div>
+      )}
+
+      {csvImported && (
+        <div className="alert-banner alert-banner-success">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <span>CSV importado com sucesso — 28 vendas adicionadas.</span>
         </div>
       )}
 

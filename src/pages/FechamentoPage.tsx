@@ -24,6 +24,7 @@ const closingBrands = brands.filter(b => b.status !== 'neutral').map(b => ({
 
 export default function FechamentoPage() {
   const [nfeSent, setNfeSent] = useState(false);
+  const [reportsSent, setReportsSent] = useState(false);
 
   const totalVendido = closingBrands.reduce((s, b) => s + b.vendido, 0);
   const totalLoja = closingBrands.reduce((s, b) => s + b.ficaLoja, 0);
@@ -89,8 +90,11 @@ export default function FechamentoPage() {
         <div className="flex items-center justify-between mb-5">
           <h3 className="font-subheading text-[16px] text-[--text-primary]">Fechamento — Maio 2025</h3>
           <div className="flex gap-2">
-            <button className="px-4 py-2 border border-[--border] rounded-lg font-label text-[12px] text-[--text-primary] hover:bg-[--bg-primary] transition-colors cursor-pointer bg-[--bg-content]">
-              Enviar relatórios
+            <button
+              onClick={() => setReportsSent(true)}
+              className={`px-4 py-2 border border-[--border] rounded-lg font-label text-[12px] transition-colors cursor-pointer ${reportsSent ? 'bg-[--success-light] text-[--success] border-[--success]' : 'text-[--text-primary] hover:bg-[--bg-primary] bg-[--bg-content]'}`}
+            >
+              {reportsSent ? 'Relatórios enviados' : 'Enviar relatórios'}
             </button>
             <button
               onClick={() => setNfeSent(true)}

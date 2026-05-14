@@ -1,7 +1,14 @@
-import { useState, lazy, Suspense } from 'react';
+import { useState, useRef, useEffect, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import SetupWizard from './components/SetupWizard';
 import Sidebar from './components/Sidebar';
+
+type UnitFilter = 'Todas' | 'SP' | 'RJ';
+const unitLabels: Record<UnitFilter, string> = {
+  'Todas': 'Todas as unidades',
+  'SP': 'SP — Jardins',
+  'RJ': 'RJ — Leblon',
+};
 
 const DemoPage = lazy(() => import('./pages/DemoPage'));
 const DashboardPage = lazy(() => import('./pages/DashboardPage'));
@@ -55,7 +62,7 @@ function renderPage(page: string, onNavigate: (p: string) => void) {
     case 'demo':
       return <DemoPage onNavigate={onNavigate} />;
     case 'dashboard':
-      return <DashboardPage />;
+      return <DashboardPage onNavigate={onNavigate} />;
     case 'lojas':
       return <LojasPage />;
     case 'fechamento':
@@ -89,6 +96,18 @@ export default function App() {
   const [setupDone, setSetupDone] = useState(false);
   const [role, setRole] = useState<Role>('financeiro');
   const [currentPage, setCurrentPage] = useState('dashboard');
+  const [unitFilter, setUnitFilter] = useState<UnitFilter>('Todas');
+  const [unitOpen, setUnitOpen] = useState(false);
+  const unitRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!unitOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (unitRef.current && !unitRef.current.contains(e.target as Node)) setUnitOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [unitOpen]);
 
   const handleSetupComplete = (config: { language: string; role: Role }) => {
     setRole(config.role);
@@ -122,9 +141,41 @@ export default function App() {
         <header className="h-14 border-b border-[--border] bg-[--bg-content] flex items-center justify-between px-8 shrink-0">
           <h1 className="font-heading text-[17px] text-[--text-primary]">{pageLabels[currentPage] || ''}</h1>
           <div className="flex items-center gap-3">
-            <div className="border border-[--border] rounded-lg px-3 py-1.5 font-label text-[12px] text-[--text-secondary] flex items-center gap-1.5">
-              Todas as unidades
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 12 15 18 9"/></svg>
+            <div ref={unitRef} className="relative">
+              <button
+                onClick={() => setUnitOpen(!unitOpen)}
+                className="border border-[--border] rounded-lg px-3 py-1.5 font-label text-[12px] text-[--text-secondary] flex items-center gap-1.5 cursor-pointer bg-[--bg-content] hover:bg-[--bg-primary] transition-colors"
+              >
+                {unitLabels[unitFilter]}
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`transition-transform duration-150 ${unitOpen ? 'rotate-180' : ''}`}><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <AnimatePresence>
+                {unitOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.12 }}
+                    className="absolute right-0 top-full mt-1 bg-[--bg-content] border border-[--border] rounded-lg shadow-lg overflow-hidden z-50"
+                    style={{ minWidth: 180 }}
+                  >
+                    {(['Todas', 'SP', 'RJ'] as UnitFilter[]).map(u => (
+                      <button
+                        key={u}
+                        onClick={() => { setUnitFilter(u); setUnitOpen(false); }}
+                        className={`w-full text-left px-4 py-2.5 font-label text-[13px] transition-colors cursor-pointer border-none ${
+                          unitFilter === u ? 'bg-[--accent-subtle] text-[--accent]' : 'bg-transparent text-[--text-secondary] hover:bg-[--bg-primary]'
+                        }`}
+                      >
+                        {unitLabels[u]}
+                        {unitFilter === u && (
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="inline ml-2"><polyline points="20 6 9 17 4 12"/></svg>
+                        )}
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
         </header>

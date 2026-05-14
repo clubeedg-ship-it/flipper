@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { brands } from '../data/brands';
 import Badge from '../components/ui/Badge';
@@ -25,6 +26,17 @@ const paymentHistory: PaymentRecord[] = [
 ];
 
 export default function BrandMensalidadePage() {
+  const [comprovanteSent, setComprovanteSent] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  const handleSendComprovante = () => {
+    setUploading(true);
+    setTimeout(() => {
+      setUploading(false);
+      setComprovanteSent(true);
+    }, 1500);
+  };
+
   return (
     <div className="content-max space-y-6">
       {/* Current month */}
@@ -34,7 +46,19 @@ export default function BrandMensalidadePage() {
         transition={{ duration: 0.3 }}
         className="card p-6"
       >
-        <h3 className="font-subheading text-[16px] text-[--text-primary] mb-5">Mensalidade — Junho 2025</h3>
+        <div className="flex items-center justify-between mb-5">
+          <h3 className="font-subheading text-[16px] text-[--text-primary]">Mensalidade — Junho 2025</h3>
+          <button
+            onClick={handleSendComprovante}
+            disabled={uploading || comprovanteSent}
+            className={`px-4 py-2 rounded-lg font-label text-[12px] cursor-pointer border-none transition-colors disabled:opacity-60 ${
+              comprovanteSent ? 'bg-[--success-light] text-[--success]' : 'text-white'
+            }`}
+            style={!comprovanteSent ? { background: '#0D9488' } : undefined}
+          >
+            {uploading ? 'Enviando...' : comprovanteSent ? 'Comprovante enviado' : 'Enviar comprovante'}
+          </button>
+        </div>
         <div className="grid gap-6" style={{ gridTemplateColumns: "repeat(4, minmax(0, 1fr))" }}>
           <div>
             <p className="font-label text-[11px] text-[--text-tertiary] uppercase tracking-[1px] mb-1">VALOR</p>
@@ -54,6 +78,13 @@ export default function BrandMensalidadePage() {
           </div>
         </div>
       </motion.div>
+
+      {comprovanteSent && (
+        <div className="alert-banner alert-banner-success">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <span>Comprovante enviado com sucesso. A loja será notificada.</span>
+        </div>
+      )}
 
       {/* History table */}
       <div className="card p-6">

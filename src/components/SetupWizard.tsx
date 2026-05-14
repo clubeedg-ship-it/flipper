@@ -27,7 +27,7 @@ export default function SetupWizard({ onComplete }: SetupWizardProps) {
             Esta é uma demo interativa do Flipper — a camada financeira para lojas multimarca que trabalham com consignação.
           </p>
           <p className="font-body text-[14px] text-[--text-tertiary] leading-relaxed">
-            Você vai explorar um painel com dados simulados da Pinga Store, uma galeria com 8 marcas parceiras em São Paulo e Rio de Janeiro.
+            Você vai explorar um painel com dados simulados da Pinga Store, uma galeria multimarca com lojas parceiras em São Paulo e Rio de Janeiro.
           </p>
         </div>
       ),

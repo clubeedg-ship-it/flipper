@@ -4,6 +4,7 @@ import { dashboardMetrics } from '../data/metrics';
 import { brands } from '../data/brands';
 import CountUp from '../components/ui/CountUp';
 import Badge from '../components/ui/Badge';
+import BrandProfileDrawer from '../components/ui/BrandProfileDrawer';
 
 const brandInitials: Record<string, { letters: string; color: string }> = {
   'Amira': { letters: 'AM', color: '#0D9488' },
@@ -27,8 +28,13 @@ const actionQueue = [
   { id: 3, title: 'NF-e pendente — Lua Cheia e Dona Sol', sub: 'Repasse aguarda recebimento da nota fiscal', action: 'Ver' },
 ];
 
-export default function DashboardPage() {
+interface DashboardPageProps {
+  onNavigate?: (page: string) => void;
+}
+
+export default function DashboardPage({ onNavigate }: DashboardPageProps) {
   const [resolvedActions, setResolvedActions] = useState<number[]>([]);
+  const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
 
   return (
     <div className="content-max space-y-8">
@@ -116,7 +122,10 @@ export default function DashboardPage() {
       <div className="card p-6">
         <div className="flex items-center justify-between mb-5">
           <h3 className="font-subheading text-[16px] text-[--text-primary]">Status das lojas parceiras — Junho 2025</h3>
-          <button className="px-4 py-1.5 border border-[--border] rounded-lg font-label text-[12px] text-[--text-primary] hover:bg-[--bg-primary] transition-colors cursor-pointer bg-[--bg-content]">
+          <button
+            onClick={() => onNavigate?.('lojas')}
+            className="px-4 py-1.5 border border-[--border] rounded-lg font-label text-[12px] text-[--text-primary] hover:bg-[--bg-primary] transition-colors cursor-pointer bg-[--bg-content]"
+          >
             Ver todos
           </button>
         </div>
@@ -135,7 +144,7 @@ export default function DashboardPage() {
               const ini = brandInitials[b.name] || { letters: b.name.slice(0, 2).toUpperCase(), color: '#6B7280' };
               const loc = locationBadge[b.name] || 'SP';
               return (
-                <tr key={b.name} className="border-b border-[--border] last:border-b-0 hover:bg-[--bg-primary]/50 transition-colors cursor-pointer">
+                <tr key={b.name} className="border-b border-[--border] last:border-b-0 hover:bg-[--bg-primary]/50 transition-colors cursor-pointer" onClick={() => setSelectedBrand(b.name)}>
                   <td className="py-3.5 pr-4">
                     <div className="flex items-center gap-3">
                       <span className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold text-white shrink-0" style={{ background: ini.color }}>{ini.letters}</span>
@@ -195,6 +204,8 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+
+      <BrandProfileDrawer brandName={selectedBrand} onClose={() => setSelectedBrand(null)} />
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { brands } from '../data/brands';
 import Badge from '../components/ui/Badge';
+import BrandProfileDrawer from '../components/ui/BrandProfileDrawer';
 import type { BrandStatus } from '../data/brands';
 
 interface Cobranca {
@@ -32,6 +33,7 @@ const cobrancas: Cobranca[] = brands
 
 export default function CobrancasPage() {
   const [reminderSent, setReminderSent] = useState(false);
+  const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
 
   const pendingCount = cobrancas.filter(c => c.statusType !== 'success').length;
 
@@ -72,7 +74,7 @@ export default function CobrancasPage() {
           </thead>
           <tbody>
             {cobrancas.map(c => (
-              <tr key={c.brand} className="border-b border-[--border] last:border-b-0 hover:bg-[--bg-primary]/50 transition-colors cursor-pointer">
+              <tr key={c.brand} className="border-b border-[--border] last:border-b-0 hover:bg-[--bg-primary]/50 transition-colors cursor-pointer" onClick={() => setSelectedBrand(c.brand)}>
                 <td className="py-3.5 pr-4">
                   <div className="flex items-center gap-3">
                     <span className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold text-white shrink-0" style={{ background: c.avatar.color }}>{c.avatar.letters}</span>
@@ -89,6 +91,8 @@ export default function CobrancasPage() {
           </tbody>
         </table>
       </div>
+
+      <BrandProfileDrawer brandName={selectedBrand} onClose={() => setSelectedBrand(null)} />
     </div>
   );
 }
