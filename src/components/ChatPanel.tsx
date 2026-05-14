@@ -11,6 +11,33 @@ interface ChatPanelProps {
   onClose: () => void;
 }
 
+function renderMarkdown(text: string) {
+  return text.split('\n').map((line, i) => {
+    const parts: React.ReactNode[] = [];
+    let rest = line;
+    let key = 0;
+    while (rest.length > 0) {
+      const boldMatch = rest.match(/\*\*(.+?)\*\*/);
+      const italicMatch = rest.match(/\*(.+?)\*/);
+      const match = boldMatch && italicMatch
+        ? (boldMatch.index! <= italicMatch.index! ? boldMatch : italicMatch)
+        : (boldMatch || italicMatch);
+      if (!match || match.index === undefined) {
+        parts.push(rest);
+        break;
+      }
+      if (match.index > 0) parts.push(rest.slice(0, match.index));
+      const isBold = match[0].startsWith('**');
+      parts.push(isBold
+        ? <strong key={key++}>{match[1]}</strong>
+        : <em key={key++}>{match[1]}</em>
+      );
+      rest = rest.slice(match.index + match[0].length);
+    }
+    return <span key={i}>{parts}{i < text.split('\n').length - 1 && <br />}</span>;
+  });
+}
+
 function LoadingDots() {
   return (
     <div className="flex items-center gap-1 px-4 py-3">
@@ -205,11 +232,10 @@ export default function ChatPanel({ onClose }: ChatPanelProps) {
                   color: msg.role === 'user'
                     ? 'white'
                     : 'var(--text-primary)',
-                  whiteSpace: 'pre-wrap',
                   wordBreak: 'break-word',
                 }}
               >
-                {msg.text}
+                {msg.role === 'assistant' ? renderMarkdown(msg.text) : msg.text}
               </div>
             </motion.div>
           ))}
