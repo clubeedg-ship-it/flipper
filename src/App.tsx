@@ -98,6 +98,7 @@ export default function App() {
   const [currentPage, setCurrentPage] = useState(() => sessionStorage.getItem('flipper-page') || 'dashboard');
   const [unitFilter, setUnitFilter] = useState<UnitFilter>('Todas');
   const [unitOpen, setUnitOpen] = useState(false);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const unitRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -108,6 +109,11 @@ export default function App() {
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, [unitOpen]);
+
+  // Close mobile sidebar on page change
+  useEffect(() => {
+    setMobileSidebarOpen(false);
+  }, [currentPage]);
 
   const handleSetupComplete = (config: { language: string; role: Role }) => {
     const page = config.role === 'financeiro' ? 'dashboard' : 'brand-home';
@@ -142,12 +148,76 @@ export default function App() {
 
   return (
     <div className="flex h-screen overflow-hidden">
-      <Sidebar role={role} currentPage={currentPage} onNavigate={handleNavigate} onLogout={switchRole} />
+      {/* Mobile overlay backdrop */}
+      <AnimatePresence>
+        {mobileSidebarOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-40"
+            style={{ background: 'rgba(0,0,0,0.35)', backdropFilter: 'blur(2px)' }}
+            onClick={() => setMobileSidebarOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Mobile sidebar — fixed overlay, slides in from left */}
+      <div
+        className="mobile-sidebar-container"
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          height: '100%',
+          zIndex: 50,
+          transform: mobileSidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
+          transition: 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+        }}
+      >
+        <Sidebar role={role} currentPage={currentPage} onNavigate={handleNavigate} onLogout={switchRole} />
+      </div>
+
+      {/* Desktop sidebar — inline in flex row */}
+      <div className="desktop-sidebar h-full">
+        <Sidebar role={role} currentPage={currentPage} onNavigate={handleNavigate} onLogout={switchRole} />
+      </div>
+
+      {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0" style={{ padding: '12px 12px 12px 8px' }}>
-        <div className="flex-1 flex flex-col min-w-0 overflow-hidden" style={{ borderRadius: 'var(--radius-xl)', background: 'var(--bg-content)', backdropFilter: 'blur(var(--blur))', WebkitBackdropFilter: 'blur(var(--blur))', border: '1px solid var(--border-glass)', boxShadow: 'var(--shadow-glass)' }}>
-          <header className="h-14 flex items-center justify-between px-8 shrink-0" style={{ borderBottom: '1px solid var(--border)' }}>
-            <h1 className="font-heading text-[17px] text-[--text-primary]">{pageLabels[currentPage] || ''}</h1>
-            <div className="flex items-center gap-3">
+        <div
+          className="flex-1 flex flex-col min-w-0 overflow-hidden"
+          style={{
+            borderRadius: 'var(--radius-xl)',
+            background: 'var(--bg-content)',
+            backdropFilter: 'blur(var(--blur))',
+            WebkitBackdropFilter: 'blur(var(--blur))',
+            border: '1px solid var(--border-glass)',
+            boxShadow: 'var(--shadow-glass)',
+          }}
+        >
+          <header
+            className="flex items-center justify-between shrink-0 px-4"
+            style={{ borderBottom: '1px solid var(--border)', height: 56, minHeight: 56 }}
+          >
+            <div className="flex items-center gap-3 min-w-0">
+              {/* Hamburger button — visible only on mobile via CSS */}
+              <button
+                onClick={() => setMobileSidebarOpen(true)}
+                className="mobile-menu-btn w-9 h-9 rounded-lg flex items-center justify-center cursor-pointer border-none text-[--text-secondary] shrink-0"
+                style={{ background: 'rgba(0,0,0,0.04)' }}
+                aria-label="Abrir menu"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  <line x1="3" y1="6" x2="21" y2="6"/>
+                  <line x1="3" y1="12" x2="21" y2="12"/>
+                  <line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+              </button>
+              <h1 className="font-heading text-[--text-primary] truncate" style={{ fontSize: 17 }}>{pageLabels[currentPage] || ''}</h1>
+            </div>
+            <div className="flex items-center gap-3 shrink-0">
               <div ref={unitRef} className="relative">
                 <button
                   onClick={() => setUnitOpen(!unitOpen)}
@@ -156,7 +226,8 @@ export default function App() {
                   onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.07)')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.04)')}
                 >
-                  {unitLabels[unitFilter]}
+                  <span className="unit-filter-label">{unitLabels[unitFilter]}</span>
+                  <span className="unit-filter-short">{unitFilter === 'Todas' ? 'Unid.' : unitFilter}</span>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`transition-transform duration-150 ${unitOpen ? 'rotate-180' : ''}`}><polyline points="6 9 12 15 18 9"/></svg>
                 </button>
                 <AnimatePresence>
@@ -193,7 +264,7 @@ export default function App() {
             </div>
           </header>
 
-          <main className="flex-1 overflow-y-auto p-8">
+          <main className="flex-1 overflow-y-auto main-content-padding">
             <Suspense fallback={<div className="flex items-center justify-center h-64 text-[--text-tertiary] font-label">Carregando...</div>}>
               <AnimatePresence mode="wait">
                 <PageWrapper key={currentPage}>

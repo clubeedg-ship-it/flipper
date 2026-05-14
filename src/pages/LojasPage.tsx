@@ -57,7 +57,7 @@ export default function LojasPage() {
   return (
     <div className="content-max space-y-6">
       {/* KPIs */}
-      <div className="grid gap-5" style={{ gridTemplateColumns: "repeat(3, minmax(0, 1fr))" }}>
+      <div className="kpi-grid-3">
         {[
           { label: 'Marcas ativas', value: activeBrands.length, color: 'var(--success)' },
           { label: 'Inadimplentes', value: inadimplentes.length, color: 'var(--danger)' },
@@ -71,8 +71,8 @@ export default function LojasPage() {
       </div>
 
       {/* Filters + search */}
-      <div className="flex items-center gap-3">
-        <div className="flex items-center gap-2">
+      <div className="filter-bar">
+        <div className="flex items-center gap-2 flex-wrap">
           {filters.map(f => (
             <button
               key={f}
@@ -140,6 +140,7 @@ export default function LojasPage() {
             + Nova loja parceira
           </button>
         </div>
+        <div className="table-scroll">
         <table className="w-full">
           <thead>
             <tr className="border-b border-[--border]">
@@ -175,6 +176,7 @@ export default function LojasPage() {
             })}
           </tbody>
         </table>
+        </div>
       </div>
 
       <BrandProfileDrawer brandName={selectedBrand} onClose={() => setSelectedBrand(null)} />

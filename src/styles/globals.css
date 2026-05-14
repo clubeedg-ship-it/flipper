@@ -180,3 +180,270 @@ body {
   border: 1px solid var(--border-glass);
   box-shadow: var(--shadow-glass);
 }
+
+/* ── Responsive table wrapper ── */
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-scroll table {
+  min-width: 500px;
+}
+
+/* ── Main content padding ── */
+.main-content-padding {
+  padding: 32px;
+}
+
+/* ── Mobile sidebar: fixed overlay, toggled by JS ── */
+.mobile-sidebar-container {
+  /* Positioned + transformed via inline styles in App.tsx */
+}
+
+.mobile-menu-btn {
+  display: none;
+}
+
+.desktop-sidebar {
+  display: block;
+}
+
+/* Unit filter: show full label on desktop, short on mobile */
+.unit-filter-short {
+  display: none;
+}
+
+.unit-filter-label {
+  display: inline;
+}
+
+/* Mobile (<640px) */
+@media (max-width: 639px) {
+  .mobile-menu-btn {
+    display: flex;
+  }
+
+  .desktop-sidebar {
+    display: none;
+  }
+
+  .main-content-padding {
+    padding: 16px;
+  }
+
+  .metric-card {
+    padding: 16px;
+  }
+
+  .alert-banner {
+    flex-wrap: wrap;
+    padding: 12px 14px;
+    font-size: 13px;
+  }
+
+  /* Compact unit filter label on mobile */
+  .unit-filter-label {
+    display: none;
+  }
+
+  .unit-filter-short {
+    display: inline;
+  }
+}
+
+/* Tablet (640px–1023px) */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .main-content-padding {
+    padding: 20px;
+  }
+
+  .metric-card {
+    padding: 18px;
+  }
+}
+
+/* ── Responsive KPI grids — mobile: 2 col, tablet: 2-3 col, desktop: 4 col ── */
+.kpi-grid-4 {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.kpi-grid-3 {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.kpi-grid-2 {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+@media (min-width: 640px) {
+  .kpi-grid-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .kpi-grid-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .kpi-grid-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .kpi-grid-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .kpi-grid-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .kpi-grid-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+}
+
+/* ── Checklist grid ── */
+.checklist-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+@media (min-width: 640px) {
+  .checklist-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .checklist-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+  }
+}
+
+/* ── Repasse breakdown grid ── */
+.repasse-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+@media (min-width: 640px) {
+  .repasse-grid {
+    grid-template-columns: 1.4fr 1fr;
+  }
+}
+
+/* ── Contract detail grid ── */
+.contract-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 1024px) {
+  .contract-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* ── Pix panel grid ── */
+.pix-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  align-items: center;
+}
+
+@media (min-width: 480px) {
+  .pix-grid {
+    grid-template-columns: auto 1fr;
+    gap: 20px;
+  }
+}
+
+/* ── Filter bar — wrap on small screens ── */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ── Dashboard bottom 2-col grid ── */
+.two-col-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+@media (min-width: 768px) {
+  .two-col-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ── BrandHome shortcuts grid ── */
+.shortcuts-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 640px) {
+  .shortcuts-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+  }
+}
+
+/* ── BrandHome products+history 2-col ── */
+.brand-home-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+@media (min-width: 768px) {
+  .brand-home-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ── Pending items alert: stack button below text on mobile ── */
+.pending-item-row {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pending-item-row .pending-item-btn {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+@media (max-width: 639px) {
+  .pending-item-row .pending-item-btn {
+    margin-left: 0;
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+}

@@ -49,7 +49,7 @@ export default function BrandHomePage({ onNavigate }: BrandHomePageProps) {
       </div>
 
       {/* 4 KPIs */}
-      <div className="grid gap-5" style={{ gridTemplateColumns: "repeat(4, minmax(0, 1fr))" }}>
+      <div className="kpi-grid-4">
         {[
           {
             label: 'VENDAS EM JUNHO',
@@ -92,7 +92,7 @@ export default function BrandHomePage({ onNavigate }: BrandHomePageProps) {
           </div>
           <Badge status="warning" label="Pendente" showDot />
         </div>
-        <div className="grid gap-6" style={{ gridTemplateColumns: "1.4fr 1fr" }}>
+        <div className="repasse-grid">
           <div className="space-y-3 text-[14px]">
             <div className="flex justify-between items-center">
               <span className="text-[--text-secondary]">Valor vendido ao cliente</span>
@@ -124,7 +124,7 @@ export default function BrandHomePage({ onNavigate }: BrandHomePageProps) {
       </div>
 
       {/* Produtos em destaque + Últimas vendas */}
-      <div className="grid gap-5" style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))" }}>
+      <div className="brand-home-grid">
         <div className="card p-6">
           <h3 className="font-subheading text-[16px] text-[--text-primary] mb-4">Produtos em destaque</h3>
           <p className="font-caption text-[--text-tertiary] mb-4">Top 3 por valor vendido em junho</p>
@@ -169,7 +169,7 @@ export default function BrandHomePage({ onNavigate }: BrandHomePageProps) {
       {/* Quick-access shortcuts */}
       <div>
         <h3 className="font-subheading text-[16px] text-[--text-primary] mb-4">Acesso rápido</h3>
-        <div className="grid gap-4" style={{ gridTemplateColumns: "repeat(4, minmax(0, 1fr))" }}>
+        <div className="shortcuts-grid">
           {shortcuts.map(s => (
             <button
               key={s.id}

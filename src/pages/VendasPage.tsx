@@ -47,7 +47,7 @@ export default function VendasPage({ unitFilter = 'Todas' }: VendasPageProps) {
   return (
     <div className="content-max space-y-6">
       {/* Period nav */}
-      <div className="flex items-center justify-between">
+      <div className="filter-bar justify-between">
         <div className="flex items-center gap-2">
           <button
             onClick={() => {
@@ -84,7 +84,7 @@ export default function VendasPage({ unitFilter = 'Todas' }: VendasPageProps) {
       </div>
 
       {/* KPIs */}
-      <div className="grid gap-5" style={{ gridTemplateColumns: "repeat(4, minmax(0, 1fr))" }}>
+      <div className="kpi-grid-4">
         {[
           { label: 'Total vendido', value: `R$ ${totalCliente.toLocaleString('pt-BR')}`, color: 'var(--text-primary)' },
           { label: 'Devoluções', value: `R$ ${totalDevolutions.toLocaleString('pt-BR')}`, color: 'var(--danger)' },
@@ -113,7 +113,7 @@ export default function VendasPage({ unitFilter = 'Todas' }: VendasPageProps) {
       </div>
 
       {/* Filters */}
-      <div className="flex items-center gap-3">
+      <div className="filter-bar">
         <select
           value={brandFilter}
           onChange={e => setBrandFilter(e.target.value)}
@@ -149,7 +149,8 @@ export default function VendasPage({ unitFilter = 'Todas' }: VendasPageProps) {
           <h3 className="font-subheading text-[16px] text-[--text-primary]">Vendas — {period}</h3>
           <button className="px-3 py-1.5 border border-[--border] rounded-lg font-label text-[12px] text-[--text-secondary] hover:bg-[--bg-primary] cursor-pointer bg-[--bg-content] transition-colors">Exportar CSV</button>
         </div>
-        <table className="w-full">
+        <div className="table-scroll">
+        <table className="w-full" style={{ minWidth: 700 }}>
           <thead>
             <tr className="border-b border-[--border]">
               {['DATA', 'CÓDIGO / SKU', 'PRODUTO', 'VALOR CLIENTE', 'LOJA 50%', 'REPASSE', 'PGTO PREVISTO'].map(h => (
@@ -195,6 +196,7 @@ export default function VendasPage({ unitFilter = 'Todas' }: VendasPageProps) {
           </tbody>
           {/* Total moved to KPIs at top */}
         </table>
+        </div>
       </div>
 
       <VendaDetailModal sale={selectedSale} onClose={() => setSelectedSale(null)} />

@@ -90,7 +90,7 @@ export default function BrandMensalidadePage({ onNavigate }: BrandMensalidadePag
           <h3 className="font-subheading text-[16px] text-[--text-primary]">Mensalidade — Junho 2025</h3>
           <Badge status="success" label="Paga" showDot />
         </div>
-        <div className="grid gap-6" style={{ gridTemplateColumns: "repeat(4, minmax(0, 1fr))" }}>
+        <div className="contract-grid">
           <div>
             <p className="font-label text-[11px] text-[--text-tertiary] uppercase tracking-[1px] mb-1">VALOR</p>
             <p className="font-mono text-[20px] font-bold text-[--text-primary]">R$ {contract.mensalidade.toLocaleString('pt-BR')}</p>
@@ -166,7 +166,7 @@ export default function BrandMensalidadePage({ onNavigate }: BrandMensalidadePag
                 className="rounded-xl border border-[--border] p-5 overflow-hidden"
                 style={{ background: 'var(--bg-primary)' }}
               >
-                <div className="grid gap-5 items-center" style={{ gridTemplateColumns: "auto 1fr" }}>
+                <div className="pix-grid">
                   <div className="w-32 h-32 rounded-lg flex items-center justify-center" style={{ background: '#fff', border: '1px solid var(--border)' }}>
                     {/* simulated QR */}
                     <div
@@ -241,6 +241,7 @@ export default function BrandMensalidadePage({ onNavigate }: BrandMensalidadePag
             {showHistory ? 'Mostrar últimos 6' : 'Ver últimos 12 meses'}
           </button>
         </div>
+        <div className="table-scroll">
         <table className="w-full">
           <thead>
             <tr className="border-b border-[--border]">
@@ -261,6 +262,7 @@ export default function BrandMensalidadePage({ onNavigate }: BrandMensalidadePag
             ))}
           </tbody>
         </table>
+        </div>
         <p className="font-caption text-[--text-tertiary] mt-4">
           Mostrando {showHistory ? 12 : 6} de {paymentHistory.length} meses
         </p>
@@ -269,7 +271,7 @@ export default function BrandMensalidadePage({ onNavigate }: BrandMensalidadePag
       {/* Seu contrato */}
       <div className="card p-6">
         <h3 className="font-subheading text-[16px] text-[--text-primary] mb-4">Seu contrato</h3>
-        <div className="grid gap-6" style={{ gridTemplateColumns: "repeat(4, minmax(0, 1fr))" }}>
+        <div className="contract-grid">
           <div>
             <p className="font-label text-[11px] text-[--text-tertiary] uppercase tracking-[1px] mb-1">MARCA</p>
             <p className="font-subheading text-[14px] text-[--text-primary]">{amira.name}</p>

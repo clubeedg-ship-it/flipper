@@ -77,7 +77,7 @@ export default function DashboardPage({ onNavigate, unitFilter = 'Todas' }: Dash
   return (
     <div className="content-max space-y-8">
       {/* Metrics */}
-      <div className="grid gap-5" style={{ gridTemplateColumns: "repeat(4, minmax(0, 1fr))" }}>
+      <div className="kpi-grid-4">
         {metrics.map((m, i) => (
           <motion.div
             key={m.label}
@@ -109,19 +109,19 @@ export default function DashboardPage({ onNavigate, unitFilter = 'Todas' }: Dash
       <div className="card p-5" style={{ borderLeft: '3px solid var(--warning)' }}>
         <h4 className="font-label text-[11px] text-[--warning] uppercase tracking-[1px] mb-3">Pendências críticas</h4>
         <div className="space-y-2.5">
-          <div className="flex items-center gap-3">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" strokeWidth="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <div className="pending-item-row">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" strokeWidth="2" style={{ flexShrink: 0, marginTop: 2 }}><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
             <span className="font-body text-[13px] text-[--text-primary]"><strong>2 lojas parceiras</strong> com mensalidade em aberto — Lua Cheia e Marca D · Lembretes enviados em 01/06</span>
           </div>
-          <div className="flex items-center gap-3">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" strokeWidth="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <div className="pending-item-row">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" strokeWidth="2" style={{ flexShrink: 0, marginTop: 2 }}><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
             <span className="font-body text-[13px] text-[--text-primary]"><strong>3 SKUs sem loja parceira</strong> · R$ 890 travados fora do fechamento</span>
-            <button onClick={() => onNavigate?.('produtos')} className="ml-auto px-3 py-1 border border-[--border] rounded-md font-label text-[11px] text-[--text-primary] hover:bg-[--bg-primary] transition-colors cursor-pointer bg-[--bg-content]">Resolver</button>
+            <button onClick={() => onNavigate?.('produtos')} className="pending-item-btn px-3 py-1 border border-[--border] rounded-md font-label text-[11px] text-[--text-primary] hover:bg-[--bg-primary] transition-colors cursor-pointer bg-[--bg-content]">Resolver</button>
           </div>
-          <div className="flex items-center gap-3">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-tertiary)" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          <div className="pending-item-row">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-tertiary)" strokeWidth="2" style={{ flexShrink: 0, marginTop: 2 }}><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
             <span className="font-body text-[13px] text-[--text-secondary]"><strong>Terra Mãe</strong> — cadastro incompleto, sem contrato definido</span>
-            <button onClick={() => setSelectedBrand('Terra Mãe')} className="ml-auto px-3 py-1 border border-[--border] rounded-md font-label text-[11px] text-[--text-primary] hover:bg-[--bg-primary] transition-colors cursor-pointer bg-[--bg-content]">Revisar</button>
+            <button onClick={() => setSelectedBrand('Terra Mãe')} className="pending-item-btn px-3 py-1 border border-[--border] rounded-md font-label text-[11px] text-[--text-primary] hover:bg-[--bg-primary] transition-colors cursor-pointer bg-[--bg-content]">Revisar</button>
           </div>
         </div>
       </div>
@@ -176,6 +176,7 @@ export default function DashboardPage({ onNavigate, unitFilter = 'Todas' }: Dash
             Ver todos
           </button>
         </div>
+        <div className="table-scroll">
         <table className="w-full">
           <thead>
             <tr className="border-b border-[--border]">
@@ -207,10 +208,11 @@ export default function DashboardPage({ onNavigate, unitFilter = 'Todas' }: Dash
             })}
           </tbody>
         </table>
+        </div>
       </div>
 
       {/* Bottom row */}
-      <div className="grid gap-5" style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))" }}>
+      <div className="two-col-grid">
         <div className="card p-6">
           <h3 className="font-subheading text-[16px] text-[--text-primary] mb-4">Próximos vencimentos</h3>
           <div className="space-y-3">

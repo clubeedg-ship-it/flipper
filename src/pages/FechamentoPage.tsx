@@ -63,7 +63,7 @@ export default function FechamentoPage({ onNavigate, unitFilter = 'Todas' }: Fec
   return (
     <div className="content-max space-y-8">
       {/* Period selector */}
-      <div className="flex items-center justify-between">
+      <div className="filter-bar justify-between">
         <div className="flex items-center gap-2">
           <span className="font-label text-[11px] text-[--text-tertiary] uppercase tracking-[1px]">Período</span>
           <select
@@ -87,7 +87,7 @@ export default function FechamentoPage({ onNavigate, unitFilter = 'Todas' }: Fec
         <h2 className="font-heading text-[20px] text-[--text-primary] mb-6">Junho 2025 — em andamento</h2>
 
         {/* Metrics */}
-        <div className="grid gap-5 mb-6" style={{ gridTemplateColumns: "repeat(4, minmax(0, 1fr))" }}>
+        <div className="kpi-grid-4 mb-6">
           {[
             { label: 'TOTAL VENDAS', value: totalVendido, sub: `${filteredClosing.length} lojas parceiras` },
             { label: 'FICA PARA LOJA', value: totalLoja, sub: '50% das vendas elegíveis' },
@@ -132,7 +132,7 @@ export default function FechamentoPage({ onNavigate, unitFilter = 'Todas' }: Fec
               {checklistSteps.filter(s => s.status !== 'ok').length} pendências
             </span>
           </div>
-          <div className="grid gap-4" style={{ gridTemplateColumns: "repeat(4, minmax(0, 1fr))" }}>
+          <div className="checklist-grid">
             {checklistSteps.map(step => (
               <div
                 key={step.label}
@@ -190,7 +190,8 @@ export default function FechamentoPage({ onNavigate, unitFilter = 'Todas' }: Fec
               </button>
             </div>
           </div>
-          <table className="w-full">
+          <div className="table-scroll">
+          <table className="w-full" style={{ minWidth: 640 }}>
             <thead>
               <tr className="border-b border-[--border]">
                 {['LOJA PARCEIRA', 'VENDIDO CLIENTE', 'FICA LOJA', 'REPASSE', 'NF-E', 'STATUS', ''].map(h => (
@@ -236,6 +237,7 @@ export default function FechamentoPage({ onNavigate, unitFilter = 'Todas' }: Fec
               })}
             </tbody>
           </table>
+          </div>
         </div>
       </div>
     </div>

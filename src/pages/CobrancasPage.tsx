@@ -98,7 +98,7 @@ export default function CobrancasPage({ unitFilter = 'Todas', onNavigate }: Cobr
   return (
     <div className="content-max space-y-6">
       {/* Period nav */}
-      <div className="flex items-center justify-between">
+      <div className="filter-bar justify-between">
         <div className="flex items-center gap-2">
           <button
             onClick={() => {
@@ -137,7 +137,7 @@ export default function CobrancasPage({ unitFilter = 'Todas', onNavigate }: Cobr
       </div>
 
       {/* KPIs */}
-      <div className="grid gap-5" style={{ gridTemplateColumns: "repeat(3, minmax(0, 1fr))" }}>
+      <div className="kpi-grid-3">
         {[
           { label: 'Total esperado', value: `R$ ${totalEsperado.toLocaleString('pt-BR')}`, color: 'var(--text-primary)' },
           { label: 'Total recebido', value: `R$ ${totalRecebido.toLocaleString('pt-BR')}`, color: 'var(--success)' },
@@ -175,6 +175,7 @@ export default function CobrancasPage({ unitFilter = 'Todas', onNavigate }: Cobr
             Reenviar lembretes (massa)
           </button>
         </div>
+        <div className="table-scroll">
         <table className="w-full">
           <thead>
             <tr className="border-b border-[--border]">
@@ -212,6 +213,7 @@ export default function CobrancasPage({ unitFilter = 'Todas', onNavigate }: Cobr
             ))}
           </tbody>
         </table>
+        </div>
       </div>
 
       {/* 3-month payment history */}
