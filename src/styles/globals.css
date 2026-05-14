@@ -1,31 +1,40 @@
 @import "tailwindcss";
 
 :root {
-  --bg-primary: #FAF9F7;
-  --bg-content: #FFFFFF;
-  --bg-sidebar: #FFFFFF;
-  --text-primary: #1A1A1A;
-  --text-secondary: #6B7280;
-  --text-tertiary: #9CA3AF;
+  --bg-primary: #F0EEEB;
+  --bg-content: rgba(255,255,255,0.72);
+  --bg-content-solid: #FFFFFF;
+  --bg-sidebar: rgba(255,255,255,0.55);
+  --bg-glass: rgba(255,255,255,0.6);
+  --bg-glass-hover: rgba(255,255,255,0.8);
+  --text-primary: #111111;
+  --text-secondary: #555555;
+  --text-tertiary: #999999;
   --accent: #0D9488;
-  --accent-hover: #0F766E;
+  --accent-hover: #0B7A70;
   --accent-light: #CCFBF1;
-  --accent-subtle: #F0FDFA;
+  --accent-subtle: rgba(13,148,136,0.08);
   --success: #16A34A;
-  --success-light: #DCFCE7;
-  --warning: #F59E0B;
-  --warning-light: #FEF3C7;
+  --success-light: rgba(22,163,74,0.12);
+  --warning: #E5A000;
+  --warning-light: rgba(229,160,0,0.12);
   --danger: #DC2626;
-  --danger-light: #FEE2E2;
-  --border: #E5E7EB;
-  --border-warm: #E8E5E0;
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-  --radius-xl: 20px;
-  --shadow-card: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.03);
-  --shadow-hover: 0 4px 12px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.03);
-  --shadow-elevated: 0 10px 40px rgba(0,0,0,0.08);
+  --danger-light: rgba(220,38,38,0.10);
+  --border: rgba(0,0,0,0.08);
+  --border-warm: rgba(0,0,0,0.06);
+  --border-glass: rgba(255,255,255,0.45);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --blur: 20px;
+  --shadow-card: 0 1px 2px rgba(0,0,0,0.04), 0 2px 8px rgba(0,0,0,0.03);
+  --shadow-hover: 0 4px 16px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
+  --shadow-elevated: 0 12px 48px rgba(0,0,0,0.10), 0 4px 12px rgba(0,0,0,0.05);
+  --shadow-glass: 0 8px 32px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.5);
+  --sidebar-width: 240px;
+  --sidebar-collapsed: 68px;
+  --sidebar-gap: 12px;
 }
 
 html {
@@ -37,8 +46,12 @@ html {
 body {
   font-family: 'Inter', sans-serif;
   color: var(--text-primary);
-  background: var(--bg-primary);
   height: 100%;
+  background: var(--bg-primary);
+  background-image:
+    radial-gradient(ellipse 80% 60% at 10% 90%, rgba(13,148,136,0.05) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 90% 20%, rgba(13,148,136,0.04) 0%, transparent 50%);
+  background-attachment: fixed;
 }
 
 #root {
@@ -48,11 +61,13 @@ body {
 .font-display {
   font-family: 'DM Sans', sans-serif;
   font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 .font-heading {
   font-family: 'DM Sans', sans-serif;
   font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 .font-subheading {
@@ -95,9 +110,12 @@ body {
 
 .card {
   background: var(--bg-content);
-  border: 1px solid var(--border);
+  backdrop-filter: blur(var(--blur));
+  -webkit-backdrop-filter: blur(var(--blur));
+  border: 1px solid var(--border-glass);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
+  transition: box-shadow 0.2s, transform 0.2s;
 }
 
 .card:hover {
@@ -106,11 +124,18 @@ body {
 
 .metric-card {
   background: var(--bg-content);
-  border: 1px solid var(--border);
+  backdrop-filter: blur(var(--blur));
+  -webkit-backdrop-filter: blur(var(--blur));
+  border: 1px solid var(--border-glass);
   border-radius: var(--radius-lg);
   padding: 24px;
   box-shadow: var(--shadow-card);
-  transition: box-shadow 0.2s;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.metric-card:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-1px);
 }
 
 .alert-banner {
@@ -120,24 +145,37 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .alert-banner-warning {
   background: var(--warning-light);
-  color: #92400E;
+  color: #7A5A00;
+  border: 1px solid rgba(229,160,0,0.15);
 }
 
 .alert-banner-success {
   background: var(--success-light);
   color: #166534;
+  border: 1px solid rgba(22,163,74,0.15);
 }
 
 .alert-banner-danger {
   background: var(--danger-light);
   color: #991B1B;
+  border: 1px solid rgba(220,38,38,0.15);
 }
 
 .content-max {
   max-width: 1120px;
   margin: 0 auto;
+}
+
+.glass-surface {
+  background: var(--bg-glass);
+  backdrop-filter: blur(var(--blur));
+  -webkit-backdrop-filter: blur(var(--blur));
+  border: 1px solid var(--border-glass);
+  box-shadow: var(--shadow-glass);
 }
