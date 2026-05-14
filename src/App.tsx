@@ -93,9 +93,9 @@ function renderPage(page: string, onNavigate: (p: string) => void, unitFilter: U
 }
 
 export default function App() {
-  const [setupDone, setSetupDone] = useState(false);
-  const [role, setRole] = useState<Role>('financeiro');
-  const [currentPage, setCurrentPage] = useState('dashboard');
+  const [setupDone, setSetupDone] = useState(() => sessionStorage.getItem('flipper-setup-done') === '1');
+  const [role, setRole] = useState<Role>(() => (sessionStorage.getItem('flipper-role') as Role) || 'financeiro');
+  const [currentPage, setCurrentPage] = useState(() => sessionStorage.getItem('flipper-page') || 'dashboard');
   const [unitFilter, setUnitFilter] = useState<UnitFilter>('Todas');
   const [unitOpen, setUnitOpen] = useState(false);
   const unitRef = useRef<HTMLDivElement>(null);
@@ -110,24 +110,30 @@ export default function App() {
   }, [unitOpen]);
 
   const handleSetupComplete = (config: { language: string; role: Role }) => {
+    const page = config.role === 'financeiro' ? 'dashboard' : 'brand-home';
     setRole(config.role);
-    setCurrentPage(config.role === 'financeiro' ? 'dashboard' : 'brand-home');
+    setCurrentPage(page);
     setSetupDone(true);
+    sessionStorage.setItem('flipper-setup-done', '1');
+    sessionStorage.setItem('flipper-role', config.role);
+    sessionStorage.setItem('flipper-page', page);
   };
 
   const handleNavigate = (page: string) => {
+    const newRole = page.startsWith('brand-') ? 'expositor' : 'financeiro';
     setCurrentPage(page);
-    if (page.startsWith('brand-')) {
-      setRole('expositor');
-    } else {
-      setRole('financeiro');
-    }
+    setRole(newRole);
+    sessionStorage.setItem('flipper-page', page);
+    sessionStorage.setItem('flipper-role', newRole);
   };
 
   const switchRole = () => {
     const next: Role = role === 'financeiro' ? 'expositor' : 'financeiro';
+    const page = next === 'financeiro' ? 'dashboard' : 'brand-home';
     setRole(next);
-    setCurrentPage(next === 'financeiro' ? 'dashboard' : 'brand-home');
+    setCurrentPage(page);
+    sessionStorage.setItem('flipper-role', next);
+    sessionStorage.setItem('flipper-page', page);
   };
 
   if (!setupDone) {
