@@ -146,7 +146,7 @@ export default function RepassesPage({ onNavigate, unitFilter = 'Todas' }: Repas
                         {eff === 'danger' && (
                           <p className="font-caption text-[--danger]">
                             Mensalidade em atraso ·{' '}
-                            <span className="underline cursor-pointer" onClick={e => { e.stopPropagation(); onNavigate?.('cobrancas'); }}>Regularizar</span>
+                            <span className="underline cursor-pointer" onClick={e => { e.stopPropagation(); onNavigate?.('cobrancas'); }}>Regularizar em Cobranças</span>
                           </p>
                         )}
                       </div>
