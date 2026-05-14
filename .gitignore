@@ -25,3 +25,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+feedback/thay/images/.gitkeep
+!feedback/thay/README.md
+!feedback/thay/*.jsonl
+feedback/thay/audio/*.m4a
