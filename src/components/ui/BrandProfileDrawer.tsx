@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { brands } from '../../data/brands';
+import { products } from '../../data/products';
 import Badge from './Badge';
 
 const brandAvatars: Record<string, { letters: string; color: string }> = {
@@ -26,6 +27,7 @@ export default function BrandProfileDrawer({ brandName, onClose }: BrandProfileD
 
   const avatar = brandAvatars[brand.name] || { letters: brand.name.slice(0, 2).toUpperCase(), color: '#6B7280' };
   const { contract, june, history } = brand.drawer;
+  const brandProducts = products.filter(p => p.brand === brand.name);
 
   const vencimentoDate = contract.vencimento === '—' ? '—' : `05/07`;
 
@@ -171,6 +173,32 @@ export default function BrandProfileDrawer({ brandName, onClose }: BrandProfileD
                   </div>
                 </div>
               )}
+
+              {/* Produtos / SKUs vinculados — moved here from standalone Produtos page */}
+              <div className="rounded-xl border border-[--border] p-5 space-y-3">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-subheading text-[14px] text-[--text-primary]">Produtos cadastrados</h3>
+                  <span className="font-caption text-[--text-tertiary]">{brandProducts.length} SKU{brandProducts.length === 1 ? '' : 's'}</span>
+                </div>
+                {brandProducts.length === 0 ? (
+                  <p className="font-body text-[13px] text-[--text-tertiary]">Nenhum SKU vinculado a esta marca ainda.</p>
+                ) : (
+                  <div className="space-y-0">
+                    {brandProducts.map(p => (
+                      <div key={p.sku} className="flex items-center justify-between py-2.5 border-b border-[--border] last:border-b-0 gap-3">
+                        <div className="flex-1 min-w-0">
+                          <p className="font-body text-[13px] text-[--text-primary] truncate">{p.name}</p>
+                          <p className="font-mono text-[11px] text-[--text-tertiary]">{p.sku} · {p.origin}</p>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <p className="font-mono text-[13px] text-[--text-primary]">R$ {p.salePrice.toLocaleString('pt-BR')}</p>
+                          <p className="font-caption text-[--text-tertiary]">marca: R$ {p.partnerValue.toLocaleString('pt-BR')}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </motion.div>
         </motion.div>
