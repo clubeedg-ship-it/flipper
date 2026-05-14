@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import SetupWizard from './components/SetupWizard';
 import Sidebar from './components/Sidebar';
+import ChatWidget from './components/ChatWidget';
 
 import type { UnitFilter } from './data/brands';
 const unitLabels: Record<UnitFilter, string> = {
@@ -183,6 +184,9 @@ export default function App() {
       <div className="desktop-sidebar h-full">
         <Sidebar role={role} currentPage={currentPage} onNavigate={handleNavigate} onLogout={switchRole} />
       </div>
+
+      {/* Chat assistant — rendered on all pages, above content, below modals */}
+      <ChatWidget />
 
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0 main-area-padding">

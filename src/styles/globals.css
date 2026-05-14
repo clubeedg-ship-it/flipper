@@ -462,6 +462,45 @@ body {
   }
 }
 
+/* ── Chat widget ── */
+/* FAB wrapper — panel sits above the button, right-aligned */
+.chat-panel-wrapper {
+  position: fixed;
+  bottom: 88px; /* 24px bottom + 52px FAB + 12px gap */
+  right: 24px;
+  z-index: 30;
+  width: 380px;
+  max-height: 500px;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-panel {
+  width: 100%;
+  max-height: 500px;
+}
+
+/* Mobile: full-width bottom sheet */
+@media (max-width: 639px) {
+  .chat-panel-wrapper {
+    bottom: 0;
+    right: 0;
+    left: 0;
+    width: 100%;
+    max-height: 70vh;
+  }
+
+  .chat-panel {
+    max-height: 70vh;
+    border-radius: 16px 16px 0 0 !important;
+  }
+
+  .chat-fab {
+    bottom: 16px !important;
+    right: 16px !important;
+  }
+}
+
 /* ── Pending items alert: stack button below text on mobile ── */
 .pending-item-row {
   display: flex;
