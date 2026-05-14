@@ -90,8 +90,8 @@ export default function RepassesPage({ onNavigate, unitFilter = 'Todas' }: Repas
 
   return (
     <div className="content-max space-y-6">
-      {/* KPI strip */}
-      <div className="grid gap-5" style={{ gridTemplateColumns: "repeat(4, minmax(0, 1fr))" }}>
+      {/* KPI strip — 2 cols mobile, 4 cols desktop */}
+      <div className="kpi-grid-repasses grid gap-3" style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))" }}>
         {[
           { label: 'TOTAL A REPASSAR', value: totalRepasse, color: undefined },
           { label: 'TOTAL PAGO', value: totalPago, color: '#16A34A' },
@@ -105,11 +105,12 @@ export default function RepassesPage({ onNavigate, unitFilter = 'Todas' }: Repas
             transition={{ duration: 0.3, delay: i * 0.06 }}
             className="metric-card"
           >
-            <p className="font-label text-[11px] text-[--text-tertiary] uppercase tracking-[1px] mb-3">{m.label}</p>
-            <CountUp end={m.value} prefix="R$" start className="text-[28px] font-bold text-[--text-primary]" formatOptions={{ useGrouping: true }} />
+            <p className="font-label text-[11px] text-[--text-tertiary] uppercase tracking-[1px] mb-2">{m.label}</p>
+            <CountUp end={m.value} prefix="R$" start className="text-[20px] font-bold text-[--text-primary]" formatOptions={{ useGrouping: true }} />
           </motion.div>
         ))}
       </div>
+      <style>{`@media (min-width: 768px) { .kpi-grid-repasses { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; gap: 1.25rem; } .kpi-grid-repasses .text-\\[20px\\] { font-size: 28px; } }`}</style>
 
       {/* Alert */}
       <div className="alert-banner alert-banner-success">
@@ -117,56 +118,62 @@ export default function RepassesPage({ onNavigate, unitFilter = 'Todas' }: Repas
         <span>Repasses de junho serão processados até 20/07/2025.</span>
       </div>
 
-      {/* Table */}
-      <div className="card p-6">
+      {/* Table — scrollable on mobile, hide secondary cols */}
+      <div className="card p-4 sm:p-6">
         <h3 className="font-subheading text-[16px] text-[--text-primary] mb-5">Repasses — Junho 2025</h3>
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-[--border]">
-              {['LOJA PARCEIRA', 'VENDIDO CLIENTE', 'FICA LOJA', 'REPASSE', 'PGTO', 'STATUS'].map(h => (
-                <th key={h} className="text-left font-label text-[11px] text-[--text-tertiary] uppercase tracking-[1px] py-3 pr-4 last:pr-0">{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {filteredRows.map(r => {
-              const eff = getEffectiveStatus(r);
-              const paid = paidBrands[r.brand] || (r.paidDate ? { date: r.paidDate, method: r.paidMethod || '' } : null);
-              return (
-                <tr
-                  key={r.brand}
-                  className="border-b border-[--border] last:border-b-0 hover:bg-[--bg-primary]/50 transition-colors cursor-pointer"
-                  onClick={() => setSelectedBrand(r.brand)}
-                >
-                  <td className="py-3.5 pr-4">
-                    <div className="flex items-center gap-3">
-                      <span className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold text-white shrink-0" style={{ background: r.avatar.color }}>{r.avatar.letters}</span>
-                      <div>
-                        <span className="font-subheading text-[14px]">{r.brand}</span>
-                        {eff === 'danger' && (
-                          <p className="font-caption text-[--danger]">
-                            Mensalidade em atraso ·{' '}
-                            <span className="underline cursor-pointer" onClick={e => { e.stopPropagation(); onNavigate?.('cobrancas'); }}>Regularizar em Cobranças</span>
-                          </p>
-                        )}
+        <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+          <table className="w-full" style={{ minWidth: '600px' }}>
+            <thead>
+              <tr className="border-b border-[--border]">
+                <th className="text-left font-label text-[11px] text-[--text-tertiary] uppercase tracking-[1px] py-3 pr-4">LOJA PARCEIRA</th>
+                <th className="text-left font-label text-[11px] text-[--text-tertiary] uppercase tracking-[1px] py-3 pr-4 repasses-hide-mobile">VENDIDO CLIENTE</th>
+                <th className="text-left font-label text-[11px] text-[--text-tertiary] uppercase tracking-[1px] py-3 pr-4 repasses-hide-mobile">FICA LOJA</th>
+                <th className="text-left font-label text-[11px] text-[--text-tertiary] uppercase tracking-[1px] py-3 pr-4">REPASSE</th>
+                <th className="text-left font-label text-[11px] text-[--text-tertiary] uppercase tracking-[1px] py-3 pr-4 repasses-hide-mobile">PGTO</th>
+                <th className="text-left font-label text-[11px] text-[--text-tertiary] uppercase tracking-[1px] py-3">STATUS</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredRows.map(r => {
+                const eff = getEffectiveStatus(r);
+                const paid = paidBrands[r.brand] || (r.paidDate ? { date: r.paidDate, method: r.paidMethod || '' } : null);
+                return (
+                  <tr
+                    key={r.brand}
+                    className="border-b border-[--border] last:border-b-0 hover:bg-[--bg-primary]/50 transition-colors cursor-pointer"
+                    onClick={() => setSelectedBrand(r.brand)}
+                  >
+                    <td className="py-3.5 pr-4">
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <span className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold text-white shrink-0" style={{ background: r.avatar.color }}>{r.avatar.letters}</span>
+                        <div className="min-w-0">
+                          <span className="font-subheading text-[13px] sm:text-[14px] truncate block">{r.brand}</span>
+                          {eff === 'danger' && (
+                            <p className="font-caption text-[--danger] text-[11px] truncate">
+                              Atraso ·{' '}
+                              <span className="underline cursor-pointer" onClick={e => { e.stopPropagation(); onNavigate?.('cobrancas'); }}>Regularizar</span>
+                            </p>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </td>
-                  <td className="py-3.5 pr-4 font-mono text-[14px]">R$ {r.vendido.toLocaleString('pt-BR')}</td>
-                  <td className="py-3.5 pr-4 font-mono text-[14px]">R$ {r.ficaLoja.toLocaleString('pt-BR')}</td>
-                  <td className="py-3.5 pr-4 font-mono text-[14px]" style={{ color: '#0D9488' }}>R$ {r.repasse.toLocaleString('pt-BR')}</td>
-                  <td className="py-3.5 pr-4 font-body text-[13px] text-[--text-secondary]">
-                    {paid ? `${paid.date} · ${paid.method}` : '—'}
-                  </td>
-                  <td className="py-3.5">
-                    <Badge status={eff} label={eff === 'success' ? 'Pago' : eff === 'danger' ? 'Bloqueado' : 'Pendente'} showDot />
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                    </td>
+                    <td className="py-3.5 pr-4 font-mono text-[14px] repasses-hide-mobile">R$ {r.vendido.toLocaleString('pt-BR')}</td>
+                    <td className="py-3.5 pr-4 font-mono text-[14px] repasses-hide-mobile">R$ {r.ficaLoja.toLocaleString('pt-BR')}</td>
+                    <td className="py-3.5 pr-4 font-mono text-[13px] sm:text-[14px]" style={{ color: '#0D9488' }}>R$ {r.repasse.toLocaleString('pt-BR')}</td>
+                    <td className="py-3.5 pr-4 font-body text-[13px] text-[--text-secondary] repasses-hide-mobile">
+                      {paid ? `${paid.date} · ${paid.method}` : '—'}
+                    </td>
+                    <td className="py-3.5">
+                      <Badge status={eff} label={eff === 'success' ? 'Pago' : eff === 'danger' ? 'Bloqueado' : 'Pendente'} showDot />
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
+      <style>{`@media (max-width: 639px) { .repasses-hide-mobile { display: none; } }`}</style>
 
       {/* 3-state modal */}
       <AnimatePresence>
@@ -175,15 +182,15 @@ export default function RepassesPage({ onNavigate, unitFilter = 'Todas' }: Repas
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center"
+            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
             style={{ background: 'rgba(0,0,0,0.4)' }}
             onClick={() => setSelectedBrand(null)}
           >
             <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-[--bg-content-solid] rounded-2xl p-8 w-full max-w-lg shadow-2xl"
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="bg-[--bg-content-solid] rounded-t-2xl sm:rounded-2xl p-5 sm:p-8 w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto"
               style={{ border: '1px solid var(--border)' }}
               onClick={e => e.stopPropagation()}
             >
