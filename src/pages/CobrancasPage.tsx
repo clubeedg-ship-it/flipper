@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { brands } from '../data/brands';
 import Badge from '../components/ui/Badge';
-import BrandProfileDrawer from '../components/ui/BrandProfileDrawer';
+import CobrancaModal, { type CobrancaModalData } from '../components/ui/CobrancaModal';
 import type { BrandStatus, UnitFilter } from '../data/brands';
 
 interface Cobranca {
@@ -13,6 +13,7 @@ interface Cobranca {
   metodo: string;
   status: string;
   statusType: BrandStatus;
+  comprovante?: { fileName: string; sentAt: string };
 }
 
 const cobrancas: Cobranca[] = brands
@@ -29,15 +30,30 @@ const cobrancas: Cobranca[] = brands
     metodo: b.mensalidadeStatus === 'success' ? 'Pix' : '—',
     status: b.mensalidadeStatus === 'success' ? 'Pago' : b.mensalidadeStatus === 'danger' ? 'Atrasado' : 'Pendente',
     statusType: b.mensalidadeStatus,
+    // Hardcoded: Lua Cheia sent a comprovante that's awaiting financeiro review
+    comprovante: b.name === 'Lua Cheia' ? { fileName: 'comprovante-lua-cheia-jun.pdf', sentAt: '08/06/2025' } : undefined,
   }));
 
 interface CobrancasPageProps {
   unitFilter?: UnitFilter;
+  onNavigate?: (page: string) => void;
 }
 
-export default function CobrancasPage({ unitFilter = 'Todas' }: CobrancasPageProps) {
+type PeriodPattern = 'pago-em-dia' | 'pago-com-atraso' | 'inadimplente' | 'sem-historico';
+
+interface HistoryRow {
+  brand: string;
+  avatar: { letters: string; color: string };
+  months: { label: string; status: 'paid-on-time' | 'paid-late' | 'unpaid' | 'na' }[];
+  pattern: PeriodPattern;
+}
+
+const months = ['Junho 2025', 'Maio 2025', 'Abril 2025', 'Março 2025'];
+
+export default function CobrancasPage({ unitFilter = 'Todas', onNavigate }: CobrancasPageProps) {
   const [reminderSent, setReminderSent] = useState(false);
-  const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
+  const [selectedCobranca, setSelectedCobranca] = useState<CobrancaModalData | null>(null);
+  const [period, setPeriod] = useState(months[0]);
 
   const filteredCobrancas = useMemo(() =>
     unitFilter === 'Todas' ? cobrancas : cobrancas.filter(c => {
@@ -52,8 +68,74 @@ export default function CobrancasPage({ unitFilter = 'Todas' }: CobrancasPagePro
   const totalRecebido = filteredCobrancas.filter(c => c.statusType === 'success').reduce((s, c) => s + c.valor, 0);
   const totalAberto = totalEsperado - totalRecebido;
 
+  // Build deterministic 3-month history per brand from current month status
+  const history: HistoryRow[] = useMemo(() => filteredCobrancas.map(c => {
+    let pattern: PeriodPattern = 'pago-em-dia';
+    if (c.statusType === 'danger') pattern = 'inadimplente';
+    else if (c.statusType === 'warning') pattern = 'pago-com-atraso';
+    return {
+      brand: c.brand,
+      avatar: c.avatar,
+      pattern,
+      months: [
+        { label: 'Mai/2025', status: pattern === 'inadimplente' ? 'paid-late' : 'paid-on-time' },
+        { label: 'Abr/2025', status: pattern === 'inadimplente' ? 'paid-late' : 'paid-on-time' },
+        { label: 'Mar/2025', status: pattern === 'inadimplente' ? 'paid-on-time' : 'paid-on-time' },
+      ],
+    };
+  }), [filteredCobrancas]);
+
+  const patternLabel = (p: PeriodPattern) =>
+    p === 'pago-em-dia' ? 'Sempre em dia' :
+    p === 'pago-com-atraso' ? 'Costuma atrasar' :
+    p === 'inadimplente' ? 'Inadimplência recorrente' : 'Sem histórico';
+
+  const patternColor = (p: PeriodPattern) =>
+    p === 'pago-em-dia' ? 'var(--success)' :
+    p === 'pago-com-atraso' ? 'var(--warning)' :
+    p === 'inadimplente' ? 'var(--danger)' : 'var(--text-tertiary)';
+
   return (
     <div className="content-max space-y-6">
+      {/* Period nav */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => {
+              const i = months.indexOf(period);
+              if (i < months.length - 1) setPeriod(months[i + 1]);
+            }}
+            disabled={period === months[months.length - 1]}
+            className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer border border-[--border] text-[--text-secondary] hover:bg-[--bg-primary] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            style={{ background: 'var(--bg-content-solid)' }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <select
+            value={period}
+            onChange={e => setPeriod(e.target.value)}
+            className="px-3 py-1.5 border border-[--border] rounded-lg font-body text-[13px] text-[--text-primary] cursor-pointer"
+            style={{ background: 'var(--bg-content-solid)' }}
+          >
+            {months.map(m => <option key={m}>{m}</option>)}
+          </select>
+          <button
+            onClick={() => {
+              const i = months.indexOf(period);
+              if (i > 0) setPeriod(months[i - 1]);
+            }}
+            disabled={period === months[0]}
+            className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer border border-[--border] text-[--text-secondary] hover:bg-[--bg-primary] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            style={{ background: 'var(--bg-content-solid)' }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+        <p className="font-caption text-[--text-tertiary]">
+          {filteredCobrancas.length} mensalidades · {period}
+        </p>
+      </div>
+
       {/* KPIs */}
       <div className="grid gap-5" style={{ gridTemplateColumns: "repeat(3, minmax(0, 1fr))" }}>
         {[
@@ -84,10 +166,11 @@ export default function CobrancasPage({ unitFilter = 'Todas' }: CobrancasPagePro
       {/* Table */}
       <div className="card p-6">
         <div className="flex items-center justify-between mb-5">
-          <h3 className="font-subheading text-[16px] text-[--text-primary]">Mensalidades — Junho 2025</h3>
+          <h3 className="font-subheading text-[16px] text-[--text-primary]">Mensalidades — {period}</h3>
           <button
             onClick={() => setReminderSent(true)}
-            className="px-4 py-2 rounded-lg font-label text-[12px] text-[--text-secondary] cursor-pointer border border-[--border] transition-colors hover:bg-[--bg-primary] bg-[--bg-content]"
+            className="px-4 py-2 rounded-lg font-label text-[12px] text-[--text-secondary] cursor-pointer border border-[--border] transition-colors hover:bg-[--bg-primary]"
+            style={{ background: 'var(--bg-content-solid)' }}
           >
             Reenviar lembretes (massa)
           </button>
@@ -102,11 +185,22 @@ export default function CobrancasPage({ unitFilter = 'Todas' }: CobrancasPagePro
           </thead>
           <tbody>
             {filteredCobrancas.map(c => (
-              <tr key={c.brand} className="border-b border-[--border] last:border-b-0 hover:bg-[--bg-primary]/50 transition-colors cursor-pointer" onClick={() => setSelectedBrand(c.brand)}>
+              <tr
+                key={c.brand}
+                className="border-b border-[--border] last:border-b-0 hover:bg-[--bg-primary]/50 transition-colors cursor-pointer"
+                onClick={() => setSelectedCobranca(c)}
+              >
                 <td className="py-3.5 pr-4">
                   <div className="flex items-center gap-3">
                     <span className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold text-white shrink-0" style={{ background: c.avatar.color }}>{c.avatar.letters}</span>
-                    <span className="font-subheading text-[14px]">{c.brand}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-subheading text-[14px]">{c.brand}</span>
+                      {c.comprovante && (
+                        <span className="px-1.5 py-0.5 rounded text-[10px] font-bold" style={{ background: 'rgba(13,148,136,0.12)', color: '#0D9488' }} title="Comprovante recebido">
+                          Comprovante
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </td>
                 <td className="py-3.5 pr-4 font-mono text-[14px]">R$ {c.valor.toLocaleString('pt-BR')}</td>
@@ -120,7 +214,42 @@ export default function CobrancasPage({ unitFilter = 'Todas' }: CobrancasPagePro
         </table>
       </div>
 
-      <BrandProfileDrawer brandName={selectedBrand} onClose={() => setSelectedBrand(null)} />
+      {/* 3-month payment history */}
+      <div className="card p-6">
+        <div className="flex items-center justify-between mb-5">
+          <div>
+            <h3 className="font-subheading text-[16px] text-[--text-primary]">Histórico de pagamentos — últimos 3 meses</h3>
+            <p className="font-caption text-[--text-tertiary] mt-1">Padrão de cada loja parceira</p>
+          </div>
+        </div>
+        <div className="space-y-1">
+          {history.map(h => (
+            <div key={h.brand} className="flex items-center gap-4 py-3 px-2 rounded-lg hover:bg-[--bg-primary]/50 transition-colors">
+              <span className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold text-white shrink-0" style={{ background: h.avatar.color }}>{h.avatar.letters}</span>
+              <span className="font-subheading text-[14px] w-32 shrink-0">{h.brand}</span>
+              <div className="flex items-center gap-1.5">
+                {h.months.map(m => {
+                  const fill =
+                    m.status === 'paid-on-time' ? 'var(--success)' :
+                    m.status === 'paid-late' ? 'var(--warning)' :
+                    m.status === 'unpaid' ? 'var(--danger)' : 'var(--bg-primary)';
+                  return (
+                    <span key={m.label} className="flex flex-col items-center gap-1">
+                      <span className="w-3 h-3 rounded-full" style={{ background: fill }} />
+                      <span className="font-caption text-[10px] text-[--text-tertiary]">{m.label.split('/')[0]}</span>
+                    </span>
+                  );
+                })}
+              </div>
+              <span className="ml-auto font-label text-[12px]" style={{ color: patternColor(h.pattern) }}>
+                {patternLabel(h.pattern)}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <CobrancaModal data={selectedCobranca} onClose={() => setSelectedCobranca(null)} onNavigate={onNavigate} />
     </div>
   );
 }

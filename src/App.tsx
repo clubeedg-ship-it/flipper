@@ -72,7 +72,7 @@ function renderPage(page: string, onNavigate: (p: string) => void, unitFilter: U
     case 'produtos':
       return <ProdutosPage />;
     case 'cobrancas':
-      return <CobrancasPage unitFilter={unitFilter} />;
+      return <CobrancasPage unitFilter={unitFilter} onNavigate={onNavigate} />;
     case 'repasses':
       return <RepassesPage onNavigate={onNavigate} unitFilter={unitFilter} />;
     case 'nfe':
