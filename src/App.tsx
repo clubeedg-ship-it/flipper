@@ -78,7 +78,7 @@ function renderPage(page: string, onNavigate: (p: string) => void, unitFilter: U
     case 'nfe':
       return <NFePage unitFilter={unitFilter} />;
     case 'brand-home':
-      return <BrandHomePage />;
+      return <BrandHomePage onNavigate={onNavigate} />;
     case 'brand-vendas':
       return <BrandVendasPage />;
     case 'brand-repasses':
