@@ -1,13 +1,19 @@
 /**
  * observability.js
  *
- * In-memory log of all chat exchanges + evaluation rules for the 3 key prompts.
- * Each log entry captures: sessionId, message, reply, latency, timestamp, and
- * if it matches an eval prompt, a scored breakdown of expected vs actual references.
+ * File-backed log of all chat exchanges + evaluation rules for the 3 key prompts.
+ * Logs are persisted to a JSONL file so the admin server (separate process) can read them.
  */
 
-/** @type {Array<LogEntry>} */
-const logs = [];
+import { readFileSync, appendFileSync, existsSync, mkdirSync } from 'fs';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const LOG_DIR = join(__dirname, '..', '.logs');
+const LOG_FILE = join(LOG_DIR, 'chat.jsonl');
+
+if (!existsSync(LOG_DIR)) mkdirSync(LOG_DIR, { recursive: true });
 
 /**
  * @typedef {{
@@ -117,12 +123,24 @@ function evaluate(evalPrompt, reply) {
  * @param {{sessionId: string, message: string, reply: string, latencyMs: number, error?: string}} entry
  * @returns {LogEntry}
  */
+function readLogs() {
+  if (!existsSync(LOG_FILE)) return [];
+  try {
+    return readFileSync(LOG_FILE, 'utf-8')
+      .split('\n')
+      .filter(l => l.trim())
+      .map(l => JSON.parse(l))
+      .slice(-500);
+  } catch { return []; }
+}
+
 export function logExchange(entry) {
   const matched = matchEvalPrompt(entry.message);
   const evalResult = matched && !entry.error ? evaluate(matched, entry.reply) : null;
+  const existing = readLogs();
 
   const logEntry = {
-    id: logs.length + 1,
+    id: existing.length + 1,
     sessionId: entry.sessionId,
     message: entry.message,
     reply: entry.reply || '',
@@ -133,23 +151,16 @@ export function logExchange(entry) {
     eval: evalResult,
   };
 
-  logs.push(logEntry);
-  if (logs.length > 500) logs.shift();
+  appendFileSync(LOG_FILE, JSON.stringify(logEntry) + '\n');
   return logEntry;
 }
 
-/**
- * Get all logs, newest first.
- * @returns {Array<LogEntry>}
- */
 export function getLogs() {
-  return [...logs].reverse();
+  return readLogs().reverse();
 }
 
-/**
- * Get summary stats.
- */
 export function getStats() {
+  const logs = readLogs();
   const total = logs.length;
   const errors = logs.filter(l => l.error).length;
   const evals = logs.filter(l => l.eval);
