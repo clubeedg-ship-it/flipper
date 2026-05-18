@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface Message {
   id: string;
@@ -9,33 +11,6 @@ interface Message {
 
 interface ChatPanelProps {
   onClose: () => void;
-}
-
-function renderMarkdown(text: string) {
-  return text.split('\n').map((line, i) => {
-    const parts: React.ReactNode[] = [];
-    let rest = line;
-    let key = 0;
-    while (rest.length > 0) {
-      const boldMatch = rest.match(/\*\*(.+?)\*\*/);
-      const italicMatch = rest.match(/\*(.+?)\*/);
-      const match = boldMatch && italicMatch
-        ? (boldMatch.index! <= italicMatch.index! ? boldMatch : italicMatch)
-        : (boldMatch || italicMatch);
-      if (!match || match.index === undefined) {
-        parts.push(rest);
-        break;
-      }
-      if (match.index > 0) parts.push(rest.slice(0, match.index));
-      const isBold = match[0].startsWith('**');
-      parts.push(isBold
-        ? <strong key={key++}>{match[1]}</strong>
-        : <em key={key++}>{match[1]}</em>
-      );
-      rest = rest.slice(match.index + match[0].length);
-    }
-    return <span key={i}>{parts}{i < text.split('\n').length - 1 && <br />}</span>;
-  });
 }
 
 function LoadingDots() {
@@ -237,7 +212,15 @@ export default function ChatPanel({ onClose }: ChatPanelProps) {
                   wordBreak: 'break-word',
                 }}
               >
-                {msg.role === 'assistant' ? renderMarkdown(msg.text) : msg.text}
+                {msg.role === 'assistant' ? (
+                  <div className="markdown-content">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {msg.text}
+                    </ReactMarkdown>
+                  </div>
+                ) : (
+                  msg.text
+                )}
               </div>
             </motion.div>
           ))}
